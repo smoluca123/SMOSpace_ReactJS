@@ -23,14 +23,10 @@ baseApi.interceptors.request.use(
 
 baseApi.interceptors.response.use(
   (response) => {
-    // response.data
-    console.log(response.data);
     return response;
   },
   (error) => {
-    if (error.response.status === 401) {
-      // Handle token expired or invalid
-      // You can redirect to login page here or simply logout the user
+    if (error.response?.status === 401) {
       console.log('Token expired or invalid');
     }
     return Promise.reject(error);
