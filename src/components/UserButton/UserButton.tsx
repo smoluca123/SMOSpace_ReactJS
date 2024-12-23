@@ -10,13 +10,19 @@ import {
 } from '@/components/ui/dropdown-menu';
 import UserAvatar from '@/components/UserAvatar';
 import ThemeToggleMenuItem from '@/components/UserButton/ThemeToggleMenuItem';
-import { useAppSelector } from '@/redux/hooks';
-import { selectAuth } from '@/redux/slices/authSlice';
-import { Coins, LucideProps } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { logout, selectAuth } from '@/redux/slices/authSlice';
+import { Coins, LogOut, LucideProps } from 'lucide-react';
 import { ForwardRefExoticComponent, PropsWithChildren, RefAttributes } from 'react';
 
-export default function ProfileButton({ showName }: { showName?: boolean }) {
+export default function UserButton({ showName }: { showName?: boolean }) {
   const { user } = useAppSelector(selectAuth);
+
+  const dispatch = useAppDispatch();
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
 
   return (
     <>
@@ -37,11 +43,16 @@ export default function ProfileButton({ showName }: { showName?: boolean }) {
             <DropdownMenuSeparator />
             <DropdownMenuItem className='flex gap-4 h-12'>
               <UserAvatar avatarUrl={user.avatar} fallbackName={user.fullName} className='size-5' />
-              <h4>{user.fullName}</h4>
+              <h4 className='hidden truncate whitespace-nowrap break-words line-clamp-1 lg:block'>
+                {user.fullName}
+              </h4>
             </DropdownMenuItem>
             <MenuItem Icon={Coins}>Points: {user.credits}</MenuItem>
-            <DropdownMenuItem>Team</DropdownMenuItem>
-            <DropdownMenuItem>Subscription</DropdownMenuItem>
+            {/* Logout */}
+            <DropdownMenuItem className='flex gap-x-4 items-center h-12' onClick={handleLogout}>
+              <LogOut className='!size-5 text-destructive' />
+              Logout
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <ThemeToggleMenuItem />
           </DropdownMenuContent>

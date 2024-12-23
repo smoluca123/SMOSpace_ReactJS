@@ -40,6 +40,7 @@ const authSlice = createSlice({
       state.user = null;
       localStorage.removeItem('currentUser');
       localStorage.removeItem('isAuthenticated');
+      window.location.reload();
     },
     updateUser(
       state,
