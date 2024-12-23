@@ -11,9 +11,7 @@ interface AuthState {
   error: { message: string } | null;
 }
 
-const isAuthenticated = JSON.parse(
-  localStorage.getItem('isAuthenticated') || 'false'
-);
+const isAuthenticated = JSON.parse(localStorage.getItem('isAuthenticated') || 'false');
 const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
 
 const initialState: AuthState = {
@@ -23,18 +21,15 @@ const initialState: AuthState = {
   error: null,
 };
 
-export const login = createAsyncThunk(
-  'auth/login',
-  async (credentials: LoginValues) => {
-    try {
-      const data = await loginAPI(credentials);
-      return data;
-    } catch (error) {
-      console.log('🚀 ~ error:', error);
-      throw error;
-    }
+export const login = createAsyncThunk('auth/login', async (credentials: LoginValues) => {
+  try {
+    const data = await loginAPI(credentials);
+    return data;
+  } catch (error) {
+    console.log('🚀 ~ error:', error);
+    throw error;
   }
-);
+});
 
 const authSlice = createSlice({
   name: 'auth',
@@ -50,7 +45,7 @@ const authSlice = createSlice({
       state,
       action: {
         payload: IUserWithAccessTokenType;
-      }
+      },
     ) {
       state.user = action.payload;
       localStorage.setItem('currentUser', JSON.stringify(action.payload));
@@ -80,10 +75,7 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.user = action.payload.data;
         state.error = null;
-        localStorage.setItem(
-          'currentUser',
-          JSON.stringify(action.payload.data)
-        );
+        localStorage.setItem('currentUser', JSON.stringify(action.payload.data));
         localStorage.setItem('isAuthenticated', JSON.stringify(true));
       })
       .addCase(login.rejected, (state, action) => {

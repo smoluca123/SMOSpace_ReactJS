@@ -15,37 +15,34 @@ interface IPostProps {
 export default function Post({ post }: IPostProps) {
   return (
     <ContentWrapper>
-      <article className="space-y-3 shadow-sm bg-card group/post">
-        <div className="flex gap-3 justify-between">
-          <div className="flex gap-3 flex-warp">
+      <article className='space-y-3 shadow-sm bg-card group/post'>
+        <div className='flex gap-3 justify-between'>
+          <div className='flex gap-3 flex-warp'>
             <Link to={`/users/${post.author.username}`}>
-              <UserAvatar
-                avatarUrl={post.author.avatar}
-                fallbackName={post.author.fullName}
-              />
+              <UserAvatar avatarUrl={post.author.avatar} fallbackName={post.author.fullName} />
             </Link>
-            <div className="">
+            <div className=''>
               <Link
                 to={`/users/${post.author.username}`}
-                className="block font-medium hover:underline"
+                className='block font-medium hover:underline'
               >
                 {post.author.fullName}
               </Link>
-              <div className="flex gap-2 items-center">
+              <div className='flex gap-2 items-center'>
                 <Link
                   to={`/posts/${post.id}`}
-                  className="block text-sm text-muted-foreground hover:underline"
+                  className='block text-sm text-muted-foreground hover:underline'
                 >
                   {formatRelativeDate(new Date(post.createdAt))}
                   {/* {post.createdAt.toString()} */}
                 </Link>
                 {post.isPrivate ? (
-                  <div className="" title="Private">
-                    <GlobeLock className="size-3" />
+                  <div className='' title='Private'>
+                    <GlobeLock className='size-3' />
                   </div>
                 ) : (
-                  <div className="" title="Public">
-                    <Globe className="size-3" />
+                  <div className='' title='Public'>
+                    <Globe className='size-3' />
                   </div>
                 )}
               </div>
@@ -58,7 +55,7 @@ export default function Post({ post }: IPostProps) {
           />
         )} */}
         </div>
-        <div className="whitespace-pre-line break-words">
+        <div className='whitespace-pre-line break-words'>
           <LinkifyHashTag>{parser(post.content)}</LinkifyHashTag>
         </div>
       </article>

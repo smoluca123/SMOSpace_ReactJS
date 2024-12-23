@@ -1,8 +1,7 @@
 import axios from 'axios';
 import env from '@/lib/env';
 
-const accessToken =
-  JSON.parse(localStorage.getItem('currentUser') || '{}').accessToken || '';
+const accessToken = JSON.parse(localStorage.getItem('currentUser') || '{}').accessToken || '';
 
 const baseApi = axios.create({
   baseURL: env.VITE_API_URL,
@@ -19,7 +18,7 @@ baseApi.interceptors.request.use(
   (error) => {
     // request.config
     return Promise.reject(error);
-  }
+  },
 );
 
 baseApi.interceptors.response.use(
@@ -35,7 +34,7 @@ baseApi.interceptors.response.use(
       console.log('Token expired or invalid');
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default baseApi;

@@ -3,13 +3,7 @@
 import PasswordInput from '@/components/PasswordInput';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { loginSchema, LoginValues } from '@/lib/validations';
 import { Loader2 } from 'lucide-react';
@@ -58,38 +52,38 @@ export default function LoginForm() {
     <Form {...form}>
       {/* Alert */}
       {error && (
-        <Alert variant="destructive">
+        <Alert variant='destructive'>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
-      <form className="space-y-4" onSubmit={form.handleSubmit(handleLogin)}>
+      <form className='space-y-4' onSubmit={form.handleSubmit(handleLogin)}>
         <FormField
           control={form.control}
-          name="username"
+          name='username'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Username" />
+                <Input {...field} placeholder='Username' />
               </FormControl>
             </FormItem>
           )}
         />
         <FormField
           control={form.control}
-          name="password"
+          name='password'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <PasswordInput {...field} placeholder="Password" />
+                <PasswordInput {...field} placeholder='Password' />
               </FormControl>
             </FormItem>
           )}
         />
-        <Button className="mt-3 w-full" disabled={isLoading}>
-          {isLoading && <Loader2 className="ml-2 animate-spin size-5" />}
+        <Button className='mt-3 w-full' disabled={isLoading}>
+          {isLoading && <Loader2 className='ml-2 animate-spin size-5' />}
           Login
         </Button>
       </form>

@@ -5,6 +5,6 @@ import { Navigate } from 'react-router-dom';
 
 export default function UnauthenticationRoute({ children }: PropsWithChildren) {
   const { isAuthenticated } = useAppSelector(selectAuth);
-  if (isAuthenticated) return <Navigate to="/" replace />;
+  if (isAuthenticated) return <Navigate to='/' replace />;
   return <>{children}</>;
 }

@@ -2,13 +2,7 @@ import { submitPostAPI } from '@/apis/postApi';
 import { useMutation } from '@tanstack/react-query';
 
 export function useSubmitPostMutaion() {
-  const submitPost = async ({
-    content,
-    isPrivate,
-  }: {
-    content: string;
-    isPrivate?: boolean;
-  }) => {
+  const submitPost = async ({ content, isPrivate }: { content: string; isPrivate?: boolean }) => {
     try {
       const data = await submitPostAPI({
         content,

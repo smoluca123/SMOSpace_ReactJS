@@ -2,13 +2,7 @@
 
 import PasswordInput from '@/components/PasswordInput';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { registerSchema, RegisterValues } from '@/lib/validations';
 import { useState } from 'react';
@@ -52,7 +46,7 @@ export default function RegisterForm() {
         login({
           username: validCredentials.username,
           password: validCredentials.password,
-        })
+        }),
       ).unwrap();
 
       toast({
@@ -73,33 +67,33 @@ export default function RegisterForm() {
     <Form {...form}>
       {/* Alert */}
       {error && (
-        <Alert variant="destructive">
+        <Alert variant='destructive'>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
-      <form className="space-y-4" onSubmit={form.handleSubmit(handleRegister)}>
-        <div className="grid gap-4 md:grid-cols-2">
+      <form className='space-y-4' onSubmit={form.handleSubmit(handleRegister)}>
+        <div className='grid gap-4 md:grid-cols-2'>
           <FormField
             control={form.control}
-            name="fullName"
+            name='fullName'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Full name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Ex: Luca Dev" />
+                  <Input {...field} placeholder='Ex: Luca Dev' />
                 </FormControl>
               </FormItem>
             )}
           />
           <FormField
             control={form.control}
-            name="displayName"
+            name='displayName'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Display name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Ex: Luca N" />
+                  <Input {...field} placeholder='Ex: Luca N' />
                 </FormControl>
               </FormItem>
             )}
@@ -107,44 +101,41 @@ export default function RegisterForm() {
         </div>
         <FormField
           control={form.control}
-          name="email"
+          name='email'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Ex: lucadev1@gmail.com" />
+                <Input {...field} placeholder='Ex: lucadev1@gmail.com' />
               </FormControl>
             </FormItem>
           )}
         />
         <FormField
           control={form.control}
-          name="username"
+          name='username'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Username" />
+                <Input {...field} placeholder='Username' />
               </FormControl>
             </FormItem>
           )}
         />
         <FormField
           control={form.control}
-          name="password"
+          name='password'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <PasswordInput {...field} placeholder="Password" />
+                <PasswordInput {...field} placeholder='Password' />
               </FormControl>
             </FormItem>
           )}
         />
-        <LoadingButton
-          className="mt-3 w-full"
-          loading={isLoading || loginLoading}
-        >
+        <LoadingButton className='mt-3 w-full' loading={isLoading || loginLoading}>
           Register
         </LoadingButton>
       </form>

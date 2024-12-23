@@ -22,16 +22,13 @@ const showErrorToast = (message: string) => {
 
 const showSuccessToast = () => {
   toast({
-    title: 'Success', 
+    title: 'Success',
     description: 'Content has been generated successfully',
     duration: 3000,
   });
 };
 
-export default function GeneratePostForm({
-  createPostEditor,
-  closeDialog,
-}: GeneratePostFormProps) {
+export default function GeneratePostForm({ createPostEditor, closeDialog }: GeneratePostFormProps) {
   const [prompt, setPrompt] = useState('');
 
   const { mutate, isPending } = useGeneratePostMutaion();
@@ -54,24 +51,24 @@ export default function GeneratePostForm({
         onError: (error) => {
           showErrorToast(error.message || 'Something went wrong');
         },
-      }
+      },
     );
   };
 
   return (
-    <div className="w-[25rem] space-y-4">
-      <div className="space-y-2">
+    <div className='w-[25rem] space-y-4'>
+      <div className='space-y-2'>
         <Label>Write something here..</Label>
         <Textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Describe your post, e.g. 'Write a post about AI technology'"
-          className="h-[12rem] overflow-y-auto"
+          className='h-[12rem] overflow-y-auto'
         />
       </div>
       <LoadingButton
         loading={isPending}
-        className="ml-auto"
+        className='ml-auto'
         onClick={handleGeneratePost}
         disabled={!prompt.trim()}
       >

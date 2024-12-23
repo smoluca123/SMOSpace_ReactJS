@@ -15,15 +15,13 @@ export default function SubmitPostBox() {
 
   return (
     <>
-      <ContentWrapper className="flex gap-x-4 items-center">
+      <ContentWrapper className='flex gap-x-4 items-center'>
         <UserAvatar fallbackName={user.fullName} avatarUrl={user.avatar} />
         <div
-          className="grid place-items-center w-full h-9 rounded-lg border cursor-text bg-background hover:bg-background/70 border-border"
+          className='grid place-items-center w-full h-9 rounded-lg border cursor-text bg-background hover:bg-background/70 border-border'
           onClick={() => setOpen(true)}
         >
-          <span className="text-sm text-muted-foreground">
-            Write your post...
-          </span>
+          <span className='text-sm text-muted-foreground'>Write your post...</span>
         </div>
       </ContentWrapper>
       <CreatePostDialog isOpen={open} onClose={() => setOpen(false)} />
