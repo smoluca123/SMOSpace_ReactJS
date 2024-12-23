@@ -97,3 +97,8 @@ export interface IGeneratePostResponseType {
   currentCredits: number;
   content: string;
 }
+
+export interface ITrendingTopicType {
+  hashtag: string;
+  count: number;
+}
