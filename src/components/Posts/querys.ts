@@ -4,9 +4,9 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 export const getPostsQueryKey = ['posts', 'for-you'];
 
 export function useGetPosts() {
-  const getPosts = async () => {
+  const getPosts = async ({ page }: { page?: number }) => {
     try {
-      const data = await getAllPostsAPI({});
+      const data = await getAllPostsAPI({ page });
       return data.data;
     } catch (error) {
       console.log(error);
@@ -15,10 +15,11 @@ export function useGetPosts() {
   };
   const query = useInfiniteQuery({
     queryKey: getPostsQueryKey,
-    queryFn: getPosts,
+    queryFn: ({ pageParam }) => getPosts({ page: pageParam }),
     maxPages: 5,
-    getPreviousPageParam: ({ hasPreviousPage, currentPage }) => hasPreviousPage && currentPage - 1,
-    getNextPageParam: ({ hasNextPage, currentPage }) => hasNextPage && currentPage + 1,
+    getPreviousPageParam: ({ hasPreviousPage, currentPage }) =>
+      hasPreviousPage ? currentPage - 1 : undefined,
+    getNextPageParam: ({ hasNextPage, currentPage }) => (hasNextPage ? currentPage + 1 : undefined),
     initialPageParam: 1,
   });
   return query;

@@ -1,5 +1,4 @@
 import { Skeleton } from '@/components/ui/skeleton';
-import React from 'react';
 
 export default function PostsLoadingSkeleton() {
   return (
@@ -13,15 +12,15 @@ export default function PostsLoadingSkeleton() {
 
 export function PostLoadingSkeleton() {
   return (
-    <div className='w-full animate-pulse space-y-3 rounded-2xl bg-card p-5 shadow-sm'>
+    <div className='p-5 space-y-3 w-full rounded-2xl shadow-sm animate-pulse bg-card'>
       <div className='flex flex-wrap gap-3'>
-        <Skeleton className='size-12 rounded-full' />
+        <Skeleton className='rounded-full size-12 bg-secondary' />
         <div className='space-y-1.5'>
-          <Skeleton className='h-4 w-24 rounded' />
-          <Skeleton className='h-4 w-20 rounded' />
+          <Skeleton className='w-24 h-4 rounded bg-secondary' />
+          <Skeleton className='w-20 h-4 rounded bg-secondarys' />
         </div>
       </div>
-      <Skeleton className='h-16 rounded' />
+      <Skeleton className='h-16 rounded bg-secondary' />
     </div>
   );
 }
