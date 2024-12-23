@@ -4,6 +4,7 @@ import {
   IApiResponseWrapper,
   IGeneratePostResponseType,
   IPostDataWithLikedStatusType,
+  ITrendingTopicType,
 } from '@/lib/types/interfaces';
 import { UUID } from 'crypto';
 
@@ -64,6 +65,16 @@ export const generatePostAPI = async ({ prompt }: { prompt: string }) => {
       { prompt },
     );
 
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const getTrendingTopicsAPI = async () => {
+  try {
+    const { data } = await baseApi.get<IApiResponseWrapper<ITrendingTopicType[]>>('/post/trending');
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;

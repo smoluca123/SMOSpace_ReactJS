@@ -40,7 +40,7 @@ function LeftSidebarMenu() {
     <div className=' space-y-4'>
       <Button
         variant='ghost'
-        className='hover:bg-accent items-center flex gap-x-4 justify-start rounded-sm my-[5px] p-4 text-white/90 hover:text-white w-full'
+        className='hover:bg-accent items-center flex gap-x-4 justify-start rounded-sm my-[5px] p-4 text-foreground/90 hover:text-foreground/90 w-full'
       >
         <MessageSquareHeart className='text-primary' />
         News Feed
@@ -52,7 +52,7 @@ function LeftSidebarMenu() {
         <Button
           key={label}
           variant='ghost'
-          className='hover:bg-accent items-center flex gap-x-4 justify-start  rounded-sm  p-4 text-white/90 hover:text-white w-full'
+          className='hover:bg-accent items-center flex gap-x-4 justify-start  rounded-sm  p-4 text-foreground/90 hover:text-foreground/90  w-full'
         >
           <Icon className='text-primary' />
           {label}
