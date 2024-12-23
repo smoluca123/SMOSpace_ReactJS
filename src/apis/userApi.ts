@@ -4,12 +4,13 @@ import { IApiResponseWrapper, IUserWithAccessTokenType } from '@/lib/types';
 import { LoginValues, RegisterValues } from '@/lib/validations';
 
 export const loginAPI = async (
-  credentials: LoginValues
+  credentials: LoginValues,
 ): Promise<IApiResponseWrapper<IUserWithAccessTokenType>> => {
   try {
-    const { data } = await baseApi.post<
-      IApiResponseWrapper<IUserWithAccessTokenType>
-    >('/auth/login', credentials);
+    const { data } = await baseApi.post<IApiResponseWrapper<IUserWithAccessTokenType>>(
+      '/auth/login',
+      credentials,
+    );
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;
@@ -18,12 +19,13 @@ export const loginAPI = async (
 };
 
 export const registerAPI = async (
-  credentials: RegisterValues
+  credentials: RegisterValues,
 ): Promise<IApiResponseWrapper<IUserWithAccessTokenType>> => {
   try {
-    const { data } = await baseApi.post<
-      IApiResponseWrapper<IUserWithAccessTokenType>
-    >('/auth/register', credentials);
+    const { data } = await baseApi.post<IApiResponseWrapper<IUserWithAccessTokenType>>(
+      '/auth/register',
+      credentials,
+    );
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;

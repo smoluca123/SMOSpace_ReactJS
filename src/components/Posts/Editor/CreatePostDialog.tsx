@@ -1,10 +1,5 @@
 import PostEditor from '@/components/Posts/Editor/PostEditor';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 
 export default function CreatePostDialog({
@@ -20,9 +15,9 @@ export default function CreatePostDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="">
+      <DialogContent className=''>
         <DialogHeader>
-          <DialogTitle className="text-center">Create a Post</DialogTitle>
+          <DialogTitle className='text-center'>Create a Post</DialogTitle>
         </DialogHeader>
         <Separator />
         {/* Editor */}

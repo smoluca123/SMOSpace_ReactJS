@@ -17,10 +17,8 @@ export function useGetPosts() {
     queryKey: getPostsQueryKey,
     queryFn: getPosts,
     maxPages: 5,
-    getPreviousPageParam: ({ hasPreviousPage, currentPage }) =>
-      hasPreviousPage && currentPage - 1,
-    getNextPageParam: ({ hasNextPage, currentPage }) =>
-      hasNextPage && currentPage + 1,
+    getPreviousPageParam: ({ hasPreviousPage, currentPage }) => hasPreviousPage && currentPage - 1,
+    getNextPageParam: ({ hasNextPage, currentPage }) => hasNextPage && currentPage + 1,
     initialPageParam: 1,
   });
   return query;

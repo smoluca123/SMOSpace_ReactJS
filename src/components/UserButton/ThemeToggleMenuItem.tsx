@@ -6,7 +6,7 @@ import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 export default function ThemeToggleMenuItem() {
   return (
     <DropdownMenuItem
-      className="flex justify-between items-center"
+      className='flex justify-between items-center'
       onClick={(e) => {
         e.preventDefault();
       }}

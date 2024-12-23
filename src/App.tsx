@@ -11,16 +11,16 @@ import ReactQueryProvider from '@/components/ReactQueryProvider';
 function App() {
   return (
     <NextUIProvider>
-      <ThemeProvider defaultTheme="dark">
+      <ThemeProvider defaultTheme='dark'>
         <ReactQueryProvider>
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<MainLayout />}>
+              <Route path='/' element={<MainLayout />}>
                 <Route index element={<HomePage />} />
               </Route>
-              <Route path="/auth" element={<AuthPage />}>
-                <Route path="login" element={<Login />} />
-                <Route path="register" element={<Register />} />
+              <Route path='/auth' element={<AuthPage />}>
+                <Route path='login' element={<Login />} />
+                <Route path='register' element={<Register />} />
               </Route>
             </Routes>
           </BrowserRouter>

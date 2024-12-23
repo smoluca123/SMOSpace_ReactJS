@@ -21,13 +21,13 @@ interface GeneratePostDialogProps {
 }
 
 const CreditBalanceCard = ({ credits }: { credits: number }) => (
-  <div className="bg-card w-[20rem] rounded-md p-5 text-foreground space-y-5 border border-border">
+  <div className='bg-card w-[20rem] rounded-md p-5 text-foreground space-y-5 border border-border'>
     <h6>Available balance</h6>
-    <h2 className="flex gap-x-2 items-center text-3xl font-semibold tracking-wide">
-      {credits} <Coins className="text-primary" />
+    <h2 className='flex gap-x-2 items-center text-3xl font-semibold tracking-wide'>
+      {credits} <Coins className='text-primary' />
     </h2>
     <p>Credits</p>
-    <Button className="w-full text-primary" variant="secondary">
+    <Button className='w-full text-primary' variant='secondary'>
       Buy Credits
     </Button>
   </div>
@@ -44,21 +44,17 @@ export default function GeneratePostDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={() => isOpen && onClose()}>
-      <DialogContent className="max-w-full w-fit">
+      <DialogContent className='max-w-full w-fit'>
         <DialogHeader>
           <DialogTitle>Generate Post</DialogTitle>
           <DialogDescription>
-            Generate new post content using AI. This will consume credits from
-            your balance.
+            Generate new post content using AI. This will consume credits from your balance.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex gap-5 items-start">
+        <div className='flex gap-5 items-start'>
           <CreditBalanceCard credits={user.credits} />
-          <GeneratePostForm
-            createPostEditor={createPostEditor}
-            closeDialog={onClose}
-          />
+          <GeneratePostForm createPostEditor={createPostEditor} closeDialog={onClose} />
         </div>
       </DialogContent>
     </Dialog>

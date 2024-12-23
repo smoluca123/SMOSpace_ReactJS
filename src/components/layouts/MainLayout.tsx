@@ -6,10 +6,10 @@ import { Outlet } from 'react-router-dom';
 
 export default function MainLayout({ children }: PropsWithChildren) {
   return (
-    <section className="min-h-dvh bg-background">
+    <section className='min-h-dvh bg-background'>
       <Header />
 
-      <div className="container flex gap-6 mx-auto mt-6">
+      <div className='container flex gap-6 mx-auto mt-6'>
         <LeftSidebar />
         {children || <Outlet />}
         <Sidebar />

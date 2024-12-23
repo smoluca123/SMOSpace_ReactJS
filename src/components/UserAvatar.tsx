@@ -8,16 +8,12 @@ interface IProps extends PropsWithClassName {
   avatarUrl: string;
 }
 
-export default function UserAvatar({
-  avatarUrl,
-  fallbackName = 'Anonymous',
-  className,
-}: IProps) {
+export default function UserAvatar({ avatarUrl, fallbackName = 'Anonymous', className }: IProps) {
   return (
     <Avatar className={cn('size-10', className)}>
       <AvatarFallback>{fallbackName[0].toLocaleUpperCase()}</AvatarFallback>
       <AvatarImage
-        className="object-cover"
+        className='object-cover'
         src={avatarUrl || avatarPlaceholder}
         alt={fallbackName}
       />

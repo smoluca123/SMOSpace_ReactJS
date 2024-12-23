@@ -14,10 +14,10 @@ export default function AppLogo({
   const { theme } = useTheme();
 
   return (
-    <Link to="/" className={cn('', wrapperClassName)}>
+    <Link to='/' className={cn('', wrapperClassName)}>
       <img
         src={theme === 'dark' ? NightLogo : Logo}
-        alt="SMO Space Logo"
+        alt='SMO Space Logo'
         className={cn('h-8 w-[200px]', className)}
       />
     </Link>

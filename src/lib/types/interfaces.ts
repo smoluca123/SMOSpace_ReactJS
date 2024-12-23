@@ -42,9 +42,7 @@ export interface IUserDataType {
   credits: number;
 }
 
-export interface IUserWithAccessTokenType
-  extends IUserDataType,
-    IWithAccessTokenType {}
+export interface IUserWithAccessTokenType extends IUserDataType, IWithAccessTokenType {}
 
 export interface IWithAccessTokenType {
   accessToken: string;
