@@ -3,32 +3,36 @@ import { Bell, Home, MessageCircleCode, UserPlus } from 'lucide-react';
 
 // Components
 import AppLogo from '@/components/AppLogo';
-import SearchInput from '@/components/Header/SearchInput';
 import UserButton from '@/components/UserButton';
+import { NavSidebar } from '@/components/Header/NavSidebar';
+import SearchBox from '@/components/Header/SearchBox';
 
 // Sub-components
 const LeftSection = () => (
-  <div className='flex items-center justify-between w-[20rem]'>
-    <AppLogo className='w-[11rem]' />
-    <Link to='/' className='flex gap-x-2 items-center p-2 text-white rounded-md bg-primary'>
-      <Home size={18} />
-      <span className='text-sm'>Home</span>
-    </Link>
-  </div>
+  <>
+    <NavSidebar />
+    <div className='flex items-center lg:justify-between lg:w-[20rem]'>
+      <AppLogo className='w-[11rem] hidden lg:block' />
+      <Link to='/' className='flex gap-x-2 items-center p-2 text-white rounded-md bg-primary'>
+        <Home size={18} />
+        <span className='hidden text-sm sm:inline-block'>Home</span>
+      </Link>
+    </div>
+  </>
 );
 
 const ActionButtons = () => (
-  <>
-    <button className='p-4 rounded-md hover:bg-accent'>
+  <div className='flex ~gap-x-0/2 justify-between items-center'>
+    <button className='~p-2/4 rounded-md hover:bg-accent'>
       <UserPlus />
     </button>
-    <button className='p-4 rounded-md hover:bg-accent'>
+    <button className='~p-2/4 rounded-md hover:bg-accent'>
       <MessageCircleCode />
     </button>
-    <button className='p-4 rounded-md hover:bg-accent'>
+    <button className='~p-2/4 rounded-md hover:bg-accent'>
       <Bell />
     </button>
-  </>
+  </div>
 );
 
 const AuthSection = () => {
@@ -37,15 +41,13 @@ const AuthSection = () => {
 
 export default function Header() {
   return (
-    <header className='h-[70px] bg-card sticky top-0 z-10 border-b border-border'>
-      <div className='container flex gap-x-4 items-center mx-auto h-full'>
+    <header className='h-[70px] bg-card sticky top-0 z-10 border-b border-border px-4 sm:px-0'>
+      <div className='container flex justify-between items-center mx-auto h-full ~gap-x-2/4'>
         <LeftSection />
-        <SearchInput />
+        <SearchBox />
 
-        <div className='flex gap-x-4 justify-between items-center'>
-          <ActionButtons />
-          <AuthSection />
-        </div>
+        <ActionButtons />
+        <AuthSection />
       </div>
     </header>
   );

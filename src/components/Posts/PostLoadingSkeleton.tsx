@@ -17,7 +17,7 @@ export function PostLoadingSkeleton() {
         <Skeleton className='rounded-full size-12 bg-secondary' />
         <div className='space-y-1.5'>
           <Skeleton className='w-24 h-4 rounded bg-secondary' />
-          <Skeleton className='w-20 h-4 rounded bg-secondarys' />
+          <Skeleton className='w-20 h-4 rounded bg-secondary' />
         </div>
       </div>
       <Skeleton className='h-16 rounded bg-secondary' />
