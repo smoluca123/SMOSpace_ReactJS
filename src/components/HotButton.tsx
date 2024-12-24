@@ -13,7 +13,7 @@ export default function HotButton({ className, children, ...props }: IProps) {
         {children}
       </Button>
       <Badge className='absolute -top-2 -right-4 p-0 w-8 h-5 bg-secondary hover:bg-secondary/70'>
-        <span className='text-center w-full text-white text-[10px]'>HOT</span>
+        <span className='text-center w-full text-primary text-[10px]'>HOT</span>
       </Badge>
     </div>
   );
