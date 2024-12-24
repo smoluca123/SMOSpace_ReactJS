@@ -4,12 +4,7 @@ import { Bell, Home, MessageCircleCode, UserPlus } from 'lucide-react';
 // Components
 import AppLogo from '@/components/AppLogo';
 import SearchInput from '@/components/Header/SearchInput';
-import { Button } from '@/components/ui/button';
 import UserButton from '@/components/UserButton';
-
-// Redux
-import { useAppSelector } from '@/redux/hooks';
-import { selectAuth } from '@/redux/slices/authSlice';
 
 // Sub-components
 const LeftSection = () => (
@@ -37,19 +32,7 @@ const ActionButtons = () => (
 );
 
 const AuthSection = () => {
-  const { user } = useAppSelector(selectAuth);
-
-  return (
-    <>
-      {user ? (
-        <UserButton showName={true} />
-      ) : (
-        <Link to='/auth/login'>
-          <Button className='text-foreground'>Join now!</Button>
-        </Link>
-      )}
-    </>
-  );
+  return <UserButton showName={true} />;
 };
 
 export default function Header() {

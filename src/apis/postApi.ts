@@ -9,12 +9,27 @@ import {
 import { UUID } from 'crypto';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export const getAllPostsAPI = async (params: { userId?: UUID }) => {
+export const getAllPostsAPI = async ({
+  userId,
+  page = 1,
+  limit = 2,
+  keywords,
+}: {
+  userId?: UUID;
+  page?: number;
+  limit?: number;
+  keywords?: string;
+}) => {
   try {
     const { data } = await baseApi.get<IApiPaginationResponseWrapper<IPostDataWithLikedStatusType>>(
       '/post',
       {
-        params,
+        params: {
+          userId,
+          page,
+          limit,
+          keywords,
+        },
       },
     );
     return data;
