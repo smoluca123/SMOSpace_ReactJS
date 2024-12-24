@@ -25,7 +25,7 @@ export default function NewUsers() {
         {!isFetching && (
           <>
             {/* Individual user item with hover effects and layout */}
-            <div className='flex cursor-pointer items-center'>
+            <div className='flex hover:bg-accent rounded-md p-2 transition-colors duration-300 cursor-pointer  items-center'>
               {/* User's avatar with margin spacing */}
               <UserAvatar className='mr-[10px]' avatarUrl='' />
               {/* User's name with text styling and truncation */}
