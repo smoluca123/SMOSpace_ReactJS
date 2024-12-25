@@ -11,7 +11,7 @@ export default function NewUsers() {
   return (
     <ContentWrapper>
       {/* Header section containing title and refresh button */}
-      <div className='flex items-center mb-4 justify-between'>
+      <div className='flex items-center justify-between mb-4'>
         <h1 className='text-lg font-semibold'>New Users</h1>
         {/* Button to refresh the list of new users */}
         <button>
@@ -25,11 +25,11 @@ export default function NewUsers() {
         {!isFetching && (
           <>
             {/* Individual user item with hover effects and layout */}
-            <div className='flex hover:bg-accent rounded-md p-2 transition-colors duration-300 cursor-pointer  items-center'>
+            <div className='flex items-center p-2 transition-colors duration-300 rounded-md cursor-pointer hover:bg-accent'>
               {/* User's avatar with margin spacing */}
               <UserAvatar className='mr-[10px]' avatarUrl='' />
               {/* User's name with text styling and truncation */}
-              <h1 className='text-muted-foreground hover:text-foreground duration-300 transition-colors font-semibold truncate whitespace-pre-line break-words line-clamp-1'>
+              <h1 className='font-semibold break-words truncate whitespace-pre-line transition-colors duration-300 text-muted-foreground hover:text-foreground line-clamp-1'>
                 Nguyễn Quốc Thắng
               </h1>
               {/* Add friend button positioned at the end */}

@@ -26,3 +26,9 @@ export const formatNumber = (number: number) => {
     maximumFractionDigits: 1,
   }).format(number);
 };
+
+export const getCurrentTime = () => {
+  const currentDate = new Date();
+  const period = currentDate.getHours() < 12 ? 'AM' : 'PM';
+  return { currentDate, period };
+};
