@@ -29,6 +29,7 @@ export const formatNumber = (number: number) => {
 
 export const getCurrentTime = () => {
   const currentDate = new Date();
-  const period = currentDate.getHours() < 12 ? 'AM' : 'PM';
+  const timer = currentDate.getHours();
+  const period = timer >= 5 && timer <= 18 ? 'AM' : 'PM';
   return { currentDate, period };
 };
