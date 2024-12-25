@@ -27,7 +27,7 @@ import { Navigate } from 'react-router-dom';
 export default function PostEditor({ onCloseDialog }: { onCloseDialog: () => void }) {
   const [isShowGeneratePostDialog, setIsShowGeneratePostDialog] = useState(false);
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
-  const [editorContent, setEditorContent] = useState('');
+  // const [editorContent, setEditorContent] = useState('');
   const { user } = useAppSelector(selectAuth);
   const { mutate, isPending } = useSubmitPostMutaion();
 
@@ -50,9 +50,9 @@ export default function PostEditor({ onCloseDialog }: { onCloseDialog: () => voi
       }),
     ],
     onUpdate: ({ editor }) => {
-      setEditorContent(editor.getHTML());
+      console.log(editor.getText());
+      // setEditorContent(editor.getHTML());
     },
-    immediatelyRender: true,
   });
 
   const editorText = editor?.getText()?.trim() || '';
@@ -62,7 +62,7 @@ export default function PostEditor({ onCloseDialog }: { onCloseDialog: () => voi
   const onSubmit = () => {
     mutate(
       {
-        content: editorContent.trim(),
+        content: editor?.getHTML().trim() || '',
         isPrivate,
       },
       {

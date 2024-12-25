@@ -27,8 +27,11 @@ export const formatNumber = (number: number) => {
   }).format(number);
 };
 
-export const getCurrentTime = () => {
-  const currentDate = new Date();
-  const period = currentDate.getHours() < 12 ? 'AM' : 'PM';
-  return { currentDate, period };
+export const getTimeFromDate = (date: Date = new Date()) => {
+  const hours = date.getHours();
+  const period = hours < 12 ? 'AM' : 'PM';
+  const isMorning = !!(hours >= 0 && hours < 12);
+  const isAfternoon = !!(hours >= 12 && hours < 18);
+  const isEvening = !!(hours >= 18 && hours < 24);
+  return { date, period, isMorning, isAfternoon, isEvening };
 };

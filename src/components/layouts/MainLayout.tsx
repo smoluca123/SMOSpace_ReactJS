@@ -1,4 +1,5 @@
 import Header from '@/components/Header';
+import { Toaster } from '@/components/ui/toaster';
 import LeftSidebar from '@/modules/home/components/LeftSidebar';
 import Sidebar from '@/modules/home/components/Sidebar';
 import { PropsWithChildren } from 'react';
@@ -13,6 +14,7 @@ export default function MainLayout({ children }: PropsWithChildren) {
         <LeftSidebar className='hidden lg:block' />
         {children || <Outlet />}
         <Sidebar />
+        <Toaster />
       </div>
     </section>
   );

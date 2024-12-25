@@ -49,6 +49,7 @@ export default function GeneratePostForm({ createPostEditor, closeDialog }: Gene
           closeDialog();
         },
         onError: (error) => {
+          console.log(error);
           showErrorToast(error.message || 'Something went wrong');
         },
       },
