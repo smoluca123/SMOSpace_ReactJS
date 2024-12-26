@@ -12,21 +12,24 @@ export function TrendingTopics() {
   const { data, isFetching } = useGetTrendingTopics();
 
   return (
-    <ContentWrapper className=' space-y-4'>
+    <ContentWrapper className='space-y-4'>
       {/* Section title */}
-      <h1 className=' text-lg font-semibold'>Trendings ⚡️</h1>
+      <h1 className='text-lg font-semibold'>Trendings ⚡️</h1>
 
       {/* Display trending topics list when data is loaded */}
       {!isFetching &&
         data?.data.map(({ hashtag, count }) => (
-          <div className=' transition-colors p-2 hover:bg-accent duration-300 flex gap-x-4 rounded-md  items-center'>
+          <div
+            className='flex gap-x-4 items-center p-2 rounded-md transition-colors duration-300  hover:bg-accent'
+            key={hashtag}
+          >
             {/* Hash icon for visual indication */}
             <Hash />
             <div>
               {/* Hashtag text with link functionality */}
               <LinkifyHashTag>{hashtag}</LinkifyHashTag>
               {/* Number of posts using this hashtag */}
-              <p className=' text-muted-foreground'>{`${formatNumber(count)} ${count < 2 ? 'Post' : 'Posts'}`}</p>
+              <p className='text-muted-foreground'>{`${formatNumber(count)} ${count < 2 ? 'Post' : 'Posts'}`}</p>
             </div>
           </div>
         ))}
