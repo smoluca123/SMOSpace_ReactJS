@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import baseApi from '@/apis/baseApi';
-import { IApiResponseWrapper, IUserWithAccessTokenType } from '@/lib/types';
+import { IApiResponseWrapper, IUserWithAccessTokenType } from '@/lib/types/interfaces';
 import { LoginValues, RegisterValues } from '@/lib/validations';
 
 export const loginAPI = async (
