@@ -36,7 +36,7 @@ const UserMenuContent = ({
     <UserMenuItem user={user} />
     <MenuItem Icon={Coins}>Points: {user.credits}</MenuItem>
 
-    <DropdownMenuItem className='flex gap-x-4 items-center h-12' onClick={onLogout}>
+    <DropdownMenuItem className='flex items-center h-12 gap-x-4' onClick={onLogout}>
       <LogOut className='!size-5 text-destructive' />
       Logout
     </DropdownMenuItem>
@@ -44,11 +44,9 @@ const UserMenuContent = ({
 );
 
 const UserMenuItem = ({ user }: { user: IUserWithAccessTokenType }) => (
-  <DropdownMenuItem className='flex gap-4 h-12'>
+  <DropdownMenuItem className='flex h-12 gap-4'>
     <UserAvatar avatarUrl={user.avatar} fallbackName={user.fullName} className='size-5' />
-    <h4 className='hidden truncate whitespace-nowrap break-words line-clamp-1 lg:block'>
-      {user.fullName}
-    </h4>
+    <h4 className='break-words truncate whitespace-nowrap line-clamp-1'>{user.fullName}</h4>
   </DropdownMenuItem>
 );
 
@@ -80,7 +78,7 @@ export default function UserButton({ showName }: UserButtonProps) {
           <div className='flex items-center gap-x-4 max-w-[10rem] cursor-pointer'>
             <UserAvatar fallbackName={user.fullName} avatarUrl={user.avatar} />
             {showName && (
-              <h4 className='hidden truncate whitespace-nowrap break-words line-clamp-1 lg:block'>
+              <h4 className='hidden break-words truncate whitespace-nowrap line-clamp-1 lg:block'>
                 {user.fullName}
               </h4>
             )}
@@ -108,7 +106,7 @@ interface MenuItemProps extends PropsWithChildren {
 }
 function MenuItem({ Icon, children }: MenuItemProps) {
   return (
-    <DropdownMenuItem className='flex gap-x-4 items-center h-12'>
+    <DropdownMenuItem className='flex items-center h-12 gap-x-4'>
       <Icon className='!size-5 text-primary' />
       {children}
     </DropdownMenuItem>
