@@ -1,12 +1,19 @@
+import { UUID } from 'crypto';
+
 export type PropsWithClassName = {
   className?: string;
 };
+
+export interface IPaginationParamsType {
+  page?: number;
+  limit?: number;
+}
 
 export interface IApiResponseWrapper<T> {
   message: string;
   data: T;
   statusCode: number;
-  date: Date;
+  date: string;
 }
 
 export interface IApiPaginationResponseWrapper<T> {
@@ -21,11 +28,11 @@ export interface IApiPaginationResponseWrapper<T> {
     hasPreviousPage: boolean;
   };
   statusCode: number;
-  date: Date;
+  date: string;
 }
 
 export interface IUserDataType {
-  id: string;
+  id: UUID;
   username: string;
   email: string;
   userType: ITypeUserType;
@@ -37,9 +44,16 @@ export interface IUserDataType {
   isActive: boolean;
   isVerified: boolean;
   isBanned: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  upstringdAt: string;
   credits: number;
+  followerCount: number;
+  followingCount: number;
+  postCount: number;
+}
+
+export interface IUserDataWithFollowedStatusType extends IUserDataType {
+  isFollowedByUser: boolean;
 }
 
 export interface IUserWithAccessTokenType extends IUserDataType, IWithAccessTokenType {}
@@ -49,21 +63,21 @@ export interface IWithAccessTokenType {
 }
 
 export interface ITypeUserType {
-  id: string;
+  id: UUID;
   typeName: string;
 }
 
 export interface IUserSessionType {
-  id: string;
-  expiresAt: Date;
+  id: UUID;
+  expiresAt: string;
 }
 
 export interface IPostDataType {
-  id: string;
+  id: UUID;
   content: string;
   authorId: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  upstringdAt: string;
   isPrivate: boolean;
   likeCount: number;
   author: IUserDataType;
@@ -85,7 +99,7 @@ export interface IPostDataWithLikedStatusType extends IPostDataType {
 //   isVerified: boolean;
 //   isBanned: boolean;
 //   createdAt: string;
-//   updatedAt: string;
+//   upstringdAt: string;
 //   credits: number;
 //   userType: IUserDataType;
 //   avatar: null;
@@ -101,4 +115,18 @@ export interface IGeneratePostResponseType {
 export interface ITrendingTopicType {
   hashtag: string;
   count: number;
+}
+
+export interface IFollowerType {
+  id: UUID;
+  followerId: UUID;
+  followingId: UUID;
+  createdAt: string;
+  follower: IUserDataWithFollowedStatusType;
+}
+
+export interface IPostLikeType {
+  id: UUID;
+  createdAt: string;
+  user: IUserDataType;
 }

@@ -1,8 +1,6 @@
 import axios from 'axios';
 import env from '@/lib/env';
 
-const accessToken = JSON.parse(localStorage.getItem('currentUser') || '{}').accessToken || '';
-
 const baseApi = axios.create({
   baseURL: env.VITE_API_URL,
   headers: {
@@ -12,6 +10,7 @@ const baseApi = axios.create({
 
 baseApi.interceptors.request.use(
   (request) => {
+    const accessToken = JSON.parse(localStorage.getItem('currentUser') || '{}').accessToken || '';
     request.headers.accessToken = accessToken;
     return request;
   },

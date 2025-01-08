@@ -57,14 +57,14 @@ export default function GeneratePostForm({ createPostEditor, closeDialog }: Gene
   };
 
   return (
-    <div className='w-[25rem] space-y-4'>
+    <div className='w-full md:w-[25rem] space-y-4'>
       <div className='space-y-2'>
         <Label>Write something here..</Label>
         <Textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Describe your post, e.g. 'Write a post about AI technology'"
-          className='h-[12rem] overflow-y-auto'
+          className='h-[12rem] overflow-y-auto bg-card'
         />
       </div>
       <LoadingButton
