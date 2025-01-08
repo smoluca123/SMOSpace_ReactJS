@@ -3,7 +3,10 @@ import {
   IApiPaginationResponseWrapper,
   IApiResponseWrapper,
   IGeneratePostResponseType,
+  IPaginationParamsType,
+  IPostDataType,
   IPostDataWithLikedStatusType,
+  IPostLikeType,
   ITrendingTopicType,
 } from '@/lib/types/interfaces';
 import { UUID } from 'crypto';
@@ -12,13 +15,15 @@ import { UUID } from 'crypto';
 export const getAllPostsAPI = async ({
   userId,
   page = 1,
-  limit = 2,
+  limit = 10,
   keywords,
+  likeUserId,
 }: {
   userId?: UUID;
   page?: number;
   limit?: number;
   keywords?: string;
+  likeUserId?: UUID;
 }) => {
   try {
     const { data } = await baseApi.get<IApiPaginationResponseWrapper<IPostDataWithLikedStatusType>>(
@@ -29,6 +34,7 @@ export const getAllPostsAPI = async ({
           page,
           limit,
           keywords,
+          likeUserId,
         },
       },
     );
@@ -47,7 +53,7 @@ export const submitPostAPI = async ({
   isPrivate?: boolean;
 }) => {
   try {
-    const { data } = await baseApi.post('/post', {
+    const { data } = await baseApi.post<IApiResponseWrapper<IPostDataType>>('/post', {
       content,
       isPrivate,
     });
@@ -75,6 +81,41 @@ export const generatePostAPI = async ({ prompt }: { prompt: string }) => {
 export const getTrendingTopicsAPI = async () => {
   try {
     const { data } = await baseApi.get<IApiResponseWrapper<ITrendingTopicType[]>>('/post/trending');
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const likePostAPI = async ({ postId }: { postId: UUID }) => {
+  try {
+    const { data } = await baseApi.post<IApiResponseWrapper<IPostDataWithLikedStatusType>>(
+      `/post/like/${postId}`,
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const getLikedUsersAPI = async ({
+  postId,
+  page = 1,
+  limit = 10,
+}: IPaginationParamsType & { postId: UUID }) => {
+  try {
+    const { data } = await baseApi.get<
+      IApiPaginationResponseWrapper<IPostLikeType> & {
+        post: IPostDataType;
+      }
+    >(`/post/get-likes/${postId}`, {
+      params: {
+        page,
+        limit,
+      },
+    });
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;

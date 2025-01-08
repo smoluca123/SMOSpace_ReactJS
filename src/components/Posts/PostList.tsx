@@ -1,14 +1,18 @@
 import InfiniteScrollContainer from '@/components/InfiniteScrollContainer';
 import Post from '@/components/Posts/Post';
 import PostsLoadingSkeleton from '@/components/Posts/PostLoadingSkeleton';
-import { IApiPaginationResponseWrapper, IPostDataType } from '@/lib/types/interfaces';
+import { PostProvider } from '@/components/Posts/PostProvider';
+import {
+  IApiPaginationResponseWrapper,
+  IPostDataWithLikedStatusType,
+} from '@/lib/types/interfaces';
 import { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query';
 
 export default function PostList({
   infinitePostData,
 }: {
   infinitePostData: UseInfiniteQueryResult<
-    InfiniteData<IApiPaginationResponseWrapper<IPostDataType>['data'], unknown>,
+    InfiniteData<IApiPaginationResponseWrapper<IPostDataWithLikedStatusType>['data'], unknown>,
     Error
   >;
 }) {
@@ -17,7 +21,13 @@ export default function PostList({
     <InfiniteScrollContainer isShowInViewElement={hasNextPage} onBottomReached={fetchNextPage}>
       <div className='space-y-6'>
         {data &&
-          data.pages.map((page) => page.items.map((post) => <Post key={post.id} post={post} />))}
+          data.pages.map((page) =>
+            page.items.map((post) => (
+              <PostProvider post={post} key={post.id}>
+                <Post key={post.id} />
+              </PostProvider>
+            )),
+          )}
 
         {isFetching && <PostsLoadingSkeleton />}
       </div>

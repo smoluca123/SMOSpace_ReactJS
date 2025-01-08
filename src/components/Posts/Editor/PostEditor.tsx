@@ -1,8 +1,9 @@
-'use client';
+'use no memo';
 
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
+import Heading from '@tiptap/extension-heading';
 import UserAvatar from '@/components/UserAvatar';
 import './style.css';
 import {
@@ -48,6 +49,12 @@ export default function PostEditor({ onCloseDialog }: { onCloseDialog: () => voi
       Placeholder.configure({
         placeholder: "What's going on? #Hashtag... @Mention...",
       }),
+      Heading.configure({
+        levels: [1, 2, 3, 4, 5, 6],
+        HTMLAttributes: {
+          class: 'text-2xl font-bold',
+        },
+      }),
     ],
     onUpdate: ({ editor }) => {
       console.log(editor.getText());
@@ -80,8 +87,8 @@ export default function PostEditor({ onCloseDialog }: { onCloseDialog: () => voi
   };
 
   return (
-    <div className='overflow-x-hidden space-y-5 w-full max-w-full rounded-md shadow-sm'>
-      <div className='flex gap-x-4 items-center'>
+    <div className='w-full max-w-full space-y-5 overflow-x-hidden rounded-md shadow-sm'>
+      <div className='flex items-center gap-x-4'>
         <UserAvatar
           avatarUrl={user.avatar}
           fallbackName={user.fullName}
@@ -93,10 +100,10 @@ export default function PostEditor({ onCloseDialog }: { onCloseDialog: () => voi
         </div>
       </div>
 
-      <EditorContent
-        editor={editor}
-        className='w-full min-h-[8rem] max-h-[20rem] overflow-y-auto bg-card lg:rounded-xl rounded-lg px-5 py-3  max-w-full border-border border'
-      />
+      <div className='w-full min-h-[8rem] max-h-[20rem] overflow-y-auto bg-card lg:rounded-xl rounded-lg px-5 py-3  max-w-full border-border border space-y-2'>
+        {/* {editor && <MenuBar editor={editor} />} */}
+        <EditorContent editor={editor} className='' />
+      </div>
 
       {/* Features */}
 
@@ -112,7 +119,7 @@ export default function PostEditor({ onCloseDialog }: { onCloseDialog: () => voi
         </div>
       </div>
 
-      <div className='flex gap-2 justify-end'>
+      <div className='flex justify-end gap-2'>
         <Select
           onValueChange={(value) => {
             setIsPrivate(!!value);

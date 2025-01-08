@@ -18,13 +18,14 @@ export function TrendingTopics() {
 
       {/* Display trending topics list when data is loaded */}
       {!isFetching &&
-        data?.data.map(({ hashtag, count }) => (
+        data &&
+        data.data.map(({ hashtag, count }) => (
           <div
-            className='flex gap-x-4 items-center p-2 rounded-md transition-colors duration-300  hover:bg-accent'
+            className='flex items-center p-2 transition-colors duration-300 rounded-md gap-x-4 hover:bg-accent'
             key={hashtag}
           >
             {/* Hash icon for visual indication */}
-            <Hash />
+            <Hash className='size-5 text-muted-foreground' />
             <div>
               {/* Hashtag text with link functionality */}
               <LinkifyHashTag>{hashtag}</LinkifyHashTag>

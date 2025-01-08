@@ -21,9 +21,9 @@ interface GeneratePostDialogProps {
 }
 
 const CreditBalanceCard = ({ credits }: { credits: number }) => (
-  <div className='bg-card w-[20rem] rounded-md p-5 text-foreground space-y-5 border border-border'>
+  <div className='bg-card w-full md:w-[20rem] rounded-md p-5 text-foreground space-y-5 border border-border'>
     <h6>Available balance</h6>
-    <h2 className='flex gap-x-2 items-center text-3xl font-semibold tracking-wide'>
+    <h2 className='flex items-center text-3xl font-semibold tracking-wide gap-x-2'>
       {credits} <Coins className='text-primary' />
     </h2>
     <p>Credits</p>
@@ -44,7 +44,7 @@ export default function GeneratePostDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={() => isOpen && onClose()}>
-      <DialogContent className='max-w-full w-fit'>
+      <DialogContent className='md:max-w-full md:w-fit'>
         <DialogHeader>
           <DialogTitle>Generate Post</DialogTitle>
           <DialogDescription>
@@ -52,7 +52,7 @@ export default function GeneratePostDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className='flex gap-5 items-start'>
+        <div className='flex flex-col items-start gap-5 md:flex-row'>
           <CreditBalanceCard credits={user.credits} />
           <GeneratePostForm createPostEditor={createPostEditor} closeDialog={onClose} />
         </div>
