@@ -13,7 +13,7 @@ const LeftSection = () => (
     <NavSidebar />
     <div className='flex items-center lg:justify-between lg:w-[20rem]'>
       <AppLogo className='w-[11rem] hidden lg:block' />
-      <Link to='/' className='flex gap-x-2 items-center p-2 text-white rounded-md bg-primary'>
+      <Link to='/' className='flex items-center p-2 text-white rounded-md gap-x-2 bg-primary'>
         <Home size={18} />
         <span className='hidden text-sm sm:inline-block'>Home</span>
       </Link>
@@ -41,7 +41,7 @@ const AuthSection = () => {
 
 export default function Header() {
   return (
-    <header className='h-[70px] bg-card sticky top-0 z-10 border-b border-border px-4 sm:px-0'>
+    <header className='h-[70px] content-wrapper sticky top-0 z-10 border-b border-border px-4 sm:px-0'>
       <div className='container flex justify-between items-center mx-auto h-full ~gap-x-2/4'>
         <LeftSection />
         <SearchBox />

@@ -1,5 +1,11 @@
-import PostEditor from '@/components/Posts/Editor/PostEditor';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import CreatePostForm from '@/components/Posts/Editor/CreatePostForm';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 
 export default function CreatePostDialog({
@@ -16,12 +22,15 @@ export default function CreatePostDialog({
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className=''>
-        <DialogHeader>
-          <DialogTitle className='text-center'>Create a Post</DialogTitle>
+        <DialogHeader className='flex flex-col items-center'>
+          <DialogTitle className=''>Create a Post</DialogTitle>
+          <DialogDescription className=''>
+            Create a post to share with your friends
+          </DialogDescription>
         </DialogHeader>
         <Separator />
         {/* Editor */}
-        <PostEditor onCloseDialog={onClose} />
+        <CreatePostForm onCloseDialog={onClose} />
       </DialogContent>
     </Dialog>
   );

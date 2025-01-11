@@ -60,10 +60,12 @@
 
 @layer base {
   :root {
-    --background: 224, 5%, 95%;
+    /* --background: 224, 5%, 95%; */
+    --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
 
-    --card: 0 0% 100%;
+    /* --card: 0 0% 100%; */
+    --card: 224 5% 95%;
     --card-foreground: 240 10% 3.9%;
 
     --popover: 0 0% 100%;
@@ -150,8 +152,13 @@
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-card text-foreground dark:bg-background;
+  }
+
+  .content-wrapper {
+    @apply bg-background dark:bg-card;
   }
 }
 

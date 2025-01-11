@@ -10,11 +10,13 @@ import { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query';
 
 export default function PostList({
   infinitePostData,
+  skipFirstPost = false,
 }: {
   infinitePostData: UseInfiniteQueryResult<
     InfiniteData<IApiPaginationResponseWrapper<IPostDataWithLikedStatusType>['data'], unknown>,
     Error
   >;
+  skipFirstPost?: boolean;
 }) {
   const { data, fetchNextPage, hasNextPage, isFetching } = infinitePostData;
   return (
@@ -22,11 +24,13 @@ export default function PostList({
       <div className='space-y-6'>
         {data &&
           data.pages.map((page) =>
-            page.items.map((post) => (
-              <PostProvider post={post} key={post.id}>
-                <Post key={post.id} />
-              </PostProvider>
-            )),
+            page.items.map((post, index) =>
+              skipFirstPost && index === 0 ? null : (
+                <PostProvider post={post} key={post.id}>
+                  <Post key={post.id} />
+                </PostProvider>
+              ),
+            ),
           )}
 
         {isFetching && <PostsLoadingSkeleton />}

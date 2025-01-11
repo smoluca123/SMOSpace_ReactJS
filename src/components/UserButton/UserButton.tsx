@@ -1,5 +1,6 @@
 'use client';
 
+import DropdownMenuItemWithIcon from '@/components/DropdownMenuItemWithIcon';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -14,8 +15,7 @@ import ThemeToggleMenuItem from '@/components/UserButton/ThemeToggleMenuItem';
 import { IUserWithAccessTokenType } from '@/lib/types/interfaces';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { logout, selectAuth } from '@/redux/slices/authSlice';
-import { Coins, LogOut, LucideProps } from 'lucide-react';
-import { ForwardRefExoticComponent, PropsWithChildren, RefAttributes } from 'react';
+import { Coins, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface UserButtonProps {
@@ -34,12 +34,18 @@ const UserMenuContent = ({
     <DropdownMenuSeparator />
 
     <UserMenuItem user={user} />
-    <MenuItem Icon={Coins}>Points: {user.credits}</MenuItem>
+    <DropdownMenuItemWithIcon Icon={Coins} className='h-12'>
+      Points: {user.credits}
+    </DropdownMenuItemWithIcon>
 
-    <DropdownMenuItem className='flex items-center h-12 gap-x-4' onClick={onLogout}>
-      <LogOut className='!size-5 text-destructive' />
+    <DropdownMenuItemWithIcon
+      Icon={LogOut}
+      className='h-12'
+      variant='destructive'
+      onClick={onLogout}
+    >
       Logout
-    </DropdownMenuItem>
+    </DropdownMenuItemWithIcon>
   </>
 );
 
@@ -98,17 +104,5 @@ export default function UserButton({ showName }: UserButtonProps) {
         <ThemeToggleMenuItem />
       </DropdownMenuContent>
     </DropdownMenu>
-  );
-}
-
-interface MenuItemProps extends PropsWithChildren {
-  Icon: ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>;
-}
-function MenuItem({ Icon, children }: MenuItemProps) {
-  return (
-    <DropdownMenuItem className='flex items-center h-12 gap-x-4'>
-      <Icon className='!size-5 text-primary' />
-      {children}
-    </DropdownMenuItem>
   );
 }
