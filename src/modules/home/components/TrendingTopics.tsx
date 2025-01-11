@@ -21,7 +21,7 @@ export function TrendingTopics() {
         data &&
         data.data.map(({ hashtag, count }) => (
           <div
-            className='flex items-center p-2 transition-colors duration-300 rounded-md gap-x-4 hover:bg-accent'
+            className='flex items-center px-2 py-1 transition-colors duration-300 rounded-md gap-x-4 hover:bg-accent'
             key={hashtag}
           >
             {/* Hash icon for visual indication */}

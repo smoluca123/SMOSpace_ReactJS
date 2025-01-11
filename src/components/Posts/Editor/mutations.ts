@@ -1,4 +1,5 @@
 import { submitPostAPI } from '@/apis/postApi';
+import useUpdateDataInfomation from '@/hooks/useUpdateDataInfomation';
 import {
   IApiPaginationResponseWrapper,
   IPostDataWithLikedStatusType,
@@ -7,6 +8,7 @@ import { InfiniteData, QueryFilters, useMutation, useQueryClient } from '@tansta
 
 export function useSubmitPostMutaion() {
   const queryClient = useQueryClient();
+  const { update: updateUserInfomation } = useUpdateDataInfomation();
 
   const submitPost = async ({ content, isPrivate }: { content: string; isPrivate?: boolean }) => {
     try {
@@ -24,7 +26,7 @@ export function useSubmitPostMutaion() {
   const mutation = useMutation({
     mutationFn: submitPost,
     onSuccess: (newPost) => {
-      const queryFilter: QueryFilters<
+      const postsQueryFilter: QueryFilters<
         InfiniteData<
           IApiPaginationResponseWrapper<IPostDataWithLikedStatusType>['data'],
           number | undefined
@@ -32,9 +34,9 @@ export function useSubmitPostMutaion() {
       > = {
         queryKey: ['posts'],
       };
-      console.log(queryFilter);
-      queryClient.setQueriesData(queryFilter, (oldData) => {
-        console.log(oldData);
+
+      // update the first page of the posts query
+      queryClient.setQueriesData(postsQueryFilter, (oldData) => {
         if (!oldData) return oldData;
 
         const firstPage = oldData.pages[0];
@@ -48,12 +50,15 @@ export function useSubmitPostMutaion() {
             ...firstPage.items,
           ],
         };
-        console.log(updatedFirstPage);
+
         return {
           pageParams: oldData.pageParams,
           pages: [updatedFirstPage, ...oldData.pages.slice(1)],
         };
       });
+
+      // update the user data in the query cache
+      updateUserInfomation({ data: newPost.data.author });
     },
   });
   return mutation;

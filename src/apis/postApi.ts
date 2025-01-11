@@ -122,3 +122,34 @@ export const getLikedUsersAPI = async ({
     throw error.message;
   }
 };
+
+export const deletePostAPI = async ({ postId }: { postId: UUID }) => {
+  try {
+    const { data } = await baseApi.delete<IApiResponseWrapper<IPostDataType>>(`/post/${postId}`);
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const updatePostAPI = async ({
+  postId,
+  content,
+  isPrivate,
+}: {
+  postId: UUID;
+  content: string;
+  isPrivate: boolean;
+}) => {
+  try {
+    const { data } = await baseApi.put<IApiResponseWrapper<IPostDataType>>(`/post/${postId}`, {
+      content,
+      isPrivate,
+    });
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};

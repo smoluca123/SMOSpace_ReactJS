@@ -3,7 +3,7 @@ import { IPaginationParamsType } from '@/lib/types/interfaces';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 
-const getLikedUsersQueryKey = (postId: UUID) => ['likes', { postId }];
+export const getLikedUsersQueryKey = (postId: UUID) => ['likes', { postId }];
 export function useGetLikedUsers({ postId, enabled }: { postId: UUID; enabled?: boolean }) {
   const getLikedUsers = async ({ page = 1, limit = 10 }: IPaginationParamsType) => {
     try {
