@@ -8,19 +8,28 @@ import AuthPage from '@/modules/auth/pages/AuthPage';
 import Login from '@/modules/auth/components/Login';
 import Register from '@/modules/auth/components/Register';
 import ReactQueryProvider from '@/components/ReactQueryProvider';
+import SearchPage from '@/modules/search/page';
 
 const router = createBrowserRouter(
   [
+    // Main layout
     {
       path: '/',
       element: <MainLayout />,
       children: [
+        // Home page
         {
           index: true,
           element: <HomePage />,
         },
+        // Search page
+        {
+          path: '/search',
+          element: <SearchPage />,
+        },
       ],
     },
+    // Auth page
     {
       path: '/auth',
       element: <AuthPage />,

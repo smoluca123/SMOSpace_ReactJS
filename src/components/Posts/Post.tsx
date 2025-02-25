@@ -11,9 +11,11 @@ import { Separator } from '@/components/ui/separator';
 import PostAction, { PostMoreButton } from '@/components/Posts/PostAction';
 import { usePostContext } from '@/hooks/usePostContext';
 import PostEngagementMetrics from '@/components/Posts/PostEngagementMetrics';
+import NameWithVerifiedIcon from '@/components/NameWithVerifiedIcon';
+import { CommentBox } from '@/components/Posts/Comment';
 
 export default function Post() {
-  const { post } = usePostContext();
+  const { post, displayCommentBox } = usePostContext();
 
   return (
     <ContentWrapper className=''>
@@ -32,6 +34,13 @@ export default function Post() {
       </article>
       <Separator className='my-2' />
       <PostAction />
+
+      {displayCommentBox && (
+        <>
+          <Separator className='my-2' />
+          <CommentBox />
+        </>
+      )}
     </ContentWrapper>
   );
 }
@@ -47,7 +56,12 @@ function PostHeader() {
         </ProfileLink>
         <div className=''>
           {/* Post Author Name */}
-          <ProfileLink username={post.author.username}>{post.author.fullName}</ProfileLink>
+
+          <ProfileLink username={post.author.username}>
+            <NameWithVerifiedIcon isVerified={post.author.isVerified}>
+              {post.author.fullName}
+            </NameWithVerifiedIcon>
+          </ProfileLink>
 
           <div className='flex items-center gap-2'>
             {/* Post Date */}

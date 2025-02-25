@@ -1,14 +1,14 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { IUserDataType, PropsWithClassName } from '@/lib/types/interfaces';
+import { PropsWithClassName } from '@/lib/types/interfaces';
 import { cn } from '@/lib/utils';
 import { CircleCheck } from 'lucide-react';
 
 interface IProps extends PropsWithClassName {
-  userData: IUserDataType;
+  isVerified: boolean;
 }
 
-export default function VerifiedIcon({ className, userData }: IProps) {
-  if (!userData || !userData.isVerified) return null;
+export default function VerifiedIcon({ className, isVerified }: IProps) {
+  if (!isVerified) return null;
   return (
     <Tooltip delayDuration={100}>
       <TooltipTrigger>

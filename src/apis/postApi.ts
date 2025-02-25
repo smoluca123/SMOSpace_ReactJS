@@ -2,6 +2,7 @@ import baseApi from '@/apis/baseApi';
 import {
   IApiPaginationResponseWrapper,
   IApiResponseWrapper,
+  ICommentDataType,
   IGeneratePostResponseType,
   IPaginationParamsType,
   IPostDataType,
@@ -147,6 +148,79 @@ export const updatePostAPI = async ({
       content,
       isPrivate,
     });
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const getCommentsAPI = async ({
+  postId,
+  page = 1,
+  limit = 10,
+  replyTo,
+}: IPaginationParamsType & { postId: UUID; replyTo?: UUID }) => {
+  try {
+    const { data } = await baseApi.get<IApiPaginationResponseWrapper<ICommentDataType>>(
+      `/post/comment/${postId}`,
+      { params: { page, limit, replyTo } },
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const submitCommentAPI = async ({
+  postId,
+  content,
+  replyTo,
+}: {
+  postId: UUID;
+  content: string;
+  replyTo?: UUID;
+}) => {
+  try {
+    const { data } = await baseApi.post<IApiResponseWrapper<ICommentDataType>>(
+      `/post/comment/${postId}`,
+      {
+        content,
+        replyToId: replyTo,
+      },
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const updateCommentAPI = async ({
+  commentId,
+  content,
+}: {
+  commentId: UUID;
+  content: string;
+}) => {
+  try {
+    const { data } = await baseApi.put<IApiResponseWrapper<ICommentDataType>>(
+      `/post/comment/${commentId}`,
+      { content },
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const deleteCommentAPI = async ({ commentId }: { commentId: UUID }) => {
+  try {
+    const { data } = await baseApi.delete<IApiResponseWrapper<ICommentDataType>>(
+      `/post/comment/${commentId}`,
+    );
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;

@@ -185,7 +185,7 @@ export default function PostEditor({
 }: {
   isPrivate: boolean;
   content: string;
-  onChangeContent: (content: string) => void;
+  onChangeContent: React.Dispatch<React.SetStateAction<string>>;
   onChangeIsPrivate: (isPrivate: boolean) => void;
 }) {
   const [isShowGeneratePostDialog, setIsShowGeneratePostDialog] = useState(false);
@@ -276,6 +276,7 @@ export default function PostEditor({
         createPostEditor={editor}
         isOpen={isShowGeneratePostDialog}
         onClose={() => setIsShowGeneratePostDialog(false)}
+        onChangeContent={onChangeContent}
       />
     </div>
   );

@@ -1,3 +1,5 @@
+'use no memo';
+
 import { PropsWithClassName } from '@/lib/types/interfaces';
 import { cn } from '@/lib/utils';
 import { PropsWithChildren } from 'react';

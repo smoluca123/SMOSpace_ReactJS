@@ -1,5 +1,6 @@
 import { PostContext } from '@/contexts/PostContext';
 import { IPostDataWithLikedStatusType } from '@/lib/types/interfaces';
+import { useState } from 'react';
 
 export function PostProvider({
   children,
@@ -8,5 +9,10 @@ export function PostProvider({
   children: React.ReactNode;
   post: IPostDataWithLikedStatusType;
 }) {
-  return <PostContext.Provider value={{ post }}>{children}</PostContext.Provider>;
+  const [displayCommentBox, setDisplayCommentBox] = useState(false);
+  return (
+    <PostContext.Provider value={{ post, displayCommentBox, setDisplayCommentBox }}>
+      {children}
+    </PostContext.Provider>
+  );
 }

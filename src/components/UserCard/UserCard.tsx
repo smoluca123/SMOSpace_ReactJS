@@ -1,8 +1,8 @@
+import NameWithVerifiedIcon from '@/components/NameWithVerifiedIcon';
 import ProfileLink from '@/components/ProfileLink';
 import { Skeleton } from '@/components/ui/skeleton';
 import UserAvatar from '@/components/UserAvatar';
 import UserCardSkeleton from '@/components/UserCard/UserCardSkeleton';
-import VerifiedIcon from '@/components/VerifiedIcon';
 import { useGetMyFollowersQuery, useGetMyInfomation } from '@/lib/querys';
 import ContentWrapper from '@/modules/home/components/ContentWrapper';
 import { useAppSelector } from '@/redux/hooks';
@@ -30,12 +30,11 @@ export default function UserCard() {
             />
           </ProfileLink>
           <div className=''>
-            <div className='flex items-center justify-center gap-x-1'>
-              <ProfileLink username={user.username}>
-                <p className='text-xl font-semibold hover:underline'>{user.fullName}</p>
-              </ProfileLink>
-              <VerifiedIcon userData={user} />
-            </div>
+            <ProfileLink username={user.username} className='mx-auto w-fit'>
+              <NameWithVerifiedIcon isVerified={user.isVerified}>
+                <p className='text-xl font-semibold'>{user.fullName}</p>
+              </NameWithVerifiedIcon>
+            </ProfileLink>
             <ProfileLink username={user.username} className='font-normal !no-underline'>
               <p className='text-muted-foreground'>@{user.username}</p>
             </ProfileLink>

@@ -158,7 +158,7 @@ export function useUpdatePostMutation() {
             return {
               ...page,
               items: page.items.map((post) =>
-                post.id === newData.id ? { ...newData, isLiked: false } : post,
+                post.id === newData.id ? { ...post, ...newData } : post,
               ),
             };
           }),
