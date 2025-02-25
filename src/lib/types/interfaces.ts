@@ -80,6 +80,7 @@ export interface IPostDataType {
   upstringdAt: string;
   isPrivate: boolean;
   likeCount: number;
+  commentCount: number;
   author: IUserDataType;
 }
 
@@ -129,4 +130,16 @@ export interface IPostLikeType {
   id: UUID;
   createdAt: string;
   user: IUserDataType;
+}
+
+export interface ICommentDataType {
+  id: UUID;
+  content: string;
+  level: number;
+  createdAt: string;
+  updatedAt: string;
+  repliesCount: number;
+  replyToId: UUID | null;
+  post: IPostDataType;
+  author: IUserDataType;
 }

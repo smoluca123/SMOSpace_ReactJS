@@ -155,6 +155,19 @@
 
   body {
     @apply bg-card text-foreground dark:bg-background;
+
+  }
+
+  *::-webkit-scrollbar {
+    @apply w-[10px]
+  }
+
+  *::-webkit-scrollbar-track {
+    @apply bg-background dark:bg-muted rounded-[10px] overflow-hidden
+  }
+
+  *::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground rounded-[10px]
   }
 
   .content-wrapper {

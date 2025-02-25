@@ -10,6 +10,7 @@ import { IGeneratePostResponseType } from '@/lib/types/interfaces';
 interface GeneratePostFormProps {
   createPostEditor: Editor | null;
   closeDialog: () => void;
+  onChangeContent: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const showErrorToast = (message: string) => {
@@ -28,7 +29,11 @@ const showSuccessToast = () => {
   });
 };
 
-export default function GeneratePostForm({ createPostEditor, closeDialog }: GeneratePostFormProps) {
+export default function GeneratePostForm({
+  createPostEditor,
+  closeDialog,
+  onChangeContent,
+}: GeneratePostFormProps) {
   const [prompt, setPrompt] = useState('');
 
   const { mutate, isPending } = useGeneratePostMutaion();
@@ -45,6 +50,7 @@ export default function GeneratePostForm({ createPostEditor, closeDialog }: Gene
         onSuccess: (data: IGeneratePostResponseType) => {
           setPrompt('');
           createPostEditor?.commands.setContent(data.content);
+          onChangeContent(data.content);
           showSuccessToast();
           closeDialog();
         },

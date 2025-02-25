@@ -1,6 +1,7 @@
 'use client';
 
 import DropdownMenuItemWithIcon from '@/components/DropdownMenuItemWithIcon';
+import NameWithVerifiedIcon from '@/components/NameWithVerifiedIcon';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -52,7 +53,11 @@ const UserMenuContent = ({
 const UserMenuItem = ({ user }: { user: IUserWithAccessTokenType }) => (
   <DropdownMenuItem className='flex h-12 gap-4'>
     <UserAvatar avatarUrl={user.avatar} fallbackName={user.fullName} className='size-5' />
-    <h4 className='break-words truncate whitespace-nowrap line-clamp-1'>{user.fullName}</h4>
+    <NameWithVerifiedIcon isVerified={user.isVerified}>
+      <h4 className='font-medium break-words truncate whitespace-nowrap line-clamp-1'>
+        {user.fullName}
+      </h4>
+    </NameWithVerifiedIcon>
   </DropdownMenuItem>
 );
 
@@ -84,7 +89,7 @@ export default function UserButton({ showName }: UserButtonProps) {
           <div className='flex items-center gap-x-4 max-w-[10rem] cursor-pointer'>
             <UserAvatar fallbackName={user.fullName} avatarUrl={user.avatar} />
             {showName && (
-              <h4 className='hidden break-words truncate whitespace-nowrap line-clamp-1 lg:block'>
+              <h4 className='hidden font-medium break-words truncate whitespace-nowrap line-clamp-1 lg:block'>
                 {user.fullName}
               </h4>
             )}

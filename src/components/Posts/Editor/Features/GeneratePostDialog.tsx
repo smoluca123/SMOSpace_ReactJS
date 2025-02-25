@@ -18,6 +18,7 @@ interface GeneratePostDialogProps {
   isOpen: boolean;
   onClose: () => void;
   createPostEditor: Editor | null;
+  onChangeContent: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const CreditBalanceCard = ({ credits }: { credits: number }) => (
@@ -37,6 +38,7 @@ export default function GeneratePostDialog({
   createPostEditor,
   isOpen,
   onClose,
+  onChangeContent,
 }: GeneratePostDialogProps) {
   const { user } = useAppSelector(selectAuth);
 
@@ -54,7 +56,11 @@ export default function GeneratePostDialog({
 
         <div className='flex flex-col items-start gap-5 md:flex-row'>
           <CreditBalanceCard credits={user.credits} />
-          <GeneratePostForm createPostEditor={createPostEditor} closeDialog={onClose} />
+          <GeneratePostForm
+            createPostEditor={createPostEditor}
+            closeDialog={onClose}
+            onChangeContent={onChangeContent}
+          />
         </div>
       </DialogContent>
     </Dialog>

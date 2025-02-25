@@ -1,11 +1,14 @@
 import InfiniteScrollContainer from '@/components/InfiniteScrollContainer';
 import Post from '@/components/Posts/Post';
-import PostsLoadingSkeleton from '@/components/Posts/PostLoadingSkeleton';
+import PostsLoadingSkeleton, { PostLoadingSkeleton } from '@/components/Posts/PostLoadingSkeleton';
 import { PostProvider } from '@/components/Posts/PostProvider';
+import { useGetPosts } from '@/components/Posts/querys';
 import {
   IApiPaginationResponseWrapper,
   IPostDataWithLikedStatusType,
 } from '@/lib/types/interfaces';
+import { useAppSelector } from '@/redux/hooks';
+import { selectAuth } from '@/redux/slices/authSlice';
 import { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query';
 
 export default function PostList({
@@ -42,5 +45,21 @@ export default function PostList({
         </p>
       )}
     </InfiniteScrollContainer>
+  );
+}
+
+export function FirstPost() {
+  const { user } = useAppSelector(selectAuth);
+  const { data, isLoading } = useGetPosts({ likeUserId: user?.id });
+  return (
+    <>
+      {/* First Post */}
+      {isLoading && <PostLoadingSkeleton />}
+      {data && (
+        <PostProvider post={data.pages[0].items[0]}>
+          <Post />
+        </PostProvider>
+      )}
+    </>
   );
 }

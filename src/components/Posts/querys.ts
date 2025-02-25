@@ -2,16 +2,18 @@ import { getAllPostsAPI } from '@/apis/postApi';
 import { QueryKey, useInfiniteQuery } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 
-export const getPostsQueryKey = (likeUserId?: UUID): QueryKey => [
-  'posts',
-  'for-you',
-  { likeUserId },
-];
+export const getPostsQueryKey = ({
+  likeUserId,
+  keywords,
+}: {
+  likeUserId?: UUID;
+  keywords?: string;
+}): QueryKey => ['posts', 'for-you', { likeUserId, keywords }];
 
-export function useGetPosts({ likeUserId }: { likeUserId?: UUID }) {
+export function useGetPosts({ likeUserId, keywords }: { likeUserId?: UUID; keywords?: string }) {
   const getPosts = async ({ page }: { page?: number }) => {
     try {
-      const data = await getAllPostsAPI({ page, likeUserId });
+      const data = await getAllPostsAPI({ page, likeUserId, keywords });
       return data.data;
     } catch (error) {
       console.log(error);
@@ -19,7 +21,10 @@ export function useGetPosts({ likeUserId }: { likeUserId?: UUID }) {
     }
   };
   const query = useInfiniteQuery({
-    queryKey: getPostsQueryKey(likeUserId),
+    queryKey: getPostsQueryKey({
+      likeUserId,
+      keywords,
+    }),
     queryFn: ({ pageParam }) => getPosts({ page: pageParam }),
     maxPages: 5,
     getPreviousPageParam: ({ hasPreviousPage, currentPage }) =>
