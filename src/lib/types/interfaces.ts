@@ -143,3 +143,12 @@ export interface ICommentDataType {
   post: IPostDataType;
   author: IUserDataType;
 }
+
+export interface IFollowUserType {
+  id: UUID;
+  followerId: UUID;
+  followingId: UUID;
+  createdAt: string;
+  follower: IUserDataWithFollowedStatusType;
+  following: IUserDataWithFollowedStatusType;
+}

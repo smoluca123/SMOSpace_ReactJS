@@ -4,10 +4,13 @@ import {
   IApiPaginationResponseWrapper,
   IApiResponseWrapper,
   IFollowerType,
+  IFollowUserType,
   IPaginationParamsType,
+  IUserDataWithFollowedStatusType,
   IUserWithAccessTokenType,
 } from '@/lib/types/interfaces';
 import { LoginValues, RegisterValues } from '@/lib/validations';
+import { UUID } from 'crypto';
 
 export const loginAPI = async (
   credentials: LoginValues,
@@ -65,6 +68,42 @@ export const getMyInfomationAPI = async (): Promise<
 > => {
   try {
     const { data } = await baseApi.get<IApiResponseWrapper<IUserWithAccessTokenType>>('/user/me');
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const getUserInfomationAPI = async ({
+  userId,
+  followerId,
+}: {
+  userId: UUID;
+  followerId?: UUID;
+}) => {
+  try {
+    const { data } = await baseApi.get<IApiResponseWrapper<IUserDataWithFollowedStatusType>>(
+      `user/${userId}`,
+      {
+        params: {
+          followerId,
+        },
+      },
+    );
+
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const followUserAPI = async ({ userId }: { userId: UUID }) => {
+  try {
+    const { data } = await baseApi.post<IApiResponseWrapper<IFollowUserType>>(
+      '/user/follow/' + userId,
+    );
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;
