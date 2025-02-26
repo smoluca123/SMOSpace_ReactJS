@@ -1,6 +1,7 @@
-import { getMyFollowersAPI, getMyInfomationAPI } from '@/apis/userApi';
+import { getMyFollowersAPI, getMyInfomationAPI, getUserInfomationAPI } from '@/apis/userApi';
 import { IPaginationParamsType } from '@/lib/types/interfaces';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { UUID } from 'crypto';
 
 export const getMyFollowersQueryKey = ['followers', 'me'];
 
@@ -43,6 +44,34 @@ export function useGetMyInfomation() {
     queryKey: getMyInfomationQueryKey,
     queryFn: getMyInfomation,
     staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
+  return query;
+}
+
+export const getUserInfomationQueryKey = ({ userId }: { userId: UUID }) => [
+  'profile',
+  {
+    userId,
+  },
+];
+
+export function useGetUserInfomation({ userId, followerId }: { userId: UUID; followerId?: UUID }) {
+  const getUserInfomation = async () => {
+    try {
+      const { data } = await getUserInfomationAPI({
+        userId,
+        followerId,
+      });
+      return data;
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  };
+
+  const query = useQuery({
+    queryKey: getUserInfomationQueryKey({ userId }),
+    queryFn: getUserInfomation,
   });
 
   return query;
