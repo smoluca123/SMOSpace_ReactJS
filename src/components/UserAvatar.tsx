@@ -5,7 +5,7 @@ import avatarPlaceholder from '@/assets/imgs/avatar-placeholder.png';
 
 interface IProps extends PropsWithClassName {
   fallbackName?: string;
-  avatarUrl: string;
+  avatarUrl?: string;
 }
 
 export default function UserAvatar({ avatarUrl, fallbackName = 'Anonymous', className }: IProps) {
