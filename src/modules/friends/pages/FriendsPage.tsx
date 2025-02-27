@@ -1,9 +1,9 @@
 import ContentWrapper from '@/modules/home/components/ContentWrapper';
 import { ChevronLeft, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import RefreshRequestButton from '../components/RefreshRequestButton';
 import { Separator } from '@radix-ui/react-separator';
 import FriendRequestItem from '../components/FriendRequestItem';
+import RefreshButton from '@/components/RefreshButton';
 
 // component
 export default function FriendsPage() {
@@ -19,7 +19,7 @@ export default function FriendsPage() {
         <div className='flex items-center justify-between w-full mb-2 '>
           <h1 className='text-2xl font-bold text-foreground'>Friend request </h1>
 
-          <RefreshRequestButton />
+          <RefreshButton />
         </div>
 
         <Separator />
