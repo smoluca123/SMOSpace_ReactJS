@@ -1,6 +1,6 @@
 import { getMyFollowersAPI, getMyInfomationAPI, getUserInfomationAPI } from '@/apis/userApi';
-import { IPaginationParamsType } from '@/lib/types/interfaces';
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { IPaginationParamsType, IUserDataWithFollowedStatusType } from '@/lib/types/interfaces';
+import { useInfiniteQuery, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 
 export const getMyFollowersQueryKey = ['followers', 'me'];
@@ -49,14 +49,17 @@ export function useGetMyInfomation() {
   return query;
 }
 
-export const getUserInfomationQueryKey = ({ userId }: { userId: UUID }) => [
+export const getUserInfomationQueryKey = ({ userId }: { userId: UUID | string }) => [
   'profile',
   {
     userId,
   },
 ];
 
-export function useGetUserInfomation({ userId, followerId }: { userId: UUID; followerId?: UUID }) {
+export function useGetUserInfomation(
+  { userId, followerId }: { userId: UUID | string; followerId?: UUID },
+  options?: Omit<UseQueryOptions<IUserDataWithFollowedStatusType>, 'queryKey' | 'queryFn'>,
+) {
   const getUserInfomation = async () => {
     try {
       const { data } = await getUserInfomationAPI({
@@ -72,6 +75,7 @@ export function useGetUserInfomation({ userId, followerId }: { userId: UUID; fol
   const query = useQuery({
     queryKey: getUserInfomationQueryKey({ userId }),
     queryFn: getUserInfomation,
+    ...options,
   });
 
   return query;

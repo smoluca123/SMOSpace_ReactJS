@@ -4,6 +4,10 @@ export type PropsWithClassName = {
   className?: string;
 };
 
+export type PropsWithStyle = {
+  style?: React.CSSProperties;
+};
+
 export interface IPaginationParamsType {
   page?: number;
   limit?: number;
@@ -41,6 +45,7 @@ export interface IUserDataType {
   phoneNumber: string;
   age: number;
   avatar: string;
+  coverImage: string;
   isActive: boolean;
   isVerified: boolean;
   isBanned: boolean;

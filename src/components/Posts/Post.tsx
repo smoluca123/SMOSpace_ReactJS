@@ -6,7 +6,7 @@ import { formatRelativeDate } from '@/lib/utils';
 import LinkifyHashTag from '@/components/LinkifyHashTag';
 import { Link } from 'react-router-dom';
 import ContentWrapper from '@/modules/home/components/ContentWrapper';
-import ProfileLink from '@/components/ProfileLink';
+import { ProfileLinkWithCard } from '@/components/ProfileLink';
 import { Separator } from '@/components/ui/separator';
 import PostAction, { PostMoreButton } from '@/components/Posts/PostAction';
 import { usePostContext } from '@/hooks/usePostContext';
@@ -51,17 +51,17 @@ function PostHeader() {
     <div className='flex justify-between gap-3'>
       <div className='flex items-center gap-3'>
         {/* Post Author */}
-        <ProfileLink username={post.author.username}>
+        <ProfileLinkWithCard username={post.author.username} userId={post.author.id}>
           <UserAvatar avatarUrl={post.author.avatar} fallbackName={post.author.fullName} />
-        </ProfileLink>
+        </ProfileLinkWithCard>
         <div className=''>
           {/* Post Author Name */}
 
-          <ProfileLink username={post.author.username}>
+          <ProfileLinkWithCard username={post.author.username} userId={post.author.id}>
             <NameWithVerifiedIcon isVerified={post.author.isVerified}>
               {post.author.fullName}
             </NameWithVerifiedIcon>
-          </ProfileLink>
+          </ProfileLinkWithCard>
 
           <div className='flex items-center gap-2'>
             {/* Post Date */}
