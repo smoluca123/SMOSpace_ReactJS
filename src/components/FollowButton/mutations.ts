@@ -40,7 +40,7 @@ export const useFollowUserMutation = ({ userId }: { userId: UUID }) => {
         if (!oldData) return oldData;
         return {
           ...oldData,
-          followerCount: followData?.following.followerCount,
+          followerCount: followData.following.followerCount,
           isFollowedByUser: followData.following.isFollowedByUser,
         };
       });
