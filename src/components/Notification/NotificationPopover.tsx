@@ -10,6 +10,7 @@ export default function NotificationPopover() {
           <Bell />
         </button>
       </PopoverTrigger>
+
       <PopoverContent
         align='end'
         className=' border-border border p-0 w-screen  sm:w-[27rem]  max-w-lg  '

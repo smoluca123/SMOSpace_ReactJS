@@ -11,7 +11,7 @@ export default function Notification() {
       {/* Notification header */}
       <NotificationHeader />
 
-      {/* Notification contnet */}
+      {/* Notification loading */}
       {pending && <NotificationLoader />}
 
       {/* Display notification list */}

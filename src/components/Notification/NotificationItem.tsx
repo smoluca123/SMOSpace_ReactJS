@@ -7,8 +7,10 @@ export default function NotificationItem() {
 
   return (
     <PopoverClose className='relative flex items-center w-full gap-4 p-4 text-left transition-colors duration-300 rounded-sm cursor-pointer hover:bg-accent'>
+      {/* Avatar */}
       <UserAvatar />
 
+      {/* Notification content */}
       <div className='flex-1 '>
         <div className='items-center justify-between gap-3 md:flex'>
           <div className=' line-clamp-2'>
@@ -21,6 +23,7 @@ export default function NotificationItem() {
         </div>
       </div>
 
+      {/* Unreaded dot */}
       {!isReaded && (
         <div className='absolute rounded-full size-[10px] bg-primary top-2 right-2 '></div>
       )}

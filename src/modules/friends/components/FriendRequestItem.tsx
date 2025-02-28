@@ -6,7 +6,7 @@ import ProfileLink from '@/components/ProfileLink';
 
 export default function FriendRequestItem() {
   return (
-    <div className='p-2  w-full rounded-[8px] flex items-center gap-x-5 cursor-pointer hover:bg-accent transition-colors duration-300'>
+    <div className='p-2 w-full rounded-[8px] flex items-center gap-x-5 cursor-pointer hover:bg-accent transition-colors duration-300'>
       {/* Avatar */}
       <div className='relative rounded-full size-14'>
         <UserAvatar className='size-14' />
