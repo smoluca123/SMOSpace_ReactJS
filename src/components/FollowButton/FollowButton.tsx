@@ -1,9 +1,11 @@
-import { Loader2, UserMinus, UserPlus } from 'lucide-react';
-import { Button } from '../ui/button';
+import { UserMinus, UserPlus } from 'lucide-react';
 import { IUserDataWithFollowedStatusType } from '@/lib/types/interfaces';
 import { useFollowUserMutation } from './mutations';
+import { useGetUserInfomation } from '@/lib/querys';
+import LoadingButton from '../LoadingButton';
 
 export default function FollowButton({ user }: { user: IUserDataWithFollowedStatusType }) {
+  const { data: userInfo } = useGetUserInfomation({ userId: user.id });
   const { mutate, isPending } = useFollowUserMutation({ userId: user.id });
 
   const handleToggleFollowUser = () => {
@@ -11,24 +13,33 @@ export default function FollowButton({ user }: { user: IUserDataWithFollowedStat
   };
 
   return (
-    <>
-      {user.isFollowedByUser && !isPending && (
-        <Button onClick={handleToggleFollowUser} className='text-white'>
-          <UserMinus />
-          Unfollow
-        </Button>
-      )}
-      {!user.isFollowedByUser && !isPending && (
-        <Button onClick={handleToggleFollowUser} className='text-foreground' variant='secondary'>
-          <UserPlus />
-          Follow
-        </Button>
-      )}
-      {isPending && (
-        <Button disabled>
-          <Loader2 className=' animate-spin' />
-        </Button>
-      )}
-    </>
+    userInfo && (
+      <>
+        {/* Unfollow button */}
+        {userInfo.isFollowedByUser && (
+          <LoadingButton
+            loading={isPending}
+            onClick={handleToggleFollowUser}
+            className='text-white'
+          >
+            {!isPending && <UserMinus />}
+            Unfollow
+          </LoadingButton>
+        )}
+
+        {/* Follow button */}
+        {!userInfo.isFollowedByUser && (
+          <LoadingButton
+            onClick={handleToggleFollowUser}
+            className='text-foreground'
+            variant='secondary'
+            loading={isPending}
+          >
+            {!isPending && <UserPlus />}
+            Follow
+          </LoadingButton>
+        )}
+      </>
+    )
   );
 }

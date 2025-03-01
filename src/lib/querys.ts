@@ -1,5 +1,8 @@
+import { getAllUsersInfomationAPI } from './../apis/userApi';
 import { getMyFollowersAPI, getMyInfomationAPI, getUserInfomationAPI } from '@/apis/userApi';
 import { IPaginationParamsType, IUserDataWithFollowedStatusType } from '@/lib/types/interfaces';
+import { useAppSelector } from '@/redux/hooks';
+import { selectAuth } from '@/redux/slices/authSlice';
 import { useInfiniteQuery, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 
@@ -60,11 +63,13 @@ export function useGetUserInfomation(
   { userId, followerId }: { userId: UUID | string; followerId?: UUID },
   options?: Omit<UseQueryOptions<IUserDataWithFollowedStatusType>, 'queryKey' | 'queryFn'>,
 ) {
+  const { user } = useAppSelector(selectAuth);
+
   const getUserInfomation = async () => {
     try {
       const { data } = await getUserInfomationAPI({
         userId,
-        followerId,
+        followerId: followerId || user?.id,
       });
       return data;
     } catch (error) {
@@ -76,6 +81,39 @@ export function useGetUserInfomation(
     queryKey: getUserInfomationQueryKey({ userId }),
     queryFn: getUserInfomation,
     ...options,
+  });
+
+  return query;
+}
+
+export const getAllUsersInfomationQueryKey = ({ keywords }: { keywords: string }) => [
+  'users',
+  { keywords },
+];
+
+export function useGetAllUsersInfomation({ keywords }: { keywords: string }) {
+  const { user } = useAppSelector(selectAuth);
+  const followerId = user?.id;
+
+  const getAllUsersInfomation = async ({ page }: { page: number }) => {
+    try {
+      const { data } = await getAllUsersInfomationAPI({ page, keywords, followerId });
+      return data;
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  };
+
+  const query = useInfiniteQuery({
+    queryKey: getAllUsersInfomationQueryKey({ keywords }),
+    queryFn: ({ pageParam }) => getAllUsersInfomation({ page: pageParam }),
+    maxPages: 5,
+    getPreviousPageParam: ({ hasPreviousPage, currentPage }) =>
+      hasPreviousPage ? currentPage - 1 : undefined,
+    getNextPageParam: ({ hasNextPage, currentPage }) => (hasNextPage ? currentPage + 1 : undefined),
+    initialPageParam: 1,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchInterval: 1000 * 60 * 5, // 5 minutes
   });
 
   return query;

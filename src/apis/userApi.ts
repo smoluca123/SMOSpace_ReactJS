@@ -110,3 +110,35 @@ export const followUserAPI = async ({ userId }: { userId: UUID }) => {
     throw error.message;
   }
 };
+
+export const getAllUsersInfomationAPI = async ({
+  userId,
+  page = 1,
+  limit = 10,
+  keywords,
+  followerId,
+}: {
+  userId?: UUID;
+  page?: number;
+  limit?: number;
+  keywords?: string;
+  followerId?: UUID;
+}) => {
+  try {
+    const { data } = await baseApi.get<
+      IApiPaginationResponseWrapper<IUserDataWithFollowedStatusType>
+    >('/user', {
+      params: {
+        userId,
+        page,
+        limit,
+        keywords,
+        followerId,
+      },
+    });
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
