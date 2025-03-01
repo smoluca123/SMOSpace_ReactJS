@@ -10,7 +10,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <section className='space-y-6'>
+    <section className='space-y-6 min-h-dvh'>
       <Header />
       <div className='container mx-auto'>
         <Profile username={username} />
