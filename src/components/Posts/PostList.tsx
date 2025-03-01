@@ -22,6 +22,7 @@ export default function PostList({
   skipFirstPost?: boolean;
 }) {
   const { data, fetchNextPage, hasNextPage, isFetching } = infinitePostData;
+
   return (
     <InfiniteScrollContainer isShowInViewElement={hasNextPage} onBottomReached={fetchNextPage}>
       <div className='space-y-6'>
