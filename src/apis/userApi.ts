@@ -79,12 +79,12 @@ export const getUserInfomationAPI = async ({
   userId,
   followerId,
 }: {
-  userId: UUID;
+  userId: UUID | string;
   followerId?: UUID;
 }) => {
   try {
     const { data } = await baseApi.get<IApiResponseWrapper<IUserDataWithFollowedStatusType>>(
-      `user/${userId}`,
+      `/user/${userId}`,
       {
         params: {
           followerId,

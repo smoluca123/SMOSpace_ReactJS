@@ -14,7 +14,7 @@ import {
 export default function LeftSidebar({ className }: PropsWithClassName) {
   return (
     <ContentWrapper
-      className={cn(' ~min-w-[8rem]/[15rem] max-w-[20rem]  max-h-dvh sticky top-0', className)}
+      className={cn('~min-w-[8rem]/[15rem] max-w-[20rem]  max-h-dvh sticky top-0', className)}
     >
       <LeftSidebarMenu />
     </ContentWrapper>
@@ -56,7 +56,7 @@ function LeftSidebarMenu() {
         <Button
           key={label}
           variant='ghost'
-          className='flex gap-x-4 justify-start items-center p-4 w-full rounded-sm hover:bg-accent text-foreground/90 hover:text-foreground/90'
+          className='flex items-center justify-start w-full p-4 rounded-sm gap-x-4 hover:bg-accent text-foreground/90 hover:text-foreground/90'
         >
           <Icon className='text-primary' />
           {label}

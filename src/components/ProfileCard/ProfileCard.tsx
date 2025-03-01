@@ -20,14 +20,20 @@ interface IProps {
 
 export default function ProfileCard({ userId }: IProps) {
   const { user: currentUser } = useAppSelector(selectAuth);
-  const { data: user } = useGetUserInfomation({ userId, followerId: currentUser?.id });
+  const isMe = userId == currentUser?.id;
+  const { data: user } = useGetUserInfomation(
+    { userId, followerId: currentUser?.id },
+    {
+      enabled: !isMe,
+    },
+  );
 
-  if (userId == currentUser?.id) return null;
+  if (isMe) return null;
 
   return (
     <>
       {user && (
-        <ContentWrapper className='w-full max-w-md space-y-4 rounded-md '>
+        <ContentWrapper className='w-full max-w-md space-y-4 border rounded-md shadow-lg border-border'>
           <div className='w-full space-y-4'>
             {/* Profile Header */}
             <ProfileHeader user={user} />
@@ -57,8 +63,8 @@ function ProfileHeader({ user }: { user: IUserDataWithFollowedStatusType }) {
           <UserAvatar avatarUrl={user.avatar} />
         </ProfileLink>
 
-        <ProfileLink username={user.username}>
-          <h1 className='text-2xl font-bold text-foreground'>{user.fullName}</h1>
+        <ProfileLink username={user.username} className=''>
+          {user.fullName}
         </ProfileLink>
       </div>
     </div>
@@ -67,7 +73,7 @@ function ProfileHeader({ user }: { user: IUserDataWithFollowedStatusType }) {
 
 function ProfileContent({ user }: { user: IUserDataWithFollowedStatusType }) {
   return (
-    <div className='space-y-3 '>
+    <div className='space-y-3'>
       <UserMetaItem icon={<Rss size={20} />}>{user.followerCount} followers</UserMetaItem>
       <UserMetaItem icon={<UserRoundPlus size={20} />}>
         Following {user.followingCount} people

@@ -11,7 +11,7 @@ export default function VerifiedIcon({ className, isVerified }: IProps) {
   if (!isVerified) return null;
   return (
     <Tooltip delayDuration={100}>
-      <TooltipTrigger>
+      <TooltipTrigger asChild>
         <CircleCheck className={cn('w-4 h-4 text-primary', className)} />
       </TooltipTrigger>
       <TooltipContent>

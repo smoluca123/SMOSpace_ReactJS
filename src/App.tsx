@@ -9,6 +9,7 @@ import Login from '@/modules/auth/components/Login';
 import Register from '@/modules/auth/components/Register';
 import ReactQueryProvider from '@/components/ReactQueryProvider';
 import SearchPage from '@/modules/search/page';
+import ProfilePage from '@/modules/profile/pages/ProfilePage';
 
 const router = createBrowserRouter(
   [
@@ -43,6 +44,16 @@ const router = createBrowserRouter(
           element: <Register />,
         },
       ],
+    },
+
+    // Profile page
+    {
+      path: '/profile',
+      element: <ProfilePage />,
+    },
+    {
+      path: '/profile/:username',
+      element: <ProfilePage />,
     },
   ],
   {
