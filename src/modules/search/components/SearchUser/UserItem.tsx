@@ -30,7 +30,7 @@ export default function UserItem({ user }: { user: IUserDataWithFollowedStatusTy
       </div>
 
       {/* Follow action */}
-      <FollowButton user={user} />
+      <FollowButton userId={user.id} />
     </ContentWrapper>
   );
 }
