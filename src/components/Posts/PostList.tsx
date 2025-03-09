@@ -52,6 +52,7 @@ export default function PostList({
 export function FirstPost() {
   const { user } = useAppSelector(selectAuth);
   const { data, isLoading } = useGetPosts({ likeUserId: user?.id });
+
   return (
     <>
       {/* First Post */}

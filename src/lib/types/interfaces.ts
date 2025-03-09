@@ -47,6 +47,7 @@ export interface IUserDataType {
   id: UUID;
   username: string;
   email: string;
+  bio: string | null;
   userType: ITypeUserType;
   fullName: string;
   displayName: string;
@@ -78,7 +79,7 @@ export interface IWithAccessTokenType {
 
 export interface ITypeUserType {
   id: UUID;
-  typeName: string;
+  typeName: 'Member' | 'VIP Member' | 'Manager' | 'Administrator';
 }
 
 export interface IUserSessionType {
@@ -138,6 +139,14 @@ export interface IFollowerType {
   followingId: UUID;
   createdAt: string;
   follower: IUserDataWithFollowedStatusType;
+}
+
+export interface IFollowingType {
+  id: UUID;
+  followerId: UUID;
+  followingId: UUID;
+  createdAt: string;
+  following: IUserDataWithFollowedStatusType;
 }
 
 export interface IPostLikeType {

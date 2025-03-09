@@ -1,4 +1,5 @@
 import { useGetUserInfomation } from '@/lib/querys';
+import ProfileContent from '@/modules/profile/components/Profile/ProfileContent/ProfileContent';
 import ProfileHeader from '@/modules/profile/components/Profile/ProfileHeader';
 import ProfileProvider from '@/modules/profile/components/Profile/ProfileProvider';
 
@@ -12,7 +13,10 @@ export default function Profile({ username }: IProps) {
     <div>
       {userData && (
         <ProfileProvider userData={userData}>
-          <ProfileHeader />
+          <div className='space-y-5'>
+            <ProfileHeader />
+            <ProfileContent />
+          </div>
         </ProfileProvider>
       )}
     </div>

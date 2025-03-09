@@ -9,7 +9,7 @@ interface IProps extends PropsWithChildren, PropsWithClassName {
 
 export default function NameWithVerifiedIcon({ children, className, isVerified }: IProps) {
   return (
-    <div className={cn('flex items-center gap-x-1', className)}>
+    <div className={cn('flex gap-x-1 items-center', className)}>
       {children}
       <VerifiedIcon isVerified={isVerified} />
     </div>

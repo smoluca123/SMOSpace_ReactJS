@@ -15,7 +15,7 @@ export default function VerifiedIcon({ className, isVerified }: IProps) {
         <CircleCheck className={cn('w-4 h-4 text-primary', className)} />
       </TooltipTrigger>
       <TooltipContent>
-        <p className='text-foreground'>Verified</p>
+        <p className='text-white'>Verified</p>
       </TooltipContent>
     </Tooltip>
   );
