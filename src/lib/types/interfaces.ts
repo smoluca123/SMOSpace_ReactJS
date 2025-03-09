@@ -35,6 +35,14 @@ export interface IApiPaginationResponseWrapper<T> {
   date: string;
 }
 
+export interface IAdditionalInfoType {
+  birthDate: string | null;
+  living: string | null;
+  hometown: string | null;
+  jobs: string[];
+  website: string | null;
+}
+
 export interface IUserDataType {
   id: UUID;
   username: string;
@@ -56,6 +64,7 @@ export interface IUserDataType {
   followerCount: number;
   followingCount: number;
   postCount: number;
+  additionalInfo: IAdditionalInfoType | null;
 }
 
 export interface IUserDataWithFollowedStatusType extends IUserDataType {
