@@ -22,7 +22,7 @@ export function useGetPosts(
     keywords?: string;
     userId?: UUID;
   },
-  options: {
+  options?: {
     enabled?: boolean;
   },
 ) {
