@@ -10,7 +10,7 @@ export default function HomePage() {
   const { user } = useAppSelector(selectAuth);
   const query = useGetPosts({ likeUserId: user?.id });
   return (
-    <main className='flex-1 overflow-hidden'>
+    <main className='overflow-hidden flex-1'>
       <div className='flex-auto space-y-6'>
         <SubmitPostBox />
 
