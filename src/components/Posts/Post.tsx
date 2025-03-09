@@ -13,6 +13,7 @@ import { usePostContext } from '@/hooks/usePostContext';
 import PostEngagementMetrics from '@/components/Posts/PostEngagementMetrics';
 import NameWithVerifiedIcon from '@/components/NameWithVerifiedIcon';
 import { CommentBox } from '@/components/Posts/Comment';
+import NameWithBadge from '@/components/NameWithBadge';
 
 export default function Post() {
   const { post, displayCommentBox } = usePostContext();
@@ -25,7 +26,7 @@ export default function Post() {
         <PostHeader />
 
         {/* Post Content */}
-        <div className='break-words whitespace-pre-line'>
+        <div className='whitespace-pre-line break-words'>
           <LinkifyHashTag>{parser(post.content)}</LinkifyHashTag>
         </div>
 
@@ -48,8 +49,8 @@ export default function Post() {
 function PostHeader() {
   const { post } = usePostContext();
   return (
-    <div className='flex justify-between gap-3'>
-      <div className='flex items-center gap-3'>
+    <div className='flex gap-3 justify-between'>
+      <div className='flex gap-3 items-center'>
         {/* Post Author */}
         <ProfileLinkWithCard username={post.author.username} userId={post.author.id}>
           <UserAvatar avatarUrl={post.author.avatar} fallbackName={post.author.fullName} />
@@ -58,12 +59,14 @@ function PostHeader() {
           {/* Post Author Name */}
 
           <ProfileLinkWithCard username={post.author.username} userId={post.author.id}>
-            <NameWithVerifiedIcon isVerified={post.author.isVerified}>
-              {post.author.fullName}
-            </NameWithVerifiedIcon>
+            <NameWithBadge userData={post.author}>
+              <NameWithVerifiedIcon isVerified={post.author.isVerified}>
+                {post.author.fullName}
+              </NameWithVerifiedIcon>
+            </NameWithBadge>
           </ProfileLinkWithCard>
 
-          <div className='flex items-center gap-2'>
+          <div className='flex gap-2 items-center'>
             {/* Post Date */}
             <Link
               to={`/posts/${post.id}`}

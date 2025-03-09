@@ -1,5 +1,6 @@
 const { nextui } = require('@nextui-org/theme');
 import fluid, { extract, screens, fontSize } from 'fluid-tailwind';
+import tailwindcssTextShadow from '@designbycode/tailwindcss-text-shadow';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -75,5 +76,5 @@ export default {
       },
     },
   },
-  plugins: [require('tailwindcss-animate'), nextui(), fluid],
+  plugins: [require('tailwindcss-animate'), nextui(), fluid, tailwindcssTextShadow],
 };

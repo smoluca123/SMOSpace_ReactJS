@@ -13,6 +13,7 @@
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
   },
   "dependencies": {
+    "@designbycode/tailwindcss-text-shadow": "^2.2.1",
     "@hookform/resolvers": "^3.9.1",
     "@nextui-org/switch": "^2.0.34",
     "@nextui-org/system": "^2.2.6",

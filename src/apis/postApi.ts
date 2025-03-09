@@ -46,6 +46,33 @@ export const getAllPostsAPI = async ({
   }
 };
 
+export const getMyPostsAPI = async ({
+  page = 1,
+  limit = 10,
+  keywords,
+}: {
+  page?: number;
+  limit?: number;
+  keywords?: string;
+}) => {
+  try {
+    const { data } = await baseApi.get<IApiPaginationResponseWrapper<IPostDataWithLikedStatusType>>(
+      '/post/my-posts',
+      {
+        params: {
+          page,
+          limit,
+          keywords,
+        },
+      },
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
 export const submitPostAPI = async ({
   content,
   isPrivate = false,

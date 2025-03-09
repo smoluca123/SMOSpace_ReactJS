@@ -1,4 +1,8 @@
-import { getAllUsersInfomationAPI } from './../apis/userApi';
+import {
+  getAllUsersInfomationAPI,
+  getUserFollowersAPI,
+  getUserFollowingsAPI,
+} from './../apis/userApi';
 import { getMyFollowersAPI, getMyInfomationAPI, getUserInfomationAPI } from '@/apis/userApi';
 import { IPaginationParamsType, IUserDataWithFollowedStatusType } from '@/lib/types/interfaces';
 import { useAppSelector } from '@/redux/hooks';
@@ -22,6 +26,66 @@ export function useGetMyFollowersQuery() {
   const query = useInfiniteQuery({
     queryKey: getMyFollowersQueryKey,
     queryFn: ({ pageParam }) => getMyFollowers({ page: pageParam, limit: 10 }),
+    getNextPageParam: (lastPage) => (lastPage.hasNextPage ? lastPage.currentPage + 1 : undefined),
+    getPreviousPageParam: (firstPage) =>
+      firstPage.hasPreviousPage ? firstPage.currentPage - 1 : undefined,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    initialPageParam: 1,
+  });
+  return query;
+}
+
+export const getUserFollowersQueryKey = ({ userId }: { userId: UUID | string }) => [
+  'followers',
+  {
+    userId,
+  },
+];
+
+export function useGetUserFollowersQuery({ userId }: { userId: UUID | string }) {
+  const getUserFollowers = async ({ page, limit }: IPaginationParamsType) => {
+    try {
+      const { data } = await getUserFollowersAPI({ userId, page, limit });
+      return data;
+    } catch (error) {
+      console.log(error);
+      throw new Error(error as string);
+    }
+  };
+
+  const query = useInfiniteQuery({
+    queryKey: getUserFollowersQueryKey({ userId }),
+    queryFn: ({ pageParam }) => getUserFollowers({ page: pageParam, limit: 10 }),
+    getNextPageParam: (lastPage) => (lastPage.hasNextPage ? lastPage.currentPage + 1 : undefined),
+    getPreviousPageParam: (firstPage) =>
+      firstPage.hasPreviousPage ? firstPage.currentPage - 1 : undefined,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    initialPageParam: 1,
+  });
+  return query;
+}
+
+export const getUserFollowingsQueryKey = ({ userId }: { userId: UUID | string }) => [
+  'followings',
+  {
+    userId,
+  },
+];
+
+export function useGetUserFollowingsQuery({ userId }: { userId: UUID | string }) {
+  const getUserFollowings = async ({ page, limit }: IPaginationParamsType) => {
+    try {
+      const { data } = await getUserFollowingsAPI({ userId, page, limit });
+      return data;
+    } catch (error) {
+      console.log(error);
+      throw new Error(error as string);
+    }
+  };
+
+  const query = useInfiniteQuery({
+    queryKey: getUserFollowingsQueryKey({ userId }),
+    queryFn: ({ pageParam }) => getUserFollowings({ page: pageParam, limit: 10 }),
     getNextPageParam: (lastPage) => (lastPage.hasNextPage ? lastPage.currentPage + 1 : undefined),
     getPreviousPageParam: (firstPage) =>
       firstPage.hasPreviousPage ? firstPage.currentPage - 1 : undefined,

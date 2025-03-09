@@ -4,6 +4,7 @@ import {
   IApiPaginationResponseWrapper,
   IApiResponseWrapper,
   IFollowerType,
+  IFollowingType,
   IFollowUserType,
   IPaginationParamsType,
   IUserDataWithFollowedStatusType,
@@ -56,6 +57,55 @@ export const getMyFollowersAPI = async ({
         },
       },
     );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const getUserFollowersAPI = async ({
+  userId,
+  page,
+  limit,
+}: IPaginationParamsType & { userId: UUID | string }): Promise<
+  IApiPaginationResponseWrapper<IFollowerType>
+> => {
+  try {
+    const { data } = await baseApi.get<IApiPaginationResponseWrapper<IFollowerType>>(
+      `/user/followers/${userId}`,
+      {
+        params: {
+          page,
+          limit,
+        },
+      },
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const getUserFollowingsAPI = async ({
+  userId,
+  page,
+  limit,
+}: IPaginationParamsType & { userId: UUID | string }): Promise<
+  IApiPaginationResponseWrapper<IFollowingType>
+> => {
+  try {
+    const { data } = await baseApi.get<IApiPaginationResponseWrapper<IFollowingType>>(
+      `/user/followings/${userId}`,
+      {
+        params: {
+          page,
+          limit,
+        },
+      },
+    );
+    console.log(data);
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;
