@@ -1,25 +1,45 @@
 import { IUserDataType } from '@/lib/types/interfaces';
 import UserMetaItem from './UserMetaItem';
-import { BriefcaseBusiness, MapPin } from 'lucide-react';
+import { BriefcaseBusiness, Home, Link as LInkIcon, MapPin } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function UserAdditionalInfo({ user }: { user: IUserDataType }) {
   if (!user.additionalInfo) return null;
 
+  const { hometown, jobs, living, websites } = user.additionalInfo;
+
   return (
     <>
       {/* Living */}
-      {user.additionalInfo?.living && (
+      {living && (
+        <UserMetaItem icon={<Home size={20} />}>
+          <span>Lives in</span> <span className='font-semibold'>{living}</span>
+        </UserMetaItem>
+      )}
+
+      {/* Hometown */}
+      {hometown && (
         <UserMetaItem icon={<MapPin size={20} />}>
-          Live at {user.additionalInfo.living}
+          <span>From</span> <span className='font-semibold'>{hometown}</span>
         </UserMetaItem>
       )}
 
       {/* Jobs */}
-      {user.additionalInfo?.jobs.map((job, i) => (
-        <UserMetaItem icon={<BriefcaseBusiness />} key={i}>
+      {jobs?.map((job, i) => (
+        <UserMetaItem icon={<BriefcaseBusiness size={20} />} key={i}>
           {job}
         </UserMetaItem>
       ))}
+
+      {/* Website */}
+      {websites &&
+        websites.map((url, i) => (
+          <UserMetaItem icon={<LInkIcon key={i} size={20} />}>
+            <Link className=' text-primary hover:underline' to={url}>
+              {url}
+            </Link>
+          </UserMetaItem>
+        ))}
     </>
   );
 }
