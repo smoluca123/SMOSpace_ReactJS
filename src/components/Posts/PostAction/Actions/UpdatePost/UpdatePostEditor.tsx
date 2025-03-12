@@ -62,8 +62,8 @@ export default function UpdatePostEditor({
   if (!user) return <Navigate to='/' replace />;
 
   return (
-    <div className='w-full max-w-full space-y-5 overflow-x-hidden rounded-md shadow-sm'>
-      <div className='flex items-center gap-x-4'>
+    <div className='overflow-x-hidden space-y-5 w-full max-w-full rounded-md shadow-sm'>
+      <div className='flex gap-x-4 items-center'>
         <UserAvatar
           avatarUrl={user.avatar}
           fallbackName={user.fullName}
@@ -94,7 +94,7 @@ export default function UpdatePostEditor({
         </div>
       </div>
 
-      <div className='flex justify-end gap-2'>
+      <div className='flex gap-2 justify-end'>
         <Select
           value={isPrivate ? '1' : '0'}
           onValueChange={(value) => {

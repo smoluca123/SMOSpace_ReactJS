@@ -96,7 +96,7 @@ export function useGetUserFollowingsQuery({ userId }: { userId: UUID | string })
 }
 
 export const getMyInfomationQueryKey = ['profile', 'me'];
-export function useGetMyInfomation() {
+export function useGetMyInfomation(options?: { enabled?: boolean }) {
   const getMyInfomation = async () => {
     try {
       const { data } = await getMyInfomationAPI();
@@ -111,6 +111,7 @@ export function useGetMyInfomation() {
     queryKey: getMyInfomationQueryKey,
     queryFn: getMyInfomation,
     staleTime: 1000 * 60 * 5, // 5 minutes
+    enabled: options?.enabled ?? true,
   });
 
   return query;
