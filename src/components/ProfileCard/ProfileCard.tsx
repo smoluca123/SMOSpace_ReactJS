@@ -31,7 +31,7 @@ export default function ProfileCard({ userId }: IProps) {
     },
   );
 
-  if (isPending) return <ProfileCardSkeleton />;
+  if (isPending && !isMe) return <ProfileCardSkeleton />;
 
   if (isMe || !user) return null;
 

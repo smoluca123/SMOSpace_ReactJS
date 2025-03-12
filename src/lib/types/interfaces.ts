@@ -40,7 +40,7 @@ export interface IAdditionalInfoType {
   living: string | null;
   hometown: string | null;
   jobs: string[];
-  website: string | null;
+  websites: string[];
 }
 
 export interface IUserDataType {
