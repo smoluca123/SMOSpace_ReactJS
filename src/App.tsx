@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import './App.css';
 import HomePage from '@/modules/home/pages/HomePage';
 import MainLayout from '@/components/layouts/MainLayout';
@@ -10,6 +10,8 @@ import Register from '@/modules/auth/components/Register';
 import ReactQueryProvider from '@/components/ReactQueryProvider';
 import SearchPage from '@/modules/search/page';
 import ProfilePage from '@/modules/profile/pages/ProfilePage';
+import { GenneralSettingPage, ProfileSettingPage, SettingPage } from './modules/setting/pages';
+import AuthenticationRoute from './routes/AuthenticationRoute';
 
 const router = createBrowserRouter(
   [
@@ -54,6 +56,30 @@ const router = createBrowserRouter(
     {
       path: '/profile/:username',
       element: <ProfilePage />,
+    },
+
+    // Settings
+    {
+      path: '/setting',
+      element: (
+        <AuthenticationRoute>
+          <SettingPage />
+        </AuthenticationRoute>
+      ),
+      children: [
+        {
+          index: true,
+          element: <Navigate to='genneral' replace />,
+        },
+        {
+          path: 'genneral',
+          element: <GenneralSettingPage />,
+        },
+        {
+          path: 'profile',
+          element: <ProfileSettingPage />,
+        },
+      ],
     },
   ],
   {
