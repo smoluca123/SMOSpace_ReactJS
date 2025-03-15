@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import EditBio from '@/components/EditBio';
 import { Separator } from '@/components/ui/separator';
 import UserAdditionalInfo from '@/components/UserAdditionalInfo';
 import UserMetaData from '@/components/UserMetaData';
@@ -17,11 +17,7 @@ export default function ProfileInfo() {
         {parse(userData.bio || '')}
 
         {/* Edit bio button */}
-        {isMe && (
-          <Button variant='secondary' className='w-full'>
-            Edit bio
-          </Button>
-        )}
+        {isMe && <EditBio className='w-full' content={userData.bio || ''} />}
       </div>
 
       <Separator />

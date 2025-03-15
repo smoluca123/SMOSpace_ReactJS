@@ -1,8 +1,8 @@
-import { IUserDataWithFollowedStatusType } from '@/lib/types/interfaces';
+import { IUserDataType } from '@/lib/types/interfaces';
 import { createContext } from 'react';
 
 interface IProfileContext {
-  userData: IUserDataWithFollowedStatusType;
+  userData: IUserDataType;
   isMe: boolean;
 }
 

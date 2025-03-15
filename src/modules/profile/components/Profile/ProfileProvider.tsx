@@ -1,5 +1,5 @@
 import { ProfileContext } from '@/contexts/ProfileContext';
-import { IUserDataWithFollowedStatusType } from '@/lib/types/interfaces';
+import { IUserDataType } from '@/lib/types/interfaces';
 import { useAppSelector } from '@/redux/hooks';
 import { selectAuth } from '@/redux/slices/authSlice';
 
@@ -8,7 +8,7 @@ export default function ProfileProvider({
   userData,
 }: {
   children: React.ReactNode;
-  userData: IUserDataWithFollowedStatusType;
+  userData: IUserDataType;
 }) {
   const { user } = useAppSelector(selectAuth);
   const isMe = user?.id === userData.id;

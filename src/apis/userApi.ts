@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import baseApi from '@/apis/baseApi';
+import { IUpdateInfomationType } from '@/apis/types/interfaces';
 import {
   IApiPaginationResponseWrapper,
   IApiResponseWrapper,
@@ -7,6 +8,7 @@ import {
   IFollowingType,
   IFollowUserType,
   IPaginationParamsType,
+  IUserDataType,
   IUserDataWithFollowedStatusType,
   IUserWithAccessTokenType,
 } from '@/lib/types/interfaces';
@@ -186,6 +188,16 @@ export const getAllUsersInfomationAPI = async ({
         followerId,
       },
     });
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const updateInfomationAPI = async (newData: IUpdateInfomationType) => {
+  try {
+    const { data } = await baseApi.put<IApiResponseWrapper<IUserDataType>>('/user/me', newData);
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;
