@@ -48,7 +48,6 @@
     "html-react-parser": "^5.2.1",
     "lucide-react": "^0.469.0",
     "react": "^19.0.0-rc-7ac8e612-20241113",
-    "react-cropper": "^2.3.3",
     "react-dom": "^19.0.0-rc-7ac8e612-20241113",
     "react-dropzone": "^14.3.8",
     "react-easy-crop": "^5.4.1",
