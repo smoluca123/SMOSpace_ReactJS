@@ -44,7 +44,7 @@ const ProfileContentSkeleton = () => {
       {/* Profile card metadata */}
 
       {Array.from({ length: 3 }, (_, i) => (
-        <div key={i} className='flex items-center gap-x-4 '>
+        <div key={Math.random() * i} className='flex items-center gap-x-4 '>
           <Skeleton className='rounded-sm size-5' />
           <Skeleton className='w-1/3 h-4 rounded-md' />
         </div>

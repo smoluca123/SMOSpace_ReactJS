@@ -2,11 +2,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export function TrendingTopicsSkeleton({ skeletonCount = 3 }: { skeletonCount?: number }) {
   return Array.from({ length: skeletonCount }, (_, i) => (
-    <div key={i} className=' w-full  flex gap-x-4 items-center '>
-      <Skeleton className='size-7   rounded-sm' />
+    <div key={Math.random() * i} className='flex items-center w-full gap-x-4'>
+      <Skeleton className='rounded-sm size-7' />
       <div className='flex-1'>
-        <Skeleton className='h-4 w-1/2 mb-1 ' />
-        <Skeleton className='h-4 w-1/3 ' />
+        <Skeleton className='w-1/2 h-4 mb-1 ' />
+        <Skeleton className='w-1/3 h-4 ' />
       </div>
     </div>
   ));

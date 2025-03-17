@@ -30,8 +30,7 @@ export default function BioEditor({
     ],
     content: content,
     onUpdate: ({ editor }) => {
-      const text = editor.getText().trim();
-      onChangeContent(text ? editor.getHTML() : '');
+      onChangeContent(editor.getHTML());
     },
   });
 

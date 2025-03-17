@@ -40,7 +40,7 @@ function LoaderSkeletion() {
   return (
     <div className='grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 2xl:grid-cols-4'>
       {Array.from({ length: 10 }, (_, i) => (
-        <UserItemSkeleton key={i} />
+        <UserItemSkeleton key={Math.random() * i} />
       ))}
     </div>
   );

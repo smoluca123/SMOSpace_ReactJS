@@ -11,6 +11,7 @@ export default function GenneralSettingPage() {
 
   return (
     <section className='w-full space-y-5'>
+      {/* Setting header */}
       <GenneralSettingHeader />
 
       <ContentWrapper className='space-y-5 '>

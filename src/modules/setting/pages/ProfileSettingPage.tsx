@@ -9,8 +9,10 @@ export default function ProfileSettingPage() {
   if (!user) return null;
 
   return (
-    <section className='w-full space-y-5'>
+    <section className='w-full max-w-full space-y-5 overflow-hidden'>
+      {/* Setting header */}
       <ProfileSettingHeader />
+
       <ContentWrapper>
         <UpdateUserDetailsForm />
       </ContentWrapper>
@@ -20,8 +22,8 @@ export default function ProfileSettingPage() {
 
 function ProfileSettingHeader() {
   return (
-    <ContentWrapper className='flex items-center justify-between'>
-      <h1 className='font-bold '>Genneral Setting</h1>
+    <ContentWrapper className='flex items-center justify-between '>
+      <h1 className='font-bold '>Profile Setting</h1>
       <User />
     </ContentWrapper>
   );

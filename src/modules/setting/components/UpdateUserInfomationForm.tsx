@@ -1,16 +1,30 @@
+'use no memo';
+import LoadingButton from '@/components/LoadingButton';
 import PasswordInput from '@/components/PasswordInput';
-import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import RequestLabel from '@/components/RequestLabel';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { RegisterValues } from '@/lib/validations';
+import { useToast } from '@/hooks/use-toast';
+import { useUpdateMyInfomationMutation } from '@/lib/mutations';
+import { updateUserInfomationSchema, UpdateUserInfomationValues } from '@/lib/validations';
 import { useAppSelector } from '@/redux/hooks';
 import { selectAuth } from '@/redux/slices/authSlice';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
 export default function UpdateUserInformationForm() {
   const { user } = useAppSelector(selectAuth);
+  const { mutate, isPending } = useUpdateMyInfomationMutation();
+  const { toast } = useToast();
 
-  const form = useForm<RegisterValues>({
+  const form = useForm<UpdateUserInfomationValues>({
     defaultValues: {
       fullName: user?.fullName,
       age: user?.age || 0,
@@ -20,25 +34,36 @@ export default function UpdateUserInformationForm() {
       displayName: user?.displayName,
       password: '',
     },
+    resolver: zodResolver(updateUserInfomationSchema),
+    mode: 'onTouched',
   });
 
-  const onSubmit = (values: RegisterValues) => {
-    console.log('Updated Info:', values);
+  const handleUpdateInfomation = (values: UpdateUserInfomationValues) => {
+    mutate(values, {
+      onSuccess: () => {
+        toast({
+          title: 'Suscessfuly',
+          description: 'Update User Infomation suscessfuly',
+          className: 'w-[300px] md:w-auto',
+        });
+      },
+    });
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-5'>
-        <div className='grid gap-4 md:grid-cols-2'>
+      <form onSubmit={form.handleSubmit(handleUpdateInfomation)} className='space-y-5'>
+        <div className='grid gap-6 md:grid-cols-2 '>
           <FormField
             control={form.control}
             name='fullName'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Full Name</FormLabel>
+                <RequestLabel>Full Name</RequestLabel>
                 <FormControl>
-                  <Input className='bg-accent' {...field} placeholder='Ex : Yukicute' />
+                  <Input {...field} placeholder='Ex : Yukicute' />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -48,10 +73,39 @@ export default function UpdateUserInformationForm() {
             name='age'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Age</FormLabel>
+                <RequestLabel>Age</RequestLabel>
                 <FormControl>
-                  <Input className='bg-accent' type='number' {...field} placeholder='Ex: 25' />
+                  <Input type='number' {...field} placeholder='Ex: 25' />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='username'
+            render={({ field }) => (
+              <FormItem>
+                <RequestLabel>Username</RequestLabel>
+                <FormControl>
+                  <Input {...field} placeholder='Ex: Yukidev123' />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='email'
+            render={({ field }) => (
+              <FormItem>
+                <RequestLabel>Email</RequestLabel>
+                <FormControl>
+                  <Input {...field} placeholder='Ex: Yukidev2005@smoteam.com' />
+                </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -61,10 +115,11 @@ export default function UpdateUserInformationForm() {
             name='displayName'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Display Name</FormLabel>
+                <RequestLabel>Display Name</RequestLabel>
                 <FormControl>
-                  <Input className='bg-accent' {...field} placeholder='Ex: Nguyen Van A' />
+                  <Input {...field} placeholder='Ex: Nguyen Van A' />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -76,8 +131,9 @@ export default function UpdateUserInformationForm() {
               <FormItem>
                 <FormLabel>Phone Number</FormLabel>
                 <FormControl>
-                  <Input className='bg-accent' type='tel' {...field} placeholder='Ex: 0123456789' />
+                  <Input {...field} placeholder='Ex: 0123456789' />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -89,18 +145,17 @@ export default function UpdateUserInformationForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <PasswordInput
-                    className='bg-accent'
-                    {...field}
-                    placeholder='Enter your password'
-                  />
+                  <PasswordInput {...field} placeholder='Enter your password' />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
         </div>
 
-        <Button className='text-white'>Update</Button>
+        <LoadingButton loading={isPending} className='text-white'>
+          Update
+        </LoadingButton>
       </form>
     </Form>
   );
