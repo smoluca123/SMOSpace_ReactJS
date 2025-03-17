@@ -1,3 +1,4 @@
+import NameWithBadge from '@/components/NameWithBadge';
 import NameWithVerifiedIcon from '@/components/NameWithVerifiedIcon';
 import ProfileLink from '@/components/ProfileLink';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -31,22 +32,24 @@ export default function UserCard() {
           </ProfileLink>
           <div className=''>
             <ProfileLink username={user.username} className='mx-auto w-fit'>
-              <NameWithVerifiedIcon isVerified={user.isVerified}>
-                <p className='text-xl font-semibold'>{user.fullName}</p>
-              </NameWithVerifiedIcon>
+              <NameWithBadge userData={user}>
+                <NameWithVerifiedIcon isVerified={user.isVerified}>
+                  <p className='text-xl font-semibold'>{user.fullName}</p>
+                </NameWithVerifiedIcon>
+              </NameWithBadge>
             </ProfileLink>
             <ProfileLink username={user.username} className='font-normal !no-underline'>
               <p className='text-muted-foreground'>@{user.username}</p>
             </ProfileLink>
           </div>
-          <div className='flex items-center justify-center text-sm gap-x-1 text-muted-foreground'>
+          <div className='flex gap-x-1 justify-center items-center text-sm text-muted-foreground'>
             <p>{user.followerCount} Followers</p>
             <Dot />
             <p>{user.postCount} Posts</p>
             <Dot />
             <p>{user.followingCount} Following</p>
           </div>
-          <div className='flex items-center justify-center gap-2'>
+          <div className='flex gap-2 justify-center items-center'>
             {isLoadingFollowers &&
               Array.from({ length: 5 }).map((_, index) => (
                 <Skeleton key={index} className='size-8' />

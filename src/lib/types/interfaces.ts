@@ -175,3 +175,10 @@ export interface IFollowUserType {
   follower: IUserDataWithFollowedStatusType;
   following: IUserDataWithFollowedStatusType;
 }
+
+export interface ICroppedAreaType {
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+}
