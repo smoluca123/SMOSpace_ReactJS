@@ -204,3 +204,19 @@ export const updateInfomationAPI = async (newData: IUpdateInfomationType) => {
     throw error.message;
   }
 };
+
+export const updateAvatarAPI = async ({ userId, imageFile }: { userId: UUID; imageFile: File }) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', imageFile);
+
+    const { data } = await baseApi.post<IApiResponseWrapper<IUserDataType>>(
+      `/user/avatar/${userId}`,
+      formData,
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
