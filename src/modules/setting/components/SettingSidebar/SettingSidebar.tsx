@@ -18,7 +18,7 @@ const settingList = [
 
 export default function SettingSidebar() {
   return (
-    <ContentWrapper className='w-full  md:min-h-[calc(100vh-100px)] md:w-1/5'>
+    <ContentWrapper className='w-full  lg:min-h-[calc(100vh-100px)] lg:w-1/5'>
       {/* Seting sidebar itmes */}
       <div className='space-y-4 '>
         {/* Setting List */}

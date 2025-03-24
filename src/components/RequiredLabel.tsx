@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react';
 import { FormLabel } from './ui/form';
 
-export default function RequestLabel({ children }: PropsWithChildren) {
+export default function RequiredLabel({ children }: PropsWithChildren) {
   return (
     <FormLabel className='inline-flex items-center '>
       <span>{children}</span>

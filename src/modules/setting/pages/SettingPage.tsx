@@ -10,7 +10,7 @@ export default function Setting({ children }: PropsWithChildren) {
       <Header />
 
       {/* Setting content */}
-      <div className='container px-2 mx-auto mt-6 space-y-4 md:flex md:gap-4 lg:gap-6 sm:px-0'>
+      <div className='container px-2 mx-auto mt-6 space-y-4 lg:flex md:gap-4 lg:gap-6 sm:px-0'>
         {/* Setting Sidebar */}
         <SettingSidebar />
 

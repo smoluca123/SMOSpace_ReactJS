@@ -16,9 +16,9 @@ const footerContent = [
 
 export default function Footer() {
   return (
-    <footer className='container items-center justify-between py-5 mx-auto mt-5 text-center md:flex text-muted-foreground/70'>
+    <footer className='container items-center justify-between px-6 py-5 mx-auto mt-5 text-center md:px-0 md:flex text-muted-foreground/70'>
       {/* Coppyright */}
-      <FooterItem>© 2025 SMO Space</FooterItem>
+      <FooterItem className=' shrink-0'>© 2025 SMO Space</FooterItem>
 
       {/* Footer content */}
       <div className='flex flex-wrap justify-center gap-x-4 gap-y-1 '>

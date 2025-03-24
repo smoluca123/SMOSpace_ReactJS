@@ -23,8 +23,8 @@ export const commentSchema = z.object({
 
 export const updateUserDetailsSchema = z.object({
   bio: z.string().max(201, 'You can not write more than 201 char'),
-  // living: z.nullable(z.string({ message: 'City not not Empty' })),
-  // hometown: z.nullable(z.string({ message: 'City not not Empty' })),
+  living: z.optional(z.string({ message: 'City not not Empty' })),
+  hometown: z.optional(z.string({ message: 'City not not Empty' })),
   jobs: z.array(
     z.object({
       jobName: requiredString('JobName'),
@@ -37,10 +37,15 @@ export const updateUserDetailsSchema = z.object({
   ),
 });
 
-export const updateUserInfomationSchema = registerSchema.extend({
+export const updateUserInfomationSchema = z.object({
   fullName: requiredString('Full name').max(30, { message: 'No one has a name that long' }),
-  phoneNumber: z.optional(z.string().min(10, 'Invalid phone number')).or(z.literal('')),
+  username: requiredString('Username'),
+  phoneNumber: z
+    .optional(z.string().regex(/^(\+?[1-9]\d{0,14}|0\d{9})$/, 'Invalid phonenumber'))
+    .or(z.literal('')),
   password: z.optional(z.string()),
+  birthDate: z.optional(z.date()),
+  email: requiredString('Email').email('Invalid email address'),
   age: z.coerce
     .number()
     .int()

@@ -1,5 +1,4 @@
 'use no memo';
-
 import { useFieldArray, useForm } from 'react-hook-form';
 import BioEditor from './BioEditor';
 import { useAppSelector } from '@/redux/hooks';
@@ -21,11 +20,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus, X } from 'lucide-react';
 import LoadingButton from '@/components/LoadingButton';
 import { cn } from '@/lib/utils';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useState } from 'react';
 
 export default function UpdateUserDetailsForm() {
   const { user } = useAppSelector(selectAuth);
   const { toast } = useToast();
+  const [error, setError] = useState<string | undefined>(undefined);
 
+  // Convert additionalInfo data to match form defaultValues structure
+  // jobs: string[] -> {jobName: string}[]
+  // websites: string[] -> {websiteName: string}[]
   const jobs = user?.additionalInfo?.jobs?.map((job) => ({ jobName: job })) || [];
   const websites =
     user?.additionalInfo?.websites?.map((website) => ({ websiteName: website })) || [];
@@ -35,8 +40,8 @@ export default function UpdateUserDetailsForm() {
   const form = useForm<UpdateUserDetailsValues>({
     defaultValues: {
       bio: user?.bio || '',
-      // living: user?.additionalInfo?.living || '',
-      // hometown: user?.additionalInfo?.hometown || '',
+      living: user?.additionalInfo?.living || undefined,
+      hometown: user?.additionalInfo?.hometown || undefined,
       jobs,
       websites,
     },
@@ -44,6 +49,7 @@ export default function UpdateUserDetailsForm() {
     mode: 'onTouched',
   });
 
+  // Initialize dynamic form arrays for jobs and websites
   const jobFieldArray = useFieldArray({
     control: form.control,
     name: 'jobs',
@@ -54,6 +60,7 @@ export default function UpdateUserDetailsForm() {
     name: 'websites',
   });
 
+  // Update user additional infomation
   const handleUpdateInfomation = (value: UpdateUserDetailsValues) => {
     const jobs = value.jobs.map(({ jobName }: { jobName: string }) => jobName);
     const websites = value.websites.map(({ websiteName }: { websiteName: string }) => websiteName);
@@ -62,24 +69,36 @@ export default function UpdateUserDetailsForm() {
       additionalInfo: {
         jobs,
         websites,
-        // living: value.living,
-        // hometown: value.hometown,
+        living: value.living,
+        hometown: value.hometown,
       },
     };
+
+    console.log(userData);
 
     mutate(userData, {
       onSuccess: () => {
         toast({
-          title: 'Suscessfuly',
-          description: 'Update User Infomation suscessfuly',
+          title: 'Successfully',
+          description: 'User information updated successfully',
           className: 'w-[300px] md:w-auto',
         });
+      },
+      onError: (error) => {
+        setError(error.message);
       },
     });
   };
 
   return (
     <Form {...form}>
+      {/* Error alert */}
+      {error && (
+        <Alert variant='destructive'>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
       <form
         onSubmit={form.handleSubmit(handleUpdateInfomation, (error) => console.log(error))}
         className='max-w-[72.801rem]  space-y-6 '
@@ -88,10 +107,10 @@ export default function UpdateUserDetailsForm() {
         <FormField
           control={form.control}
           name='bio'
-          render={() => (
+          render={({ field }) => (
             <FormItem>
               <FormLabel className='flex items-center justify-between w-full gap-x-5'>
-                <span> Bio</span>
+                <span>Bio</span>
                 <span
                   className={cn('font-semibold text-muted-foreground', {
                     'text-destructive': form.getValues('bio').length > 201,
@@ -103,8 +122,8 @@ export default function UpdateUserDetailsForm() {
               <FormControl>
                 <div>
                   <BioEditor
-                    onChangeContent={(content) => form.setValue('bio', content)}
-                    content={form.watch('bio')}
+                    onChangeContent={(content) => field.onChange(content)}
+                    content={field.value}
                   />
                 </div>
               </FormControl>
@@ -113,7 +132,7 @@ export default function UpdateUserDetailsForm() {
           )}
         />
 
-        {/* <FormField
+        <FormField
           name='living'
           control={form.control}
           render={({ field }) => (
@@ -132,14 +151,14 @@ export default function UpdateUserDetailsForm() {
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Home town</FormLabel>
+              <FormLabel>Country</FormLabel>
               <FormControl>
                 <Input {...field} placeholder='Where are you from ?' />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
-        /> */}
+        />
 
         {/* Jobs Section */}
         <div className='space-y-4'>
@@ -168,7 +187,10 @@ export default function UpdateUserDetailsForm() {
             />
           ))}
           <Button
-            disabled={jobFieldArray.fields.length >= 5}
+            disabled={
+              jobFieldArray.fields.length >= 5 ||
+              jobFieldArray.fields.some((_, index) => !form.getValues(`jobs.${index}.jobName`))
+            }
             variant='ghost'
             type='button'
             className='w-full text-white bg-secondary'
@@ -205,7 +227,12 @@ export default function UpdateUserDetailsForm() {
             />
           ))}
           <Button
-            disabled={websiteFieldArray.fields.length >= 5}
+            disabled={
+              websiteFieldArray.fields.length >= 5 ||
+              websiteFieldArray.fields.some(
+                (_, index) => !form.getValues(`websites.${index}.websiteName`),
+              )
+            }
             variant='ghost'
             type='button'
             className='w-full text-white bg-secondary'
