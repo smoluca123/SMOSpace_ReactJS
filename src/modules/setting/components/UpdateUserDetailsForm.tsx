@@ -74,8 +74,6 @@ export default function UpdateUserDetailsForm() {
       },
     };
 
-    console.log(userData);
-
     mutate(userData, {
       onSuccess: () => {
         toast({
@@ -132,6 +130,7 @@ export default function UpdateUserDetailsForm() {
           )}
         />
 
+        {/* City Section */}
         <FormField
           name='living'
           control={form.control}
@@ -146,6 +145,7 @@ export default function UpdateUserDetailsForm() {
           )}
         />
 
+        {/* Country Section */}
         <FormField
           name='hometown'
           control={form.control}
