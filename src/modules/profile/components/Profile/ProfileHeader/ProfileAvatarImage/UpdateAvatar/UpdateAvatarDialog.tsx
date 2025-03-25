@@ -23,10 +23,10 @@ export default function UpdateProfileAvatarDialog({ isOpen, onClose, userData }:
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Are you absolutely sure?</DialogTitle>
+          <DialogTitle>Update avatar</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete your account and remove your
-            data from our servers.
+            Update your avatar to make your profile more personalized. Drag and drop your image here
+            or click to upload.
           </DialogDescription>
         </DialogHeader>
 

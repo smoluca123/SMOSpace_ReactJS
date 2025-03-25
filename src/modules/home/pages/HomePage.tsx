@@ -5,12 +5,17 @@ import GreetingAlert from '../components/GreetingAlert';
 import { useAppSelector } from '@/redux/hooks';
 import { selectAuth } from '@/redux/slices/authSlice';
 import { FirstPost } from '@/components/Posts/PostList';
+import { usePostSocket } from '@/hooks/usePostSocket';
+import HasNewPostButton from '@/components/HasNewPostButton';
 
 export default function HomePage() {
   const { user } = useAppSelector(selectAuth);
   const query = useGetPosts({ likeUserId: user?.id });
+  // Sử dụng socket hook cho posts
+  usePostSocket();
   return (
     <main className='overflow-hidden flex-1'>
+      <HasNewPostButton />
       <div className='flex-auto space-y-6'>
         <SubmitPostBox />
 

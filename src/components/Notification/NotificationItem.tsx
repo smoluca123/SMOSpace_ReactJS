@@ -6,20 +6,23 @@ export default function NotificationItem() {
   const isReaded = false;
 
   return (
-    <PopoverClose className='relative flex items-center w-full gap-4 p-4 text-left transition-colors duration-300 rounded-sm cursor-pointer hover:bg-accent'>
+    <PopoverClose className='flex relative gap-4 items-center p-4 w-full text-left rounded-sm transition-colors duration-300 cursor-pointer hover:bg-accent'>
       {/* Avatar */}
       <UserAvatar />
 
       {/* Notification content */}
-      <div className='flex-1 '>
-        <div className='items-center justify-between gap-3 md:flex'>
-          <div className=' line-clamp-2'>
-            <ProfileLink username={'nguyenvana'} className='inline-block font-bold text-foreground'>
+      <div className='flex-1'>
+        <div className='gap-3 justify-between items-center md:flex'>
+          <div className='line-clamp-2'>
+            <ProfileLink
+              username={'nguyenvana'}
+              className='inline-block font-semibold text-foreground'
+            >
               Nguyen Van An
             </ProfileLink>{' '}
             <span>comment on your post in HTML/CSS VietNam </span>
           </div>
-          <p className='ml-auto text-primary'>15m</p>
+          <p className='ml-auto text-sm text-primary'>15m</p>
         </div>
       </div>
 

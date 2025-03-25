@@ -1,4 +1,3 @@
-import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import './index.css';
@@ -10,12 +9,12 @@ import { TooltipProvider } from '@/components/ui/tooltip.tsx';
 import { Toaster } from '@/components/ui/toaster.tsx';
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Provider store={store}>
-      <TooltipProvider>
-        <App />
-        <Toaster />
-      </TooltipProvider>
-    </Provider>
-  </StrictMode>,
+  // <StrictMode>
+  <Provider store={store}>
+    <TooltipProvider>
+      <App />
+      <Toaster />
+    </TooltipProvider>
+  </Provider>,
+  // </StrictMode>,
 );

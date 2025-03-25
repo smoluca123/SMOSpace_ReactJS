@@ -1,3 +1,4 @@
+'use no memo';
 import LinkifyHashTag from '@/components/LinkifyHashTag';
 import UserAvatar from '@/components/UserAvatar';
 import useTimeDistance from '@/hooks/useTimeDistance';
@@ -16,8 +17,8 @@ export default function CommentItemLayout() {
         {/* User Avatar */}
         <UserAvatar avatarUrl={comment.author.avatar} fallbackName={comment.author.fullName} />
         {/* Comment Content */}
-        <div className='w-full space-y-2'>
-          <div className='flex items-center gap-2'>
+        <div className='space-y-2 w-full'>
+          <div className='flex gap-2 items-center'>
             {/* Comment Content */}
             <div className='p-3 rounded-lg bg-muted w-fit'>
               <ProfileLink username={comment.author.username}>
