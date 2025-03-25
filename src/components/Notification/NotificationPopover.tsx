@@ -13,7 +13,7 @@ export default function NotificationPopover() {
 
       <PopoverContent
         align='end'
-        className=' border-border border p-0 w-screen  sm:w-[27rem]  max-w-lg  '
+        className=' border-border border p-0 w-screen  sm:w-[25rem]  max-w-lg '
       >
         <Notification />
       </PopoverContent>

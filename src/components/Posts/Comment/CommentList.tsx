@@ -3,6 +3,7 @@ import CommentItem from '@/components/Posts/Comment/CommentItem';
 import CommentLoadingSkeletons from '@/components/Posts/Comment/CommentLoadingSkeletons';
 import CommentProvider from '@/components/Posts/Comment/CommentProvider';
 import { useGetComments } from '@/components/Posts/Comment/querys';
+import useCommentSocket from '@/hooks/useCommentSocket';
 import { usePostContext } from '@/hooks/usePostContext';
 import { UUID } from 'crypto';
 
@@ -14,6 +15,12 @@ export default function CommentList({
   showComments?: boolean;
 }) {
   const { post } = usePostContext();
+
+  useCommentSocket({
+    postId: post.id,
+    isSubscribed: showComments,
+  });
+
   const { data, isFetching, fetchNextPage, hasNextPage } = useGetComments({
     postId: post.id,
     replyTo,
@@ -46,7 +53,10 @@ export default function CommentList({
         </InfiniteScrollContainer>
       )}
 
-      {!data && !isFetching && <p className='text-center text-muted-foreground'>No comments yet</p>}
+      {/* No comments */}
+      {(!data || data.pages[0].items.length < 1) && !isFetching && (
+        <p className='text-center text-muted-foreground'>No comments yet</p>
+      )}
     </div>
   );
 }
