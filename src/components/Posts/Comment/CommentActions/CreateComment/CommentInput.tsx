@@ -26,7 +26,9 @@ export default function CommentInput({
   const { user } = useAppSelector(selectAuth);
   const [content, setContent] = useState('');
 
-  const { mutate: submitComment, isPending } = useSubmitCommentMutation({ isShowReplies });
+  const {
+    mutation: { mutate: submitComment, isPending },
+  } = useSubmitCommentMutation({ isShowReplies });
 
   const handleSubmit = () => {
     const values = commentSchema.parse({ content });
@@ -50,7 +52,7 @@ export default function CommentInput({
   if (!user) return null;
   return (
     <div>
-      <div className='flex items-center gap-2'>
+      <div className='flex gap-2 items-center'>
         <UserAvatar avatarUrl={user.avatar} fallbackName={user.fullName} />
         <CommentEditor content={content} onChangeContent={setContent} />
         <LoadingButton
