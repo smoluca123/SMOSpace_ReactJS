@@ -1,6 +1,6 @@
-import { IUserDataType } from '@/lib/types/interfaces';
+import type { IUserDataType } from '@/lib/types/interfaces';
 import UserMetaItem from './UserMetaItem';
-import { BriefcaseBusiness, Home, Link as LInkIcon, MapPin } from 'lucide-react';
+import { BriefcaseBusiness, Home, LinkIcon, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function UserAdditionalInfo({ user }: { user: IUserDataType }) {
@@ -26,20 +26,19 @@ export default function UserAdditionalInfo({ user }: { user: IUserDataType }) {
 
       {/* Jobs */}
       {jobs?.map((job, i) => (
-        <UserMetaItem icon={<BriefcaseBusiness size={20} />} key={i}>
+        <UserMetaItem key={`job-${i}`} icon={<BriefcaseBusiness size={20} />}>
           {job}
         </UserMetaItem>
       ))}
 
-      {/* Website */}
-      {websites &&
-        websites.map((url, i) => (
-          <UserMetaItem icon={<LInkIcon key={i} size={20} />}>
-            <Link className=' text-primary hover:underline' to={url}>
-              {url}
-            </Link>
-          </UserMetaItem>
-        ))}
+      {/* Websites */}
+      {websites?.map((url, i) => (
+        <UserMetaItem key={`website-${i}`} icon={<LinkIcon size={20} />}>
+          <Link className='text-primary hover:underline' to={url}>
+            {url}
+          </Link>
+        </UserMetaItem>
+      ))}
     </>
   );
 }
