@@ -21,6 +21,40 @@ export const commentSchema = z.object({
   content: requiredString('Content'),
 });
 
+export const updateUserDetailsSchema = z.object({
+  bio: z.string().max(201, 'You can not write more than 201 char'),
+  living: z.optional(z.string({ message: 'City not not Empty' })),
+  hometown: z.optional(z.string({ message: 'City not not Empty' })),
+  jobs: z.array(
+    z.object({
+      jobName: requiredString('JobName'),
+    }),
+  ),
+  websites: z.array(
+    z.object({
+      websiteName: requiredString('WebsiteName'),
+    }),
+  ),
+});
+
+export const updateUserInfomationSchema = z.object({
+  fullName: requiredString('Full name').max(30, { message: 'No one has a name that long' }),
+  username: requiredString('Username'),
+  phoneNumber: z
+    .optional(z.string().regex(/^(\+?[1-9]\d{0,14}|0\d{9})$/, 'Invalid phonenumber'))
+    .or(z.literal('')),
+  password: z.optional(z.string()),
+  birthDate: z.optional(z.date()),
+  email: requiredString('Email').email('Invalid email address'),
+  age: z.coerce
+    .number()
+    .int()
+    .max(130, { message: 'You age is too old' })
+    .min(10, 'Must be at least 10 years old'),
+});
+
 export type LoginValues = z.infer<typeof loginSchema>;
 export type RegisterValues = z.infer<typeof registerSchema>;
 export type CommentValues = z.infer<typeof commentSchema>;
+export type UpdateUserDetailsValues = z.infer<typeof updateUserDetailsSchema>;
+export type UpdateUserInfomationValues = z.infer<typeof updateUserInfomationSchema>;

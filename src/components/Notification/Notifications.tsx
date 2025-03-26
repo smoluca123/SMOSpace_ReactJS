@@ -6,7 +6,10 @@ export default function Notifications() {
     <div>
       <div className='space-y-2 pl-4 pb-2 max-h-[500px] overflow-auto '>
         {Array.from({ length: 10 }, (_, i) => (
-          <div className='pb-2 space-y-2 border-b last:border-none last:pb-0' key={i}>
+          <div
+            className='pb-2 space-y-2 border-b last:border-none last:pb-0'
+            key={Math.random() * i}
+          >
             <NotificationItem />
           </div>
         ))}
