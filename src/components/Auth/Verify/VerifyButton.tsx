@@ -8,12 +8,12 @@ import { selectAuth } from '@/redux/slices/authSlice';
 import { useToast } from '@/hooks/use-toast';
 
 // Component props interface
-interface IPops {
+interface IPorps {
   onVerified: () => void; // Callback function called after successful verification
   verifyCodeValue: string; // The verification code entered by user
 }
 
-export default function VerifyButton({ onVerified, verifyCodeValue, ...props }: IPops) {
+export default function VerifyButton({ onVerified, verifyCodeValue, ...props }: IPorps) {
   // Hooks
   const { mutate, isPending } = useActiveAccountMutation(); // Mutation hook for account verification
   const { user } = useAppSelector(selectAuth); // Get current user from Redux store
