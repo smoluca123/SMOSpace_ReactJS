@@ -97,3 +97,12 @@ export const blobToFile = (blob: Blob, fileName?: string) => {
   if (!fileName) fileName = Date.now() + '_' + 'image';
   return new File([blob], fileName, { type: blob.type });
 };
+
+export const handleMaskEmail = (email: string | undefined): string | undefined => {
+  if (!email) return;
+  const [local, domain] = email.split('@');
+  const visiblePart = local.slice(-2);
+  const fristChar = local.slice(0, 1);
+  const maskedPart = '*'.repeat(local.length - 3);
+  return fristChar + maskedPart + visiblePart + '@' + domain;
+};
