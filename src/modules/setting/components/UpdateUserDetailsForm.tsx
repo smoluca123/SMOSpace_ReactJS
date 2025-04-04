@@ -186,10 +186,12 @@ export default function UpdateUserDetailsForm() {
               )}
             />
           ))}
+
+          {/* Add job button */}
           <Button
             disabled={
               jobFieldArray.fields.length >= 5 ||
-              jobFieldArray.fields.some((_, index) => !form.getValues(`jobs.${index}.jobName`))
+              jobFieldArray.fields.some((_, index) => !form.watch(`jobs.${index}.jobName`))
             }
             variant='ghost'
             type='button'
@@ -226,11 +228,13 @@ export default function UpdateUserDetailsForm() {
               )}
             />
           ))}
+
+          {/* Add website button */}
           <Button
             disabled={
               websiteFieldArray.fields.length >= 5 ||
               websiteFieldArray.fields.some(
-                (_, index) => !form.getValues(`websites.${index}.websiteName`),
+                (_, index) => !form.watch(`websites.${index}.websiteName`),
               )
             }
             variant='ghost'
