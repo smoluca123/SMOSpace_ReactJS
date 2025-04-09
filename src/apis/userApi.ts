@@ -220,3 +220,72 @@ export const updateAvatarAPI = async ({ userId, imageFile }: { userId: UUID; ima
     throw error.message;
   }
 };
+
+export const sendVerificationCodeToEmamilAPI = async ({ userId }: { userId: UUID }) => {
+  try {
+    const { data } = await baseApi.post<IApiResponseWrapper<undefined>>(
+      '/user/active/send-verification-email/' + userId,
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const activeAccountAPI = async ({
+  userId,
+  verifyCode,
+}: {
+  userId: UUID;
+  verifyCode: string;
+}) => {
+  try {
+    const { data } = await baseApi.post<IApiResponseWrapper<IUserDataType>>(
+      '/user/active/' + userId,
+      {
+        verifyCode,
+      },
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const sendResetPasswordCodeToEmailAPI = async ({ userEmail }: { userEmail: string }) => {
+  try {
+    const { data } = await baseApi.post<IApiResponseWrapper<null>>(
+      '/user/forgot-password/send-verification-email/' + userEmail,
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const resetPasswordAPI = async ({
+  userEmail,
+  verifyCode,
+  password,
+}: {
+  userEmail: string;
+  verifyCode: string;
+  password: string;
+}) => {
+  try {
+    const { data } = await baseApi.post<IApiResponseWrapper<IUserDataType>>(
+      '/user/forgot-password/' + userEmail,
+      {
+        verifyCode,
+        password,
+      },
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
