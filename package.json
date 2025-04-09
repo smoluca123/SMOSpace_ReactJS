@@ -41,6 +41,7 @@
     "@tiptap/react": "^2.10.4",
     "@tiptap/starter-kit": "^2.10.4",
     "axios": "^1.7.7",
+    "babel-plugin-react-compiler": "^19.0.0-beta-a7bf2bd-20241110",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
