@@ -182,3 +182,57 @@ export interface ICroppedAreaType {
   x: number;
   y: number;
 }
+
+export interface INotificationType {
+  id: string;
+  isRead: boolean;
+  createdAt: string;
+  type: ITypeNotification;
+  priority: 'NORMAL';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  metadata: any;
+  content: INotificationContent;
+  entityType: 'FOLLOW' | 'COMMENT';
+  recipientId: string;
+  readAt: null;
+  sender: IUserDataType;
+}
+
+export interface IFollowNotificationType extends INotificationType {
+  metadata: IFollowNotificationMetadata;
+}
+
+export interface ICommentNotificationType extends INotificationType {
+  metadata: IMetadataComment;
+}
+
+interface INotificationContent {
+  title: string;
+  message: string;
+}
+
+interface IFollowNotificationMetadata {
+  follower: IMetadataFollower;
+}
+
+interface IMetadataFollower {
+  id: UUID;
+  avatar: string;
+  fullName: string;
+  username: string;
+}
+
+interface IMetadataComment {
+  postId: UUID;
+  commentId: UUID;
+  commentAuthor: {
+    avatar: string;
+    fullName: string;
+    username: string;
+  };
+}
+
+interface ITypeNotification {
+  id: string;
+  type: 'FOLLOW_USER' | 'REPLY_COMMENT' | 'COMMENT_POST';
+}

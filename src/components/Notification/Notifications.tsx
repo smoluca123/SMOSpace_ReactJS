@@ -1,22 +1,36 @@
-import { Loader2 } from 'lucide-react';
-import NotificationItem from './NotificationItem';
+import { FollowNotificationItem } from '@/components/Notification/EntityNotifications';
+import CommentNotificationItem from '@/components/Notification/EntityNotifications/CommentNotificationItem';
+import { IApiPaginationResponseWrapper, INotificationType } from '@/lib/types/interfaces';
+import { InfiniteData } from '@tanstack/react-query';
 
-export default function Notifications() {
+export default function Notifications({
+  data,
+}: {
+  data: InfiniteData<IApiPaginationResponseWrapper<INotificationType>['data']>;
+}) {
   return (
     <div>
-      <div className='space-y-2 pl-4 pb-2 max-h-[500px] overflow-auto '>
-        {Array.from({ length: 10 }, (_, i) => (
-          <div
-            className='pb-2 space-y-2 border-b last:border-none last:pb-0'
-            key={Math.random() * i}
-          >
-            <NotificationItem />
-          </div>
-        ))}
+      <div className='space-y-2 px-4 pb-2 max-h-[500px] overflow-auto '>
+        {data &&
+          data.pages.flatMap((pages) =>
+            pages.items.map((notification) => {
+              switch (notification.entityType) {
+                case 'FOLLOW':
+                  return (
+                    <FollowNotificationItem notification={notification} key={notification.id} />
+                  );
+                case 'COMMENT':
+                  return (
+                    <CommentNotificationItem notification={notification} key={notification.id} />
+                  );
+                default:
+                  return null;
+              }
+            }),
+          )}
+        {/* Loading */}
+        {/* {isFetching && <Loader2 className='mx-auto animate-spin text-primary' />} */}
       </div>
-
-      {/* Loading */}
-      <Loader2 className='mx-auto text-primary animate-spin' />
     </div>
   );
 }

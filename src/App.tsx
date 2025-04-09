@@ -7,9 +7,10 @@ import { NextUIProvider } from '@nextui-org/system';
 import AuthPage from '@/modules/auth/pages/AuthPage';
 import Login from '@/modules/auth/components/Login';
 import Register from '@/modules/auth/components/Register';
-import ReactQueryProvider from '@/components/ReactQueryProvider';
 import SearchPage from '@/modules/search/page';
 import ProfilePage from '@/modules/profile/pages/ProfilePage';
+import { GenneralSettingPage, ProfileSettingPage, SettingPage } from '@/modules/setting/pages';
+import useNotificationSocket from '@/hooks/useNotifiicationSocket';
 
 const router = createBrowserRouter(
   [
@@ -55,6 +56,22 @@ const router = createBrowserRouter(
       path: '/profile/:username',
       element: <ProfilePage />,
     },
+
+    // Settings page
+    {
+      path: '/settings',
+      element: <SettingPage />,
+      children: [
+        {
+          index: true,
+          element: <GenneralSettingPage />,
+        },
+        {
+          path: 'profile',
+          element: <ProfileSettingPage />,
+        },
+      ],
+    },
   ],
   {
     future: {
@@ -64,12 +81,11 @@ const router = createBrowserRouter(
 );
 
 function App() {
+  useNotificationSocket();
   return (
     <NextUIProvider>
       <ThemeProvider defaultTheme='dark'>
-        <ReactQueryProvider>
-          <RouterProvider router={router} future={{ v7_startTransition: true }} />
-        </ReactQueryProvider>
+        <RouterProvider router={router} future={{ v7_startTransition: true }} />
       </ThemeProvider>
     </NextUIProvider>
   );

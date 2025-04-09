@@ -1,4 +1,9 @@
-import { ICommentDataType, IPostDataWithLikedStatusType } from '@/lib/types/interfaces';
+import {
+  ICommentDataType,
+  INotificationType,
+  IPostDataWithLikedStatusType,
+  IUserWithAccessTokenType,
+} from '@/lib/types/interfaces';
 import { io, Socket } from 'socket.io-client';
 import env from './env';
 import { UUID } from 'crypto';
@@ -21,6 +26,14 @@ interface CommentClientToServerEvents {
   'comment:subscribeOnNewComment': ({ postId }: { postId: UUID }) => void;
 }
 
+interface NotificationServerToClientEvents {
+  'noti:new': (notification: INotificationType) => void;
+}
+
+interface NotificationClientToServerEvents {
+  'noti:subscribe': () => void;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface ClientToServerEvents {
   // Định nghĩa các event từ client gửi lên server nếu cần
@@ -33,9 +46,13 @@ export const createNamespaceSocket = <
 >(
   namespace: string,
 ) => {
+  const currentUser = JSON.parse(
+    localStorage.getItem('currentUser') || 'null',
+  ) as IUserWithAccessTokenType | null;
   return io(`${env.VITE_SOCKET_URL}/${namespace}`, {
     extraHeaders: {
       Authorization: `Bearer ${env.VITE_AUTHORIZATION_TOKEN}`,
+      accessToken: currentUser?.accessToken || '',
     },
     autoConnect: false,
   }) as Socket<SE, CE>;
@@ -45,9 +62,10 @@ export const createNamespaceSocket = <
 export const postSocket = createNamespaceSocket<PostServerToClientEvents, ClientToServerEvents>(
   'post',
 );
-export const notificationSocket = createNamespaceSocket<ServerToClientEvents, ClientToServerEvents>(
-  'notifications',
-);
+export const notificationSocket = createNamespaceSocket<
+  NotificationServerToClientEvents,
+  NotificationClientToServerEvents
+>('notification');
 export const commentSocket = createNamespaceSocket<
   CommentServerToClientEvents,
   CommentClientToServerEvents
