@@ -18,7 +18,7 @@ import ThemeToggleMenuItem from '@/components/UserButton/ThemeToggleMenuItem';
 import { IUserWithAccessTokenType } from '@/lib/types/interfaces';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { logout, selectAuth } from '@/redux/slices/authSlice';
-import { Coins, LogOut } from 'lucide-react';
+import { Coins, LogOut, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface UserButtonProps {
@@ -41,6 +41,12 @@ const UserMenuContent = ({
       Points: {user.credits}
     </DropdownMenuItemWithIcon>
 
+    <Link to='/settings'>
+      <DropdownMenuItemWithIcon Icon={Settings} className='h-12'>
+        Settings
+      </DropdownMenuItemWithIcon>
+    </Link>
+
     <DropdownMenuItemWithIcon
       Icon={LogOut}
       className='h-12'
@@ -53,8 +59,8 @@ const UserMenuContent = ({
 );
 
 const UserMenuItem = ({ user }: { user: IUserWithAccessTokenType }) => (
-  <DropdownMenuItem>
-    <ProfileLink username={user.username} className='flex gap-4 w-full'>
+  <DropdownMenuItem className='py-0'>
+    <ProfileLink username={user.username} className='flex gap-4 py-3 w-full'>
       <UserAvatar avatarUrl={user.avatar} fallbackName={user.fullName} className='size-5' />
       <NameWithBadge userData={user}>
         <NameWithVerifiedIcon isVerified={user.isVerified}>
@@ -109,7 +115,7 @@ export default function UserButton({ showName }: UserButtonProps) {
         </DropdownMenuTrigger>
       )}
 
-      <DropdownMenuContent className='w-[17rem]'>
+      <DropdownMenuContent className='w-[17rem] space-y-1'>
         {user ? <UserMenuContent user={user} onLogout={handleLogout} /> : <GuestMenuContent />}
         <DropdownMenuSeparator />
         <ThemeToggleMenuItem />

@@ -1,42 +1,52 @@
 import RefreshButton from '../RefreshButton';
 import { Loader2 } from 'lucide-react';
 import Notifications from './Notifications';
+import { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query';
+import { IApiPaginationResponseWrapper, INotificationType } from '@/lib/types/interfaces';
 
-export default function Notification() {
-  const haveNotification = true;
-  const pending = false;
-
+export default function Notification({
+  query,
+}: {
+  query: UseInfiniteQueryResult<
+    InfiniteData<IApiPaginationResponseWrapper<INotificationType>['data'], unknown>,
+    Error
+  >;
+}) {
+  const { data, isFetching, refetch, fetchNextPage, hasNextPage } = query;
   return (
-    <div className='w-full '>
+    <div className='w-full'>
       {/* Notification header */}
-      <NotificationHeader />
+      <NotificationHeader refetch={refetch} />
 
       {/* Notification loading */}
-      {pending && <NotificationLoader />}
+      {isFetching && <NotificationLoader />}
 
       {/* Display notification list */}
-      {haveNotification && !pending && <Notifications />}
+
+      {data && data.pages[0].items.length > 0 && !isFetching && (
+        <Notifications data={data} hasNextPage={hasNextPage} fetchNextPage={fetchNextPage} />
+      )}
 
       {/* Empty notification */}
-      {!haveNotification && !pending && <EmptyNotification />}
+      {(!data || data.pages[0].items.length === 0) && !isFetching && <EmptyNotification />}
     </div>
   );
 }
 
 // Sub-components
 
-const NotificationHeader = () => {
+const NotificationHeader = ({ refetch }: { refetch: () => void }) => {
   return (
-    <div className='flex  border-b-[1px] border-border mb-3 px-4 py-[10px] items-center justify-between w-full '>
-      <h1 className='text-lg font-bold '>Notifications</h1>
-      <RefreshButton />
+    <div className='flex border-b-[1px] border-border px-4 py-[10px] items-center justify-between w-full '>
+      <h1 className='text-lg font-bold'>Notifications</h1>
+      <RefreshButton onClick={refetch} />
     </div>
   );
 };
 
 const NotificationLoader = () => {
   return (
-    <div className='w-full my-2'>
+    <div className='my-2 w-full'>
       <Loader2 className='mx-auto animate-spin text-primary' />
     </div>
   );
@@ -44,13 +54,8 @@ const NotificationLoader = () => {
 
 const EmptyNotification = () => {
   return (
-    <>
-      {/* don't have request */}
-      <div className='text-center '>
-        <h1 className='my-5 text-xl font-semibold text-muted-foreground'>
-          You don{"'"}t have any notifications !
-        </h1>
-      </div>
-    </>
+    <div className='text-center'>
+      <h1 className='my-5 text-sm text-muted-foreground'>You don{"'"}t have any notifications !</h1>
+    </div>
   );
 };
