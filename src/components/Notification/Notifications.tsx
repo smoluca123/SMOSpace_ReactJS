@@ -1,3 +1,4 @@
+import InfiniteScrollContainer from '@/components/InfiniteScrollContainer';
 import { FollowNotificationItem } from '@/components/Notification/EntityNotifications';
 import CommentNotificationItem from '@/components/Notification/EntityNotifications/CommentNotificationItem';
 import { IApiPaginationResponseWrapper, INotificationType } from '@/lib/types/interfaces';
@@ -5,11 +6,22 @@ import { InfiniteData } from '@tanstack/react-query';
 
 export default function Notifications({
   data,
+  hasNextPage,
+  fetchNextPage,
 }: {
   data: InfiniteData<IApiPaginationResponseWrapper<INotificationType>['data']>;
+  hasNextPage: boolean;
+  fetchNextPage: () => void;
 }) {
   return (
-    <div>
+    <InfiniteScrollContainer
+      onBottomReached={() => {
+        if (hasNextPage) {
+          fetchNextPage();
+        }
+      }}
+      isShowInViewElement={hasNextPage}
+    >
       <div className='space-y-2 px-4 pb-2 max-h-[500px] overflow-auto '>
         {data &&
           data.pages.flatMap((pages) =>
@@ -31,6 +43,6 @@ export default function Notifications({
         {/* Loading */}
         {/* {isFetching && <Loader2 className='mx-auto animate-spin text-primary' />} */}
       </div>
-    </div>
+    </InfiniteScrollContainer>
   );
 }

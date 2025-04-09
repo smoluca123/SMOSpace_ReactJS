@@ -12,7 +12,7 @@ export default function Notification({
     Error
   >;
 }) {
-  const { data, isFetching, refetch } = query;
+  const { data, isFetching, refetch, fetchNextPage, hasNextPage } = query;
   return (
     <div className='w-full'>
       {/* Notification header */}
@@ -22,7 +22,10 @@ export default function Notification({
       {isFetching && <NotificationLoader />}
 
       {/* Display notification list */}
-      {data && data.pages[0].items.length > 0 && !isFetching && <Notifications data={data} />}
+
+      {data && data.pages[0].items.length > 0 && !isFetching && (
+        <Notifications data={data} hasNextPage={hasNextPage} fetchNextPage={fetchNextPage} />
+      )}
 
       {/* Empty notification */}
       {(!data || data.pages[0].items.length === 0) && !isFetching && <EmptyNotification />}
