@@ -86,7 +86,7 @@ export default function VerifyDialog() {
 
         <div className='space-y-4 text-muted-foreground'>
           <h1>
-            Clik on the <span className='text-foreground'>"Send verify code"</span> bellow to get a
+            Click on the <span className='text-foreground'>"Send verify code"</span> bellow to get a
             OTP via Email
           </h1>
           <div className='flex items-center gap-x-5'>

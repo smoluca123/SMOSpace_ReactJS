@@ -4,7 +4,6 @@ import LeftSide from '../LeftSide';
 import welcomeImage from '@/assets/imgs/welcome.jpg';
 import ForgetPasswordForm from '@/components/Auth/ForgetPassword/ForgetPasswordForm';
 import ResetPasswordForm from '@/components/Auth/ForgetPassword/ResetPasswordForm';
-import VerifyEmailForm from '@/components/Auth/ForgetPassword/VerifyEmailForm';
 
 // Import hooks
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
@@ -29,9 +28,13 @@ export default function ForgetPassword() {
 // Right side component containing the forms
 function RightSide() {
   // Initial step
-  const { currentStep, stepController, canGoToNextStep, canGoToPreviousStep } = useStep();
+  const { currentStep, stepController, canGoToNextStep, canGoToPreviousStep } = useStep(2);
   const { nextStep, prevStep } = stepController;
   const navigate = useNavigate();
+
+  const [searchParams] = useSearchParams();
+  const fromParam = encodeURIComponent(searchParams.get('from') || '');
+  const from = fromParam ? `?from=${fromParam}` : '';
 
   // Step pages
   const forgetPasswordPage = currentStep === 1 && (
@@ -41,14 +44,7 @@ function RightSide() {
     </>
   );
 
-  const verifyEmailPage = currentStep === 2 && (
-    <>
-      <VerifyEmailTitle />
-      <VerifyEmailForm stepController={stepController} />
-    </>
-  );
-
-  const resetPasswordPage = currentStep === 3 && (
+  const resetPasswordPage = currentStep === 2 && (
     <>
       <ResetPasswordTitle />
       <ResetPasswordForm stepController={stepController} />
@@ -62,9 +58,6 @@ function RightSide() {
         {forgetPasswordPage}
 
         {/* Step 2: Verify email */}
-        {verifyEmailPage}
-
-        {/* Step 3: Reset password */}
         {resetPasswordPage}
 
         <Separator />
@@ -91,6 +84,16 @@ function RightSide() {
             <ArrowRight />
           </Button>
         </div>
+
+        {/* Register link */}
+        <div className='text-center'>
+          <p className='text-base  inline text-muted-foreground tracking-[0.57px]'>
+            If you don't have an account ?{' '}
+          </p>
+          <Link to={`/auth/register${from}`} className='inline font-semibold hover:underline'>
+            Register now !
+          </Link>
+        </div>
       </div>
     </div>
   );
@@ -98,32 +101,12 @@ function RightSide() {
 
 // Title component for forget password step
 function ForgetPasswordTitle() {
-  const [searchParams] = useSearchParams();
-  const fromParam = encodeURIComponent(searchParams.get('from') || '');
-  const from = fromParam ? `?from=${fromParam}` : '';
-
   return (
     <>
       <AppLogo wrapperClassName='mx-auto ' className='mb-10 lg:hidden' />
       <div className='space-y-2 '>
         <h1 className='font-bold text-[clamp(24px,5vw,44px)]'>Forget password ?</h1>
-        <p className='text-base inline text-muted-foreground tracking-[0.57px]'>
-          If you don't have an account ?{' '}
-        </p>
-        <Link to={`/auth/register${from}`} className='inline font-semibold hover:underline'>
-          Register now !
-        </Link>
       </div>
-    </>
-  );
-}
-
-// Title component for email verification step
-function VerifyEmailTitle() {
-  return (
-    <>
-      <AppLogo wrapperClassName='mx-auto ' className='mb-10 lg:hidden' />
-      <h1 className='font-bold text-[clamp(24px,5vw,44px)]'>Check you email</h1>
     </>
   );
 }
@@ -134,6 +117,10 @@ function ResetPasswordTitle() {
     <>
       <AppLogo wrapperClassName='mx-auto ' className='mb-10 lg:hidden' />
       <h1 className='font-bold text-[clamp(24px,5vw,44px)]'>Enter you new password</h1>
+      <h1 className='text-muted-foreground'>
+        If you don't see any verifycode in you email , click on the{' '}
+        <span className='text-foreground'>"Send verify code"</span> bellow to get a OTP via Email
+      </h1>
     </>
   );
 }

@@ -1,4 +1,3 @@
-// Disable memo optimization
 'use no memo';
 
 // Import necessary dependencies
@@ -20,7 +19,6 @@ export default function ForgetPasswordForm({
   // Destructure step controller methods
   const { completeStep, nextStep } = stepController;
 
-  // Get and set URL search parameters
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Initialize form with react-hook-form

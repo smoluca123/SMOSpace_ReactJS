@@ -38,6 +38,14 @@ export default function useStep(totalStep?: number) {
     resetStep: () => {
       setStep((prev) => ({ ...prev, completeStep: 0, currentStep: 1 }));
     },
+
+    directToStep: (step: number) => {
+      setStep((prew) => ({
+        ...prew,
+        currentStep: step,
+        completeStep: step - 1,
+      }));
+    },
   };
 
   return {
@@ -57,4 +65,5 @@ export type StepControllerType = {
   prevStep: () => void;
   completeStep: () => void;
   resetStep: () => void;
+  directToStep: (step: number) => void;
 };
