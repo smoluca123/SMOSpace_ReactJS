@@ -11,6 +11,7 @@ import SearchPage from '@/modules/search/page';
 import ProfilePage from '@/modules/profile/pages/ProfilePage';
 import { GenneralSettingPage, ProfileSettingPage, SettingPage } from '@/modules/setting/pages';
 import useNotificationSocket from '@/hooks/useNotifiicationSocket';
+import ForgetPassword from '@/modules/auth/components/ForgetPassword';
 
 const router = createBrowserRouter(
   [
@@ -43,6 +44,10 @@ const router = createBrowserRouter(
         {
           path: 'register',
           element: <Register />,
+        },
+        {
+          path: 'forget-password',
+          element: <ForgetPassword />,
         },
       ],
     },

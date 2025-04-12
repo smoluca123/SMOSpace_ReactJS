@@ -12,7 +12,7 @@ import { UUID } from 'crypto';
 
 export const getMyFollowersQueryKey = ['followers', 'me'];
 
-export function useGetMyFollowersQuery() {
+export function useGetMyFollowersQuery(options?: { enabled?: boolean }) {
   const getMyFollowers = async ({ page, limit }: IPaginationParamsType) => {
     try {
       const { data } = await getMyFollowersAPI({ page, limit });
@@ -31,6 +31,7 @@ export function useGetMyFollowersQuery() {
       firstPage.hasPreviousPage ? firstPage.currentPage - 1 : undefined,
     staleTime: 1000 * 60 * 5, // 5 minutes
     initialPageParam: 1,
+    enabled: options?.enabled ?? true,
   });
   return query;
 }

@@ -3,12 +3,14 @@
 // Import necessary dependencies
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '../../ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../ui/form';
 import { Input } from '../../ui/input';
 import { forgetPasswordSchema, ForgetPasswordValues } from '@/lib/validations';
 import { useSearchParams } from 'react-router-dom';
 import { StepControllerType } from '@/hooks/useStep';
+import { useSendResetPasswordCodeToEmailMutation } from '@/components/Auth/ForgetPassword/mutations';
+import { toast } from '@/hooks/use-toast';
+import LoadingButton from '@/components/LoadingButton';
 
 // ForgetPasswordForm component for handling password recovery
 export default function ForgetPasswordForm({
@@ -20,6 +22,8 @@ export default function ForgetPasswordForm({
   const { completeStep, nextStep } = stepController;
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const { mutate: sendVerifyCodeToEmailMutate, isPending } =
+    useSendResetPasswordCodeToEmailMutation();
 
   // Initialize form with react-hook-form
   const form = useForm<ForgetPasswordValues>({
@@ -34,8 +38,23 @@ export default function ForgetPasswordForm({
   const onSubmit = (values: ForgetPasswordValues) => {
     // Add email to search params
     setSearchParams({ email: values.identifier });
-    nextStep();
-    completeStep();
+    sendVerifyCodeToEmailMutate(
+      { userEmail: values.identifier },
+      {
+        onSuccess: () => {
+          nextStep();
+          completeStep();
+        },
+        onError: (error) => {
+          toast({
+            title: 'Error',
+            description: error.message,
+            variant: 'destructive',
+            duration: 3000,
+          });
+        },
+      },
+    );
   };
 
   // Render form component
@@ -58,7 +77,9 @@ export default function ForgetPasswordForm({
             )}
           />
           {/* Submit button */}
-          <Button className='w-full mt-3'>Recover</Button>
+          <LoadingButton className='mt-3 w-full' loading={isPending}>
+            Recover
+          </LoadingButton>
         </form>
       </Form>
     </div>
