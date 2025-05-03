@@ -1,4 +1,4 @@
-const { nextui } = require('@nextui-org/theme');
+const { heroui } = require("@heroui/theme");
 import fluid, { extract, screens, fontSize } from 'fluid-tailwind';
 import tailwindcssTextShadow from '@designbycode/tailwindcss-text-shadow';
 
@@ -9,7 +9,7 @@ export default {
     files: [
       './index.html',
       './src/**/*.{js,ts,jsx,tsx}',
-      './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
+      './node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}',
     ],
     extract,
   },
@@ -76,5 +76,5 @@ export default {
       },
     },
   },
-  plugins: [require('tailwindcss-animate'), nextui(), fluid, tailwindcssTextShadow],
+  plugins: [require('tailwindcss-animate'), heroui(), fluid, tailwindcssTextShadow],
 };

@@ -107,7 +107,6 @@ export const getUserFollowingsAPI = async ({
         },
       },
     );
-    console.log(data);
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;
@@ -212,6 +211,28 @@ export const updateAvatarAPI = async ({ userId, imageFile }: { userId: UUID; ima
 
     const { data } = await baseApi.post<IApiResponseWrapper<IUserDataType>>(
       `/user/avatar/${userId}`,
+      formData,
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const updateCoverImageAPI = async ({
+  userId,
+  imageFile,
+}: {
+  userId: UUID;
+  imageFile: File;
+}) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', imageFile);
+
+    const { data } = await baseApi.post<IApiResponseWrapper<IUserDataType>>(
+      `/user/cover-image/${userId}`,
       formData,
     );
     return data;

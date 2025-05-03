@@ -7,6 +7,7 @@ import useCommentContext from '@/hooks/useCommentContext';
 import ProfileLink from '@/components/ProfileLink';
 import NameWithVerifiedIcon from '@/components/NameWithVerifiedIcon';
 import CommentMoreButton from '@/components/Posts/Comment/CommentActions/CommentMoreButton';
+import NameWithBadge from '@/components/NameWithBadge';
 
 export default function CommentItemLayout() {
   const { comment, setIsShowReplyInput, isShowReplies, setIsShowReplies } = useCommentContext();
@@ -22,9 +23,11 @@ export default function CommentItemLayout() {
             {/* Comment Content */}
             <div className='p-3 rounded-lg bg-muted w-fit'>
               <ProfileLink username={comment.author.username}>
-                <NameWithVerifiedIcon isVerified={comment.author.isVerified}>
-                  <p className='~text-sm font-medium'>{comment.author.fullName}</p>
-                </NameWithVerifiedIcon>
+                <NameWithBadge userData={comment.author}>
+                  <NameWithVerifiedIcon isVerified={comment.author.isVerified}>
+                    <p className='~text-sm font-medium'>{comment.author.fullName}</p>
+                  </NameWithVerifiedIcon>
+                </NameWithBadge>
               </ProfileLink>
               <LinkifyHashTag>
                 <article className='~text-sm/base'>{parse(comment.content)}</article>

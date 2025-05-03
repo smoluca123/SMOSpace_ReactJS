@@ -60,6 +60,15 @@ const authSlice = createSlice({
         localStorage.setItem('currentUser', JSON.stringify(state.user));
       }
     },
+    decreaseUserCredits(state, { payload = 1 }: { payload: number }) {
+      if (state.user) {
+        state.user = {
+          ...state.user,
+          credits: state.user.credits - payload,
+        };
+        localStorage.setItem('currentUser', JSON.stringify(state.user));
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -89,5 +98,5 @@ const authSlice = createSlice({
 });
 
 export const { reducer: authReducer } = authSlice;
-export const { logout, updateUser, updateUserCredits } = authSlice.actions;
+export const { logout, updateUser, updateUserCredits, decreaseUserCredits } = authSlice.actions;
 export const selectAuth = (state: RootState) => state.auth;

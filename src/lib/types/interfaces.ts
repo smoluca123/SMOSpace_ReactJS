@@ -87,6 +87,39 @@ export interface IUserSessionType {
   expiresAt: string;
 }
 
+export interface IMediaDataType {
+  data: {
+    id: string;
+    url: string;
+    type: string;
+    size: number;
+    format: string;
+    createdAt: string;
+    updatedAt: string;
+    height: null;
+    width: null;
+    duration: null;
+    uploadedFile: IUploadedFileType;
+  };
+  url: string;
+}
+
+interface IUploadedFileType {
+  $metadata: IUploadedFileMetadataType;
+  ETag: string;
+  VersionId: string;
+  Bucket: string;
+  Key: string;
+  Location: string;
+}
+
+interface IUploadedFileMetadataType {
+  httpStatusCode: number;
+  requestId: string;
+  attempts: number;
+  totalRetryDelay: number;
+}
+
 export interface IPostDataType {
   id: UUID;
   content: string;
@@ -96,6 +129,7 @@ export interface IPostDataType {
   isPrivate: boolean;
   likeCount: number;
   commentCount: number;
+  media: IMediaDataType[];
   author: IUserDataType;
 }
 

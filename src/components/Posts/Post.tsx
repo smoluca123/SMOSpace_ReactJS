@@ -14,9 +14,12 @@ import PostEngagementMetrics from '@/components/Posts/PostEngagementMetrics';
 import NameWithVerifiedIcon from '@/components/NameWithVerifiedIcon';
 import { CommentBox } from '@/components/Posts/Comment';
 import NameWithBadge from '@/components/NameWithBadge';
+import PostMedia from '@/components/Posts/PostMedia';
 
-export default function Post() {
+export default function Post({ isExpanded = false }: { isExpanded?: boolean }) {
   const { post, displayCommentBox } = usePostContext();
+  const limit = Math.min(post.content.length, 500);
+  const shortContent = post.content.slice(0, limit);
 
   return (
     <ContentWrapper className=''>
@@ -27,8 +30,18 @@ export default function Post() {
 
         {/* Post Content */}
         <div className='whitespace-pre-line break-words'>
-          <LinkifyHashTag>{parser(post.content)}</LinkifyHashTag>
+          <LinkifyHashTag>
+            {parser(
+              isExpanded || post.content.length <= limit ? post.content : `${shortContent}...`,
+            )}
+            {!isExpanded && post.content.length > limit && (
+              <Link to={`/post/${post.id}`} className='font-semibold text-primary hover:underline'>
+                Read More
+              </Link>
+            )}
+          </LinkifyHashTag>
         </div>
+        <PostMedia media={post.media} />
 
         {/* Post Engagement Metrics */}
         <PostEngagementMetrics />
@@ -69,7 +82,7 @@ function PostHeader() {
           <div className='flex gap-2 items-center'>
             {/* Post Date */}
             <Link
-              to={`/posts/${post.id}`}
+              to={`/post/${post.id}`}
               className='block text-sm text-muted-foreground hover:underline'
             >
               {formatRelativeDate(new Date(post.createdAt))}

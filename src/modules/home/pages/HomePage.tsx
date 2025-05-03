@@ -1,18 +1,9 @@
-import { PostList } from '@/components/Posts';
-import { useGetPosts } from '@/components/Posts/querys';
 import SubmitPostBox from '@/modules/home/components/SubmitPostBox';
 import GreetingAlert from '../components/GreetingAlert';
-import { useAppSelector } from '@/redux/hooks';
-import { selectAuth } from '@/redux/slices/authSlice';
-import { FirstPost } from '@/components/Posts/PostList';
-import { usePostSocket } from '@/hooks/usePostSocket';
 import HasNewPostButton from '@/components/HasNewPostButton';
+import PostTabs from '@/modules/home/components/PostTabs';
 
 export default function HomePage() {
-  const { user } = useAppSelector(selectAuth);
-  const query = useGetPosts({ likeUserId: user?.id });
-  // Sử dụng socket hook cho posts
-  usePostSocket();
   return (
     <main className='overflow-hidden flex-1'>
       <HasNewPostButton />
@@ -21,10 +12,7 @@ export default function HomePage() {
 
         <GreetingAlert />
 
-        {/* First Post */}
-        <FirstPost />
-
-        <PostList infinitePostData={query} skipFirstPost={true} />
+        <PostTabs />
       </div>
     </main>
   );

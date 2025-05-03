@@ -1,4 +1,4 @@
-import { getAllPostsAPI, getMyPostsAPI } from '@/apis/postApi';
+import { getAllPostsAPI, getFollowingPostsAPI, getMyPostsAPI } from '@/apis/postApi';
 import { QueryKey, useInfiniteQuery } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 
@@ -42,6 +42,58 @@ export function useGetPosts(
       userId,
     }),
     queryFn: ({ pageParam }) => getPosts({ page: pageParam }),
+    maxPages: 5,
+    getPreviousPageParam: ({ hasPreviousPage, currentPage }) =>
+      hasPreviousPage ? currentPage - 1 : undefined,
+    getNextPageParam: ({ hasNextPage, currentPage }) => (hasNextPage ? currentPage + 1 : undefined),
+    initialPageParam: 1,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchInterval: 1000 * 60 * 5, // 5 minutes
+    enabled: options?.enabled || true,
+  });
+  return query;
+}
+
+export const getFollowingPostsQueryKey = ({
+  likeUserId,
+  keywords,
+  userId,
+}: {
+  likeUserId?: UUID;
+  keywords?: string;
+  userId?: UUID;
+}): QueryKey => ['posts', 'following', { likeUserId, keywords, userId }];
+
+export function useGetFollowingPosts(
+  {
+    likeUserId,
+    keywords,
+    userId,
+  }: {
+    likeUserId?: UUID;
+    keywords?: string;
+    userId?: UUID;
+  },
+  options?: {
+    enabled?: boolean;
+  },
+) {
+  const getFollowingPosts = async ({ page }: { page?: number }) => {
+    try {
+      const data = await getFollowingPostsAPI({ page, likeUserId, keywords });
+      return data.data;
+    } catch (error) {
+      console.log(error);
+      throw new Error(error as string);
+    }
+  };
+  const query = useInfiniteQuery({
+    queryKey: getFollowingPostsQueryKey({
+      likeUserId,
+      keywords,
+      userId,
+    }),
+    queryFn: ({ pageParam }) => getFollowingPosts({ page: pageParam }),
     maxPages: 5,
     getPreviousPageParam: ({ hasPreviousPage, currentPage }) =>
       hasPreviousPage ? currentPage - 1 : undefined,

@@ -2,8 +2,8 @@ import NameWithBadge from '@/components/NameWithBadge';
 import NameWithVerifiedIcon from '@/components/NameWithVerifiedIcon';
 import { useProfileContext } from '@/hooks/useProfileContext';
 import { ProfileCoverImage } from '@/modules/profile/components/Profile/ProfileHeader';
-import { EditProfileButton } from '@/modules/profile/components/Profile/ProfileHeader/EditProfile';
 import ProfileAvatarImage from '@/modules/profile/components/Profile/ProfileHeader/ProfileAvatarImage';
+import { EditCoverImageButton } from '@/modules/profile/components/Profile/ProfileHeader/ProfileCoverImage';
 
 export default function ProfileHeader() {
   const { userData, isMe } = useProfileContext();
@@ -35,7 +35,7 @@ export default function ProfileHeader() {
         {/* Edit Profile Button */}
         {isMe && (
           <div className='absolute right-10 bottom-10'>
-            <EditProfileButton />
+            <EditCoverImageButton />
           </div>
         )}
       </div>

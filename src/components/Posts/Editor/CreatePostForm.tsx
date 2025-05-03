@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 export default function CreatePostForm({ onCloseDialog }: { onCloseDialog: () => void }) {
   const [editorContent, setEditorContent] = useState('');
+  const [media, setMedia] = useState<File[]>([]);
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
   const { mutate, isPending } = useSubmitPostMutaion();
 
@@ -14,10 +15,12 @@ export default function CreatePostForm({ onCloseDialog }: { onCloseDialog: () =>
       {
         content: editorContent,
         isPrivate,
+        images: media,
       },
       {
         onSuccess: () => {
           setEditorContent('');
+          setMedia([]);
           toast({
             title: 'Post submitted!',
             description: 'Your post has been successfully posted.',
@@ -30,12 +33,14 @@ export default function CreatePostForm({ onCloseDialog }: { onCloseDialog: () =>
   };
 
   return (
-    <div className='space-y-4 overflow-x-hidden'>
+    <div className='overflow-x-hidden space-y-4'>
       <PostEditor
         isPrivate={isPrivate}
         content={editorContent}
         onChangeContent={setEditorContent}
         onChangeIsPrivate={setIsPrivate}
+        onChangeMedia={setMedia}
+        media={media}
       />
       <LoadingButton
         loading={isPending}

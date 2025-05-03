@@ -3,7 +3,7 @@ import './App.css';
 import HomePage from '@/modules/home/pages/HomePage';
 import MainLayout from '@/components/layouts/MainLayout';
 import { ThemeProvider } from '@/components/ThemeProvider';
-import { NextUIProvider } from '@nextui-org/system';
+import { HeroUIProvider } from '@heroui/system';
 import AuthPage from '@/modules/auth/pages/AuthPage';
 import Login from '@/modules/auth/components/Login';
 import Register from '@/modules/auth/components/Register';
@@ -12,6 +12,7 @@ import ProfilePage from '@/modules/profile/pages/ProfilePage';
 import { GenneralSettingPage, ProfileSettingPage, SettingPage } from '@/modules/setting/pages';
 import useNotificationSocket from '@/hooks/useNotifiicationSocket';
 import ForgetPassword from '@/modules/auth/components/ForgetPassword';
+import PostDetailPage from '@/modules/post-detail/pages/PostDetailPage';
 
 const router = createBrowserRouter(
   [
@@ -29,6 +30,11 @@ const router = createBrowserRouter(
         {
           path: '/search',
           element: <SearchPage />,
+        },
+        // Post detail page
+        {
+          path: '/post/:postId',
+          element: <PostDetailPage />,
         },
       ],
     },
@@ -88,11 +94,11 @@ const router = createBrowserRouter(
 function App() {
   useNotificationSocket();
   return (
-    <NextUIProvider>
+    <HeroUIProvider>
       <ThemeProvider defaultTheme='dark'>
         <RouterProvider router={router} future={{ v7_startTransition: true }} />
       </ThemeProvider>
-    </NextUIProvider>
+    </HeroUIProvider>
   );
 }
 
