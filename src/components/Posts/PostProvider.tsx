@@ -5,13 +5,24 @@ import { useState } from 'react';
 export function PostProvider({
   children,
   post,
+  isRedirectWhenDeleteInitial,
 }: {
   children: React.ReactNode;
   post: IPostDataWithLikedStatusType;
+  isRedirectWhenDeleteInitial: boolean;
 }) {
   const [displayCommentBox, setDisplayCommentBox] = useState(false);
+  const [isRedirectWhenDelete, setIsRedirectWhenDelete] = useState(isRedirectWhenDeleteInitial);
   return (
-    <PostContext.Provider value={{ post, displayCommentBox, setDisplayCommentBox }}>
+    <PostContext.Provider
+      value={{
+        post,
+        displayCommentBox,
+        setDisplayCommentBox,
+        isRedirectWhenDelete,
+        setIsRedirectWhenDelete,
+      }}
+    >
       {children}
     </PostContext.Provider>
   );

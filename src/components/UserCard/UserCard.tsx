@@ -51,7 +51,7 @@ export default function UserCard() {
             <Dot />
             <p>{user.postCount} Posts</p>
             <Dot />
-            <p>{user.followingCount} Following</p>
+            <p>{user.friendCount} Friends</p>
           </div>
           <div className='flex gap-2 justify-center items-center'>
             {isLoadingFollowers &&

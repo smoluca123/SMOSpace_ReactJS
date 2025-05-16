@@ -37,7 +37,7 @@ export default function UpdatePostForm({ onCloseDialog }: { onCloseDialog: () =>
 
   if (!user) return null;
   return (
-    <div className='space-y-4 overflow-x-hidden'>
+    <div className='overflow-x-hidden space-y-4'>
       <PostEditor
         content={editorContent}
         onChangeContent={setEditorContent}

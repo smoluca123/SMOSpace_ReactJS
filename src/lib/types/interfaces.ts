@@ -63,8 +63,13 @@ export interface IUserDataType {
   credits: number;
   followerCount: number;
   followingCount: number;
+  friendCount: number;
   postCount: number;
   additionalInfo: IAdditionalInfoType | null;
+}
+
+export interface IUserDataTypeWithFriendStatus extends IUserDataType {
+  friend: IFriendRequestWithFriendDataType;
 }
 
 export interface IUserDataWithFollowedStatusType extends IUserDataType {
@@ -269,4 +274,19 @@ interface IMetadataComment {
 interface ITypeNotification {
   id: string;
   type: 'FOLLOW_USER' | 'REPLY_COMMENT' | 'COMMENT_POST';
+}
+
+export interface IFriendRequestDataType {
+  id: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IFriendRequestWithUserDataType extends IFriendRequestDataType {
+  user: IUserDataType;
+}
+
+export interface IFriendRequestWithFriendDataType extends IFriendRequestDataType {
+  friend: IUserDataType;
 }

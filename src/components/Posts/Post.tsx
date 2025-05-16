@@ -23,7 +23,7 @@ export default function Post({ isExpanded = false }: { isExpanded?: boolean }) {
 
   return (
     <ContentWrapper className=''>
-      {post.id}
+      {/* {post.id} */}
       <article className='space-y-3 shadow-sm group/post'>
         {/* Post Header */}
         <PostHeader />

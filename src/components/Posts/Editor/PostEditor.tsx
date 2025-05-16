@@ -190,8 +190,8 @@ export default function PostEditor({
   content: string;
   onChangeContent: React.Dispatch<React.SetStateAction<string>>;
   onChangeIsPrivate: (isPrivate: boolean) => void;
-  media: File[];
-  onChangeMedia: React.Dispatch<React.SetStateAction<File[]>>;
+  media?: File[];
+  onChangeMedia?: React.Dispatch<React.SetStateAction<File[]>>;
 }) {
   const { user } = useAppSelector(selectAuth);
 
@@ -244,7 +244,7 @@ export default function PostEditor({
       </div>
 
       {/* Post Media */}
-      <PostMedia media={media} onChangeMedia={onChangeMedia} />
+      {media && onChangeMedia && <PostMedia media={media} onChangeMedia={onChangeMedia} />}
 
       <Separator />
       {/* Features */}

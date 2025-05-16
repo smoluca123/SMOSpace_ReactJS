@@ -13,6 +13,7 @@ import { GenneralSettingPage, ProfileSettingPage, SettingPage } from '@/modules/
 import useNotificationSocket from '@/hooks/useNotifiicationSocket';
 import ForgetPassword from '@/modules/auth/components/ForgetPassword';
 import PostDetailPage from '@/modules/post-detail/pages/PostDetailPage';
+import FriendsPage from '@/modules/friends/pages/FriendsPage';
 
 const router = createBrowserRouter(
   [
@@ -35,6 +36,12 @@ const router = createBrowserRouter(
         {
           path: '/post/:postId',
           element: <PostDetailPage />,
+        },
+
+        // Friends page
+        {
+          path: '/friends',
+          element: <FriendsPage />,
         },
       ],
     },
