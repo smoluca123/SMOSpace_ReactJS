@@ -12,25 +12,34 @@ interface IProps {
   isOpen: boolean;
   onClose: () => void;
   userData: IUserDataType;
+  mode: 'edit' | 'upload';
 }
 
-export default function UpdateProfileAvatarDialog({ isOpen, onClose, userData }: IProps) {
+export default function UpdateProfileAvatarDialog({ isOpen, onClose, userData, mode }: IProps) {
   const handleOpenChange = (open: boolean) => {
     if (!open) onClose();
   };
+
+  const dialogTitle = mode === 'edit' ? 'Edit avatar' : 'Upload new avatar';
+  const dialogDescription =
+    mode === 'edit'
+      ? 'Edit your current avatar to make adjustments.'
+      : 'Upload a new avatar to make your profile more personalized. Drag and drop your image here or click to upload.';
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Update avatar</DialogTitle>
-          <DialogDescription>
-            Update your avatar to make your profile more personalized. Drag and drop your image here
-            or click to upload.
-          </DialogDescription>
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogDescription>{dialogDescription}</DialogDescription>
         </DialogHeader>
 
-        <UpdateAvatarForm userData={userData} onClose={onClose} />
+        <UpdateAvatarForm
+          userData={userData}
+          onClose={onClose}
+          mode={mode}
+          initialImage={mode === 'edit' ? userData.avatar : undefined}
+        />
       </DialogContent>
     </Dialog>
   );

@@ -46,6 +46,53 @@ export const getAllPostsAPI = async ({
   }
 };
 
+export const getPostAPI = async ({ postId, likeUserId }: { postId: UUID; likeUserId?: UUID }) => {
+  try {
+    const { data } = await baseApi.get<IApiResponseWrapper<IPostDataWithLikedStatusType>>(
+      `/post/${postId}`,
+      {
+        params: {
+          likeUserId,
+        },
+      },
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const getFollowingPostsAPI = async ({
+  page = 1,
+  limit = 10,
+  keywords,
+  likeUserId,
+}: {
+  page?: number;
+  limit?: number;
+  keywords?: string;
+  likeUserId?: UUID;
+}) => {
+  try {
+    const { data } = await baseApi.get<IApiPaginationResponseWrapper<IPostDataWithLikedStatusType>>(
+      '/post/following-posts',
+      {
+        params: {
+          page,
+          limit,
+          keywords,
+          likeUserId,
+        },
+      },
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
 export const getMyPostsAPI = async ({
   page = 1,
   limit = 10,
@@ -76,15 +123,20 @@ export const getMyPostsAPI = async ({
 export const submitPostAPI = async ({
   content,
   isPrivate = false,
+  images,
 }: {
   content: string;
   isPrivate?: boolean;
+  images: File[];
 }) => {
   try {
-    const { data } = await baseApi.post<IApiResponseWrapper<IPostDataType>>('/post', {
-      content,
-      isPrivate,
+    const formData = new FormData();
+    formData.append('content', content);
+    formData.append('isPrivate', isPrivate.toString());
+    images.forEach((file) => {
+      formData.append('images', file);
     });
+    const { data } = await baseApi.post<IApiResponseWrapper<IPostDataType>>('/post', formData);
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;

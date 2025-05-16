@@ -21,8 +21,7 @@ export default function GreetingAlert() {
         <h1 className='font-bold'>
           {isMorning && 'Good morning'}
           {isAfternoon && 'Good afternoon'}
-          {isEvening && 'Good evening'}
-          {user?.fullName || 'Guest'}
+          {isEvening && 'Good evening'} {user?.fullName || 'Guest'}
         </h1>
         {/* Display motivational message based on time */}
         <p className='text-sm mt-[2px]'>

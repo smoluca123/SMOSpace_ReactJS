@@ -3,9 +3,14 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import Notification from './Notification';
 import { useGetNotifications } from '@/components/Notification/querys';
 import NotificationDot from '@/components/Notification/NotificationDot';
+import { useAppSelector } from '@/redux/hooks';
+import { selectAuth } from '@/redux/slices/authSlice';
 
 export default function NotificationPopover() {
-  const query = useGetNotifications();
+  const { isAuthenticated } = useAppSelector(selectAuth);
+  const query = useGetNotifications({
+    enabled: isAuthenticated,
+  });
 
   const hasUnreadNotification = query.data?.pages[0].items.some(
     (notification) => !notification.isRead,

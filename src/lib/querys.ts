@@ -12,7 +12,7 @@ import { UUID } from 'crypto';
 
 export const getMyFollowersQueryKey = ['followers', 'me'];
 
-export function useGetMyFollowersQuery() {
+export function useGetMyFollowersQuery(options?: { enabled?: boolean }) {
   const getMyFollowers = async ({ page, limit }: IPaginationParamsType) => {
     try {
       const { data } = await getMyFollowersAPI({ page, limit });
@@ -31,6 +31,7 @@ export function useGetMyFollowersQuery() {
       firstPage.hasPreviousPage ? firstPage.currentPage - 1 : undefined,
     staleTime: 1000 * 60 * 5, // 5 minutes
     initialPageParam: 1,
+    enabled: options?.enabled ?? true,
   });
   return query;
 }
@@ -125,7 +126,7 @@ export const getUserInfomationQueryKey = ({ userId }: { userId: UUID | string })
 ];
 
 export function useGetUserInfomation(
-  { userId, followerId }: { userId: UUID | string; followerId?: UUID },
+  { userId, currentUserId }: { userId: UUID | string; currentUserId?: UUID },
   options?: Omit<UseQueryOptions<IUserDataWithFollowedStatusType>, 'queryKey' | 'queryFn'>,
 ) {
   const { user } = useAppSelector(selectAuth);
@@ -134,7 +135,7 @@ export function useGetUserInfomation(
     try {
       const { data } = await getUserInfomationAPI({
         userId,
-        followerId: followerId || user?.id,
+        currentUserId: currentUserId || user?.id,
       });
       return data;
     } catch (error) {
@@ -158,11 +159,11 @@ export const getAllUsersInfomationQueryKey = ({ keywords }: { keywords: string }
 
 export function useGetAllUsersInfomation({ keywords }: { keywords: string }) {
   const { user } = useAppSelector(selectAuth);
-  const followerId = user?.id;
+  const currentUserId = user?.id;
 
   const getAllUsersInfomation = async ({ page }: { page: number }) => {
     try {
-      const { data } = await getAllUsersInfomationAPI({ page, keywords, followerId });
+      const { data } = await getAllUsersInfomationAPI({ page, keywords, currentUserId });
       return data;
     } catch (error) {
       throw new Error(error as string);

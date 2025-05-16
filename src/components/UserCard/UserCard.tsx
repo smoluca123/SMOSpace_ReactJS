@@ -13,9 +13,13 @@ import { Dot } from 'lucide-react';
 export default function UserCard() {
   const { isAuthenticated } = useAppSelector(selectAuth);
 
-  const { data: user, isLoading: isLoadingUser } = useGetMyInfomation();
+  const { data: user, isLoading: isLoadingUser } = useGetMyInfomation({
+    enabled: isAuthenticated,
+  });
 
-  const { data: followers, isLoading: isLoadingFollowers } = useGetMyFollowersQuery();
+  const { data: followers, isLoading: isLoadingFollowers } = useGetMyFollowersQuery({
+    enabled: isAuthenticated,
+  });
 
   if (!isAuthenticated) return null;
   return (
@@ -47,7 +51,7 @@ export default function UserCard() {
             <Dot />
             <p>{user.postCount} Posts</p>
             <Dot />
-            <p>{user.followingCount} Following</p>
+            <p>{user.friendCount} Friends</p>
           </div>
           <div className='flex gap-2 justify-center items-center'>
             {isLoadingFollowers &&

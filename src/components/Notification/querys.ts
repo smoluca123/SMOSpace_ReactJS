@@ -4,7 +4,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 
 const notificationsQueryKey = ['notifications'];
 
-export function useGetNotifications() {
+export function useGetNotifications(options?: { enabled?: boolean }) {
   const getNotifications = async ({ page, limit }: IPaginationParamsType) => {
     try {
       const data = await getNotificationsAPI({ page, limit });
@@ -23,6 +23,7 @@ export function useGetNotifications() {
     initialPageParam: 1,
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchInterval: 1000 * 60 * 5, // 5 minutes
+    enabled: options?.enabled ?? true,
   });
 
   return query;

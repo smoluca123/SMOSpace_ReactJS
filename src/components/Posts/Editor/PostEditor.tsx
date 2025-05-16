@@ -87,8 +87,8 @@
 //   };
 
 //   return (
-//     <div className='w-full max-w-full space-y-5 overflow-x-hidden rounded-md shadow-sm'>
-//       <div className='flex items-center gap-x-4'>
+//     <div className='overflow-x-hidden space-y-5 w-full max-w-full rounded-md shadow-sm'>
+//       <div className='flex gap-x-4 items-center'>
 //         <UserAvatar
 //           avatarUrl={user.avatar}
 //           fallbackName={user.fullName}
@@ -119,7 +119,7 @@
 //         </div>
 //       </div>
 
-//       <div className='flex justify-end gap-2'>
+//       <div className='flex gap-2 justify-end'>
 //         <Select
 //           onValueChange={(value) => {
 //             setIsPrivate(!!value);
@@ -156,7 +156,7 @@
 
 'use no memo';
 
-import { EditorContent, useEditor } from '@tiptap/react';
+import { Editor, EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import './style.css';
@@ -176,19 +176,23 @@ import { useAppSelector } from '@/redux/hooks';
 import { selectAuth } from '@/redux/slices/authSlice';
 import { Navigate } from 'react-router-dom';
 import UserAvatar from '@/components/UserAvatar';
+import PostMedia from '@/components/Posts/Editor/PostMedia/';
 
 export default function PostEditor({
   content,
   onChangeContent,
   isPrivate,
   onChangeIsPrivate,
+  media,
+  onChangeMedia,
 }: {
   isPrivate: boolean;
   content: string;
   onChangeContent: React.Dispatch<React.SetStateAction<string>>;
   onChangeIsPrivate: (isPrivate: boolean) => void;
+  media?: File[];
+  onChangeMedia?: React.Dispatch<React.SetStateAction<File[]>>;
 }) {
-  const [isShowGeneratePostDialog, setIsShowGeneratePostDialog] = useState(false);
   const { user } = useAppSelector(selectAuth);
 
   const editor = useEditor({
@@ -219,37 +223,19 @@ export default function PostEditor({
   if (!user) return <Navigate to='/' replace />;
 
   return (
-    <div className='w-full max-w-full px-1 space-y-5 overflow-x-hidden rounded-md shadow-sm'>
-      <div className='flex items-center justify-between'>
+    <div className='overflow-x-hidden px-1 space-y-5 w-full max-w-full rounded-md shadow-sm'>
+      <div className='flex justify-between items-center'>
         {/* Author Info */}
-        <div className='flex items-center gap-x-4'>
-          <UserAvatar
-            avatarUrl={user.avatar}
-            fallbackName={user.fullName}
-            className='hidden sm:block'
-          />
-          <div className=''>
-            <h3 className='font-semibold'>{user.fullName}</h3>
-            <p className='text-sm text-muted-foreground'>@{user.username}</p>
-          </div>
-        </div>
+        <AuthorInfo />
 
         {/* Privacy Select */}
-        <Select
-          value={isPrivate ? '1' : '0'}
-          onValueChange={(value) => {
+        <PrivacySelect
+          isPrivate={isPrivate}
+          onChangeIsPrivate={(value) => {
             onChangeIsPrivate(!!+value);
             return value;
           }}
-        >
-          <SelectTrigger className='w-[100px]'>
-            <SelectValue placeholder='Public' />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='0'>Public</SelectItem>
-            <SelectItem value='1'>Private</SelectItem>
-          </SelectContent>
-        </Select>
+        />
       </div>
 
       <div className='w-full min-h-[8rem] max-h-[20rem] overflow-y-auto bg-card lg:rounded-xl rounded-lg px-5 py-3  max-w-full border-border border space-y-2'>
@@ -257,9 +243,64 @@ export default function PostEditor({
         <EditorContent editor={editor} className='' />
       </div>
 
-      {/* Features */}
+      {/* Post Media */}
+      {media && onChangeMedia && <PostMedia media={media} onChangeMedia={onChangeMedia} />}
 
       <Separator />
+      {/* Features */}
+      <PostFeatures editor={editor} onChangeContent={onChangeContent} />
+    </div>
+  );
+}
+
+function AuthorInfo() {
+  const { user } = useAppSelector(selectAuth);
+  if (!user) return null;
+  return (
+    <div className='flex gap-x-4 items-center'>
+      <UserAvatar
+        avatarUrl={user.avatar}
+        fallbackName={user.fullName}
+        className='hidden sm:block'
+      />
+      <div className=''>
+        <h3 className='font-semibold'>{user.fullName}</h3>
+        <p className='text-sm text-muted-foreground'>@{user.username}</p>
+      </div>
+    </div>
+  );
+}
+
+function PrivacySelect({
+  isPrivate,
+  onChangeIsPrivate,
+}: {
+  isPrivate: boolean;
+  onChangeIsPrivate: (isPrivate: '1' | '0') => void;
+}) {
+  return (
+    <Select value={isPrivate ? '1' : '0'} onValueChange={onChangeIsPrivate}>
+      <SelectTrigger className='w-[100px]'>
+        <SelectValue placeholder='Public' />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value='0'>Public</SelectItem>
+        <SelectItem value='1'>Private</SelectItem>
+      </SelectContent>
+    </Select>
+  );
+}
+
+function PostFeatures({
+  editor,
+  onChangeContent,
+}: {
+  editor: Editor | null;
+  onChangeContent: React.Dispatch<React.SetStateAction<string>>;
+}) {
+  const [isShowGeneratePostDialog, setIsShowGeneratePostDialog] = useState(false);
+  return (
+    <>
       <div className='space-y-4'>
         <h4 className='text-sm text-center'>Add to your post</h4>
         <div className='flex flex-wrap gap-5'>
@@ -270,7 +311,6 @@ export default function PostEditor({
           <Button variant='outline-primary'>Feelings</Button>
         </div>
       </div>
-
       {/* Generate Post Dialog */}
       <GeneratePostDialog
         createPostEditor={editor}
@@ -278,6 +318,6 @@ export default function PostEditor({
         onClose={() => setIsShowGeneratePostDialog(false)}
         onChangeContent={onChangeContent}
       />
-    </div>
+    </>
   );
 }

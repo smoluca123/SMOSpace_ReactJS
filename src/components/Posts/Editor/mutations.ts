@@ -10,11 +10,20 @@ export function useSubmitPostMutaion() {
   const queryClient = useQueryClient();
   const { update: updateUserInfomation } = useUpdateDataInfomation();
 
-  const submitPost = async ({ content, isPrivate }: { content: string; isPrivate?: boolean }) => {
+  const submitPost = async ({
+    content,
+    isPrivate,
+    images,
+  }: {
+    content: string;
+    isPrivate?: boolean;
+    images: File[];
+  }) => {
     try {
       const data = await submitPostAPI({
         content,
         isPrivate,
+        images,
       });
       return data;
     } catch (error) {

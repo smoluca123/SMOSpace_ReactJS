@@ -13,6 +13,8 @@ import {
   IPostLikeType,
 } from '@/lib/types/interfaces';
 import { getLikedUsersQueryKey } from '@/components/Posts/PostEngagementMetrics/LikedUsersDialog/querys';
+import { getPostQueryKey } from '@/modules/post-detail/components/PostDetail/querys';
+import useUpdateDataInfomation from '@/hooks/useUpdateDataInfomation';
 
 export function useLikePostMutation() {
   const queryClient = useQueryClient();
@@ -36,6 +38,13 @@ export function useLikePostMutation() {
       > = {
         queryKey: ['posts'],
       };
+      const postQueryFilter: QueryFilters<IPostDataWithLikedStatusType> = {
+        queryKey: getPostQueryKey({ postId: newData.id }),
+      };
+
+      const postQueryData = queryClient.getQueryData<IPostDataWithLikedStatusType>(
+        postQueryFilter.queryKey as QueryKey,
+      );
 
       const likedUsersQueryFilter: QueryFilters<
         InfiniteData<IApiPaginationResponseWrapper<IPostLikeType>['data']>
@@ -43,14 +52,26 @@ export function useLikePostMutation() {
         queryKey: getLikedUsersQueryKey(newData.id),
       };
 
-      // Cancel the existing posts query to prevent race condition
-      await queryClient.cancelQueries(postsQueryFilter);
-
       // Cancel the existing liked users query to prevent race condition
       // await queryClient.cancelQueries(likedUsersQueryFilter);
 
       await queryClient.invalidateQueries(likedUsersQueryFilter);
 
+      if (postQueryData) {
+        queryClient.setQueryData(
+          postQueryFilter.queryKey as QueryKey,
+          (oldData: IPostDataWithLikedStatusType) => {
+            if (!oldData) return oldData;
+            return {
+              ...oldData,
+              ...newData,
+            };
+          },
+        );
+      }
+
+      // Cancel the existing posts query to prevent race condition
+      await queryClient.cancelQueries(postsQueryFilter);
       // Update the post data in the query cache
       queryClient.setQueriesData(postsQueryFilter, (oldData) => {
         if (!oldData) return oldData;
@@ -80,6 +101,7 @@ export function useLikePostMutation() {
 
 export function useDeletePostMutation() {
   const queryClient = useQueryClient();
+  const { update: updateUserInfomation } = useUpdateDataInfomation();
 
   const deletePost = async ({ postId }: { postId: UUID }) => {
     try {
@@ -110,6 +132,8 @@ export function useDeletePostMutation() {
           })),
         };
       });
+      // update the user data in the query cache
+      updateUserInfomation({ data: newData.author });
     },
   });
   return mutation;
