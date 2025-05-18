@@ -1,6 +1,6 @@
 import { deleteCommentAPI } from '@/apis/postApi';
 import { IApiPaginationResponseWrapper, ICommentDataType } from '@/lib/types/interfaces';
-import { InfiniteData, QueryFilters, useMutation, useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 
 export const useDeleteCommentMutation = () => {
@@ -17,16 +17,16 @@ export const useDeleteCommentMutation = () => {
   const mutation = useMutation({
     mutationFn: deleteComment,
     onSuccess: async (responseData) => {
-      const queryFilter: QueryFilters<
-        InfiniteData<IApiPaginationResponseWrapper<ICommentDataType>['data']>
-      > = {
+      const queryFilter = {
         queryKey: ['comments'],
       };
 
       await queryClient.cancelQueries(queryFilter);
 
       // update the comment list
-      queryClient.setQueriesData(queryFilter, (data) => {
+      queryClient.setQueriesData<
+        InfiniteData<IApiPaginationResponseWrapper<ICommentDataType>['data']>
+      >(queryFilter, (data) => {
         if (!data) return;
         return {
           pageParams: data.pageParams,
@@ -53,7 +53,9 @@ export const useDeleteCommentMutation = () => {
       });
 
       // update the comment count
-      queryClient.setQueriesData(queryFilter, (data) => {
+      queryClient.setQueriesData<
+        InfiniteData<IApiPaginationResponseWrapper<ICommentDataType>['data']>
+      >(queryFilter, (data) => {
         if (!data) return;
         return {
           ...data,

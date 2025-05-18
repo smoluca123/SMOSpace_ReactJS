@@ -2,7 +2,7 @@ import { getMyInfomationQueryKey } from '@/lib/querys';
 import { IApiResponseWrapper, IUserDataType } from '@/lib/types/interfaces';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { selectAuth, updateUser } from '@/redux/slices/authSlice';
-import { QueryFilters, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
 export default function useUpdateDataInfomation() {
@@ -12,15 +12,18 @@ export default function useUpdateDataInfomation() {
 
   const updateDataInfomationQuery = useCallback(
     (data: IUserDataType) => {
-      const queryFilter: QueryFilters<IApiResponseWrapper<IUserDataType>['data']> = {
+      const queryFilter = {
         queryKey: getMyInfomationQueryKey,
       };
 
       queryClient.cancelQueries(queryFilter);
 
-      queryClient.setQueriesData(queryFilter, (oldData) => {
-        return { ...oldData, ...data };
-      });
+      queryClient.setQueriesData<IApiResponseWrapper<IUserDataType>['data']>(
+        queryFilter,
+        (oldData) => {
+          return { ...oldData, ...data };
+        },
+      );
     },
     [queryClient],
   );

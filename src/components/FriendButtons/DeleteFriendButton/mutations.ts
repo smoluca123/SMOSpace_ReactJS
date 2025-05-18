@@ -5,7 +5,7 @@ import {
   IFriendRequestWithFriendDataType,
 } from '@/lib/types/interfaces';
 import { getMyFriendRequestsQueryKey } from '@/modules/friends/components/FriendRequests/querys';
-import { InfiniteData, QueryFilters, useMutation, useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 
 export function useDeleteFriend() {
@@ -20,15 +20,15 @@ export function useDeleteFriend() {
     mutationKey: ['deleteFriend'],
     mutationFn: deleteFriend,
     onSuccess: (newData) => {
-      const queryFilter: QueryFilters<
-        InfiniteData<IApiPaginationResponseWrapper<IFriendRequestWithFriendDataType>['data']>
-      > = {
+      const queryFilter = {
         queryKey: getMyFriendRequestsQueryKey,
       };
 
       queryClient.cancelQueries(queryFilter);
 
-      queryClient.setQueriesData(queryFilter, (data) => {
+      queryClient.setQueriesData<
+        InfiniteData<IApiPaginationResponseWrapper<IFriendRequestWithFriendDataType>['data']>
+      >(queryFilter, (data) => {
         if (!data) return;
         return {
           ...data,

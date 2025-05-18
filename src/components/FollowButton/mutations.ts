@@ -4,7 +4,7 @@ import { getUserInfomationQueryKey } from '@/lib/querys';
 import { IApiResponseWrapper, IUserDataWithFollowedStatusType } from '@/lib/types/interfaces';
 import { useAppSelector } from '@/redux/hooks';
 import { selectAuth } from '@/redux/slices/authSlice';
-import { QueryFilters, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 
 export const useFollowUserMutation = ({ userId }: { userId: UUID }) => {
@@ -31,19 +31,22 @@ export const useFollowUserMutation = ({ userId }: { userId: UUID }) => {
       if (!followData || !user) return;
 
       // Define query filters for cache updates
-      const queryFilters: QueryFilters<IApiResponseWrapper<IUserDataWithFollowedStatusType>> = {
+      const queryFilters = {
         queryKey: getUserInfomationQueryKey({ userId }),
       };
 
       // Update cached user data with new follower count and status
-      queryClient.setQueriesData(queryFilters, (oldData) => {
-        if (!oldData) return oldData;
-        return {
-          ...oldData,
-          followerCount: followData.following.followerCount,
-          isFollowedByUser: followData.following.isFollowedByUser,
-        };
-      });
+      queryClient.setQueriesData<IApiResponseWrapper<IUserDataWithFollowedStatusType>>(
+        queryFilters,
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            followerCount: followData.following.followerCount,
+            isFollowedByUser: followData.following.isFollowedByUser,
+          };
+        },
+      );
 
       // update the user data in the query cache
       update({

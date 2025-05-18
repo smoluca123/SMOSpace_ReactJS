@@ -4,7 +4,7 @@ import {
   IApiPaginationResponseWrapper,
   IPostDataWithLikedStatusType,
 } from '@/lib/types/interfaces';
-import { InfiniteData, QueryFilters, useMutation, useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export function useSubmitPostMutaion() {
   const queryClient = useQueryClient();
@@ -35,17 +35,17 @@ export function useSubmitPostMutaion() {
   const mutation = useMutation({
     mutationFn: submitPost,
     onSuccess: (newPost) => {
-      const postsQueryFilter: QueryFilters<
-        InfiniteData<
-          IApiPaginationResponseWrapper<IPostDataWithLikedStatusType>['data'],
-          number | undefined
-        >
-      > = {
+      const postsQueryFilter = {
         queryKey: ['posts'],
       };
 
       // update the first page of the posts query
-      queryClient.setQueriesData(postsQueryFilter, (oldData) => {
+      queryClient.setQueriesData<
+        InfiniteData<
+          IApiPaginationResponseWrapper<IPostDataWithLikedStatusType>['data'],
+          number | undefined
+        >
+      >(postsQueryFilter, (oldData) => {
         if (!oldData) return oldData;
 
         const firstPage = oldData.pages[0];
