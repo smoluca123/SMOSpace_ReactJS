@@ -1,17 +1,17 @@
 import { ConfirmRequestButton, CancelRequestButton } from '../FriendRequestButtons';
 import ProfileLink from '@/components/ProfileLink';
-import { IFriendRequestWithFriendDataType } from '@/lib/types/interfaces';
 import { formatRelativeDate } from '@/lib/utils';
 import UserAvatar from '@/components/UserAvatar';
+import useFriendRequestContext from '@/hooks/useFriendRequestContext';
+import { DeleteFriendButton } from '@/components/FriendButtons';
+import { Button } from '@/components/ui/button';
+import { Trash, User } from 'lucide-react';
 
-export default function FriendRequestItem({
-  friendRequest,
-}: {
-  friendRequest: IFriendRequestWithFriendDataType;
-}) {
+export default function FriendRequestItem() {
+  const { friendRequest } = useFriendRequestContext();
   const { friend } = friendRequest;
   return (
-    <div className='flex overflow-hidden flex-col w-full h-96 rounded-md border cursor-pointer hover:bg-accent border-border'>
+    <div className='flex overflow-hidden flex-col w-full max-h-96 rounded-md border cursor-pointer hover:bg-accent border-border'>
       {/* Avatar */}
       <div className='overflow-hidden relative flex-1 w-full bg-black'>
         <UserAvatar
@@ -25,7 +25,8 @@ export default function FriendRequestItem({
       </div>
 
       {/* Content */}
-      <div className='flex-[0.3] p-4 space-y-2'>
+      <div className='flex-[0.3] p-4 space-y-3 '>
+        {/* Header */}
         <div className='block gap-y-4 justify-between md:flex'>
           <div className='flex-1 truncate whitespace-pre-line break-words line-clamp-1'>
             <ProfileLink username={friend.username} className='font-bold text-foreground'>
@@ -38,11 +39,36 @@ export default function FriendRequestItem({
         </div>
 
         {/* Actions */}
-        <div className='flex gap-x-2'>
+        <FriendRequestActions />
+      </div>
+    </div>
+  );
+}
+
+function FriendRequestActions() {
+  const { friendRequest } = useFriendRequestContext();
+  return (
+    <>
+      {friendRequest.status === 'PENDING' && (
+        <div className='space-y-2'>
           <ConfirmRequestButton />
           <CancelRequestButton />
         </div>
-      </div>
-    </div>
+      )}
+      {friendRequest.status === 'ACCEPTED' && (
+        <div className='space-y-2'>
+          <ProfileLink username={friendRequest.friend.username} className='w-full'>
+            <Button className='w-full text-white' variant='outline-primary'>
+              <User className='w-4 h-4' />
+              Profile
+            </Button>
+          </ProfileLink>
+          <DeleteFriendButton userData={friendRequest.friend}>
+            <Trash className='w-4 h-4' />
+            Unfriend
+          </DeleteFriendButton>
+        </div>
+      )}
+    </>
   );
 }

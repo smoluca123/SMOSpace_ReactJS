@@ -1,1 +1,1 @@
-export { default as UpdateAvatarDialog } from './UpdateAvatarDialog';
+export { default as UpdateProfileCoverDialog } from './UpdateProfileCoverDialog';

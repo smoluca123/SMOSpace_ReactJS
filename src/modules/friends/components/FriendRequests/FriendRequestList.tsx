@@ -6,6 +6,7 @@ import {
   IApiPaginationResponseWrapper,
   IFriendRequestWithFriendDataType,
 } from '@/lib/types/interfaces';
+import FriendRequestProvider from '@/modules/friends/components/FriendRequests/FriendRequestProvider';
 
 export default function FriendRequestList({
   friendRequestsQuery,
@@ -21,12 +22,14 @@ export default function FriendRequestList({
     <div className=''>
       {/* Friend request  List */}
       {data && !isPending && (
-        <div className='grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4'>
+        <div className='grid grid-cols-1 gap-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3'>
           {data.pages.flatMap((page) =>
             page.items.map((friendRequest) => (
-              <div className='pb-2 border-b last:border-none last:pb-0'>
-                <FriendRequestItem key={friendRequest.id} friendRequest={friendRequest} />
-              </div>
+              <FriendRequestProvider key={friendRequest.id} friendRequest={friendRequest}>
+                <div className='pb-2 border-b last:border-none last:pb-0'>
+                  <FriendRequestItem />
+                </div>
+              </FriendRequestProvider>
             )),
           )}
         </div>

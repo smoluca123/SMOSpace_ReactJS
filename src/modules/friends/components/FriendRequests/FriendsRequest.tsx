@@ -12,7 +12,7 @@ export default function FriendsRequest() {
       <div className='flex justify-between items-center mb-2 w-full'>
         <h1 className='text-2xl font-bold text-foreground'>Friend request </h1>
 
-        <RefreshButton />
+        <RefreshButton onClick={() => query.refetch()} />
       </div>
 
       <FriendRequestList friendRequestsQuery={query} />

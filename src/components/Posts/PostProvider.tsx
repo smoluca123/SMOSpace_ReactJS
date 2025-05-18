@@ -5,11 +5,11 @@ import { useState } from 'react';
 export function PostProvider({
   children,
   post,
-  isRedirectWhenDeleteInitial,
+  isRedirectWhenDeleteInitial = false,
 }: {
   children: React.ReactNode;
   post: IPostDataWithLikedStatusType;
-  isRedirectWhenDeleteInitial: boolean;
+  isRedirectWhenDeleteInitial?: boolean;
 }) {
   const [displayCommentBox, setDisplayCommentBox] = useState(false);
   const [isRedirectWhenDelete, setIsRedirectWhenDelete] = useState(isRedirectWhenDeleteInitial);

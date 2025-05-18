@@ -365,3 +365,15 @@ export const cancelFriendRequestAPI = async ({ userId }: { userId: UUID }) => {
     throw new Error(error as string);
   }
 };
+
+export const deleteFriendAPI = async ({ userId }: { userId: UUID }) => {
+  try {
+    const { data } = await baseApi.delete<
+      IApiResponseWrapper<IFriendRequestWithFriendDataType & IFriendRequestWithUserDataType>
+    >('/user/friend/' + userId);
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};

@@ -278,7 +278,7 @@ interface ITypeNotification {
 
 export interface IFriendRequestDataType {
   id: string;
-  status: string;
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'BLOCKED';
   createdAt: string;
   updatedAt: string;
 }
