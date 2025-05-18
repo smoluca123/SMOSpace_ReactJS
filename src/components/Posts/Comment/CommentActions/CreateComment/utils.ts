@@ -1,6 +1,6 @@
 import { getCommentsQueryKey } from '@/components/Posts/Comment/querys';
 import { IApiPaginationResponseWrapper, ICommentDataType } from '@/lib/types/interfaces';
-import { InfiniteData, QueryClient, QueryFilters } from '@tanstack/react-query';
+import { InfiniteData, QueryClient } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 
 const setQueriesDataParentComment = ({
@@ -10,32 +10,33 @@ const setQueriesDataParentComment = ({
   parentCommentId: UUID;
   queryClient: QueryClient;
 }) => {
-  const queryFilter: QueryFilters<
-    InfiniteData<IApiPaginationResponseWrapper<ICommentDataType>['data']>
-  > = {
+  const queryFilter = {
     queryKey: ['comments'],
   };
 
-  queryClient.setQueriesData(queryFilter, (oldData) => {
-    if (!oldData) return;
-    return {
-      pageParams: oldData.pageParams,
-      pages: oldData.pages.map((page) => {
-        const hasParentComment = page.items.some((comment) => comment.id === parentCommentId);
-        if (hasParentComment) {
-          return {
-            ...page,
-            items: page.items.map((comment) =>
-              comment.id === parentCommentId
-                ? { ...comment, repliesCount: comment.repliesCount + 1 } // Increase replies count
-                : comment,
-            ),
-          };
-        }
-        return page;
-      }),
-    };
-  });
+  queryClient.setQueriesData<InfiniteData<IApiPaginationResponseWrapper<ICommentDataType>['data']>>(
+    queryFilter,
+    (oldData) => {
+      if (!oldData) return;
+      return {
+        pageParams: oldData.pageParams,
+        pages: oldData.pages.map((page) => {
+          const hasParentComment = page.items.some((comment) => comment.id === parentCommentId);
+          if (hasParentComment) {
+            return {
+              ...page,
+              items: page.items.map((comment) =>
+                comment.id === parentCommentId
+                  ? { ...comment, repliesCount: comment.repliesCount + 1 } // Increase replies count
+                  : comment,
+              ),
+            };
+          }
+          return page;
+        }),
+      };
+    },
+  );
 };
 
 const setQueriesDataAddCommentToCommentList = async ({
@@ -51,9 +52,7 @@ const setQueriesDataAddCommentToCommentList = async ({
   };
   queryClient: QueryClient;
 }) => {
-  const queryFilter: QueryFilters<
-    InfiniteData<IApiPaginationResponseWrapper<ICommentDataType>['data']>
-  > = {
+  const queryFilter = {
     queryKey: getCommentsQueryKey({ postId, replyTo }),
   };
 
@@ -61,31 +60,34 @@ const setQueriesDataAddCommentToCommentList = async ({
   await queryClient.cancelQueries(queryFilter);
 
   // Add new comment to the bottom of the list
-  queryClient.setQueriesData(queryFilter, (oldData) => {
-    if (!oldData)
+  queryClient.setQueriesData<InfiniteData<IApiPaginationResponseWrapper<ICommentDataType>['data']>>(
+    queryFilter,
+    (oldData) => {
+      if (!oldData)
+        return {
+          pageParams: [0],
+          pages: [
+            {
+              items: [commentData],
+              totalCount: 1,
+              totalPage: 1,
+              currentPage: 1,
+              pageSize: 1,
+              hasNextPage: false,
+              hasPreviousPage: false,
+            },
+          ],
+        };
+      const lastPage = oldData.pages[oldData.pages.length - 1];
       return {
-        pageParams: [0],
+        pageParams: oldData.pageParams,
         pages: [
-          {
-            items: [commentData],
-            totalCount: 1,
-            totalPage: 1,
-            currentPage: 1,
-            pageSize: 1,
-            hasNextPage: false,
-            hasPreviousPage: false,
-          },
+          ...oldData.pages.slice(0, -1),
+          { ...lastPage, items: [...lastPage.items, commentData] },
         ],
       };
-    const lastPage = oldData.pages[oldData.pages.length - 1];
-    return {
-      pageParams: oldData.pageParams,
-      pages: [
-        ...oldData.pages.slice(0, -1),
-        { ...lastPage, items: [...lastPage.items, commentData] },
-      ],
-    };
-  });
+    },
+  );
 };
 
 const handleNewComment = async ({

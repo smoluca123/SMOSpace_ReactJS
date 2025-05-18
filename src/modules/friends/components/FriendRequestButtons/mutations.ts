@@ -5,7 +5,7 @@ import {
   IFriendRequestWithFriendDataType,
 } from '@/lib/types/interfaces';
 import { getMyFriendRequestsQueryKey } from '@/modules/friends/components/FriendRequests/querys';
-import { InfiniteData, QueryFilters, useMutation, useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 
 export const useCancelFriendRequest = () => {
@@ -25,15 +25,15 @@ export const useCancelFriendRequest = () => {
     mutationKey: ['cancelFriendRequest'],
     mutationFn: cancelFriendRequest,
     onSuccess: (newData) => {
-      const queryFilter: QueryFilters<
-        InfiniteData<IApiPaginationResponseWrapper<IFriendRequestWithFriendDataType>['data']>
-      > = {
+      const queryFilter = {
         queryKey: getMyFriendRequestsQueryKey,
       };
 
       queryClient.cancelQueries(queryFilter);
 
-      queryClient.setQueriesData(queryFilter, (data) => {
+      queryClient.setQueriesData<
+        InfiniteData<IApiPaginationResponseWrapper<IFriendRequestWithFriendDataType>['data']>
+      >(queryFilter, (data) => {
         if (!data) return;
         return {
           ...data,
@@ -70,15 +70,15 @@ export const useAcceptFriendRequest = () => {
     mutationKey: ['acceptFriendRequest'],
     mutationFn: acceptFriendRequest,
     onSuccess: (newData) => {
-      const queryFilter: QueryFilters<
-        InfiniteData<IApiPaginationResponseWrapper<IFriendRequestWithFriendDataType>['data']>
-      > = {
+      const queryFilter = {
         queryKey: getMyFriendRequestsQueryKey,
       };
 
       queryClient.cancelQueries(queryFilter);
 
-      queryClient.setQueriesData(queryFilter, (data) => {
+      queryClient.setQueriesData<
+        InfiniteData<IApiPaginationResponseWrapper<IFriendRequestWithFriendDataType>['data']>
+      >(queryFilter, (data) => {
         if (!data) return;
         return {
           ...data,

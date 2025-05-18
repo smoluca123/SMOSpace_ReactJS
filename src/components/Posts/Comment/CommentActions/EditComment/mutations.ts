@@ -2,7 +2,7 @@ import { updateCommentAPI } from '@/apis/postApi';
 import { getCommentsQueryKey } from '@/components/Posts/Comment/querys';
 import { toast } from '@/hooks/use-toast';
 import { IApiPaginationResponseWrapper, ICommentDataType } from '@/lib/types/interfaces';
-import { InfiniteData, QueryFilters, useMutation, useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 
 export function useEditCommentMutation() {
@@ -22,9 +22,7 @@ export function useEditCommentMutation() {
   const mutation = useMutation({
     mutationFn: editComment,
     onSuccess: (responseData) => {
-      const queryFilter: QueryFilters<
-        InfiniteData<IApiPaginationResponseWrapper<ICommentDataType>['data']>
-      > = {
+      const queryFilter = {
         queryKey: getCommentsQueryKey({
           postId: responseData.post.id,
           replyTo: responseData.replyToId ?? undefined,
@@ -32,7 +30,9 @@ export function useEditCommentMutation() {
       };
 
       // update the comment list
-      queryClient.setQueriesData(queryFilter, (data) => {
+      queryClient.setQueriesData<
+        InfiniteData<IApiPaginationResponseWrapper<ICommentDataType>['data']>
+      >(queryFilter, (data) => {
         if (!data) return;
 
         return {

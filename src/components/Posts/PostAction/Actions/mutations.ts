@@ -1,12 +1,6 @@
 import { deletePostAPI, likePostAPI, updatePostAPI } from '@/apis/postApi';
 import { UUID } from 'crypto';
-import {
-  InfiniteData,
-  QueryFilters,
-  QueryKey,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { InfiniteData, QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   IApiPaginationResponseWrapper,
   IPostDataWithLikedStatusType,
@@ -33,12 +27,10 @@ export function useLikePostMutation() {
     mutationKey: ['likePost'],
     mutationFn: likePost,
     onSuccess: async (newData) => {
-      const postsQueryFilter: QueryFilters<
-        InfiniteData<IApiPaginationResponseWrapper<IPostDataWithLikedStatusType>['data']>
-      > = {
+      const postsQueryFilter = {
         queryKey: ['posts'],
       };
-      const postQueryFilter: QueryFilters<IPostDataWithLikedStatusType> = {
+      const postQueryFilter = {
         queryKey: getPostQueryKey({ postId: newData.id }),
       };
 
@@ -46,21 +38,21 @@ export function useLikePostMutation() {
         postQueryFilter.queryKey as QueryKey,
       );
 
-      const likedUsersQueryFilter: QueryFilters<
-        InfiniteData<IApiPaginationResponseWrapper<IPostLikeType>['data']>
-      > = {
+      const likedUsersQueryFilter = {
         queryKey: getLikedUsersQueryKey(newData.id),
       };
 
       // Cancel the existing liked users query to prevent race condition
       // await queryClient.cancelQueries(likedUsersQueryFilter);
 
-      await queryClient.invalidateQueries(likedUsersQueryFilter);
+      await queryClient.invalidateQueries<
+        InfiniteData<IApiPaginationResponseWrapper<IPostLikeType>['data']>
+      >(likedUsersQueryFilter);
 
       if (postQueryData) {
-        queryClient.setQueryData(
+        queryClient.setQueryData<IPostDataWithLikedStatusType>(
           postQueryFilter.queryKey as QueryKey,
-          (oldData: IPostDataWithLikedStatusType) => {
+          (oldData) => {
             if (!oldData) return oldData;
             return {
               ...oldData,
@@ -73,7 +65,9 @@ export function useLikePostMutation() {
       // Cancel the existing posts query to prevent race condition
       await queryClient.cancelQueries(postsQueryFilter);
       // Update the post data in the query cache
-      queryClient.setQueriesData(postsQueryFilter, (oldData) => {
+      queryClient.setQueriesData<
+        InfiniteData<IApiPaginationResponseWrapper<IPostDataWithLikedStatusType>['data']>
+      >(postsQueryFilter, (oldData) => {
         if (!oldData) return oldData;
 
         const updatedPages = oldData.pages.map((page) => {
@@ -163,14 +157,14 @@ export function useUpdatePostMutation() {
     mutationKey: ['updatePost'],
     mutationFn: updatePost,
     onSuccess: async (newData) => {
-      const queryFilter: QueryFilters<
-        InfiniteData<IApiPaginationResponseWrapper<IPostDataWithLikedStatusType>['data']>
-      > = {
+      const queryFilter = {
         queryKey: ['posts'],
       };
       await queryClient.cancelQueries(queryFilter);
 
-      queryClient.setQueriesData(queryFilter, (oldData) => {
+      queryClient.setQueriesData<
+        InfiniteData<IApiPaginationResponseWrapper<IPostDataWithLikedStatusType>['data']>
+      >(queryFilter, (oldData) => {
         if (!oldData) return oldData;
         return {
           pageParams: oldData.pageParams,
