@@ -4,7 +4,6 @@ import { InfiniteData, QueryKey, useMutation, useQueryClient } from '@tanstack/r
 import {
   IApiPaginationResponseWrapper,
   IPostDataWithLikedStatusType,
-  IPostLikeType,
 } from '@/lib/types/interfaces';
 import { getLikedUsersQueryKey } from '@/components/Posts/PostEngagementMetrics/LikedUsersDialog/querys';
 import { getPostQueryKey } from '@/modules/post-detail/components/PostDetail/querys';
@@ -45,9 +44,7 @@ export function useLikePostMutation() {
       // Cancel the existing liked users query to prevent race condition
       // await queryClient.cancelQueries(likedUsersQueryFilter);
 
-      await queryClient.invalidateQueries<
-        InfiniteData<IApiPaginationResponseWrapper<IPostLikeType>['data']>
-      >(likedUsersQueryFilter);
+      await queryClient.invalidateQueries(likedUsersQueryFilter);
 
       if (postQueryData) {
         queryClient.setQueryData<IPostDataWithLikedStatusType>(
