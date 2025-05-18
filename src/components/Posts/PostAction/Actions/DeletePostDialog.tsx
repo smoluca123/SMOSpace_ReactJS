@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
 import { usePostContext } from '@/hooks/usePostContext';
+import { useNavigate } from 'react-router-dom';
 export default function DeletePostDialog({
   open,
   onClose,
@@ -18,8 +19,9 @@ export default function DeletePostDialog({
   open: boolean;
   onClose: () => void;
 }) {
-  const { post } = usePostContext();
+  const { post, isRedirectWhenDelete } = usePostContext();
   const { mutate: deletePost, isPending } = useDeletePostMutation();
+  const navigate = useNavigate();
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       onClose();
@@ -36,7 +38,11 @@ export default function DeletePostDialog({
             description: 'Your post has been deleted',
             duration: 3000,
           });
+
           onClose();
+          if (isRedirectWhenDelete) {
+            navigate('/');
+          }
         },
       },
     );

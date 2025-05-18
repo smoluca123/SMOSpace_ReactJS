@@ -28,7 +28,15 @@ function RightSide() {
           <h1 className='font-bold text-[clamp(24px,5vw,44px)]'>Welcome back!</h1>
           <p className='text-base text-muted-foreground tracking-[0.57px]'>Join SMO now!</p>
         </div>
-        <LoginForm />
+        <div className='space-y-2'>
+          <LoginForm />
+          <div className='text-right text-primary'>
+            {/* Don&apos;t have an account?{' '} */}
+            <Link to={`/auth/forget-password${from}`} className='font-semibold hover:underline'>
+              Forgot password?
+            </Link>
+          </div>
+        </div>
 
         <div className='text-center'>
           Don&apos;t have an account?{' '}

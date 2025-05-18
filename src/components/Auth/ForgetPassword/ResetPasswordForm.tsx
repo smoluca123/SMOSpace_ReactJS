@@ -20,7 +20,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { UseResetPasswordMutation, useSendResetPasswordCodeToEmailMutation } from './mutations';
 import { useToast } from '@/hooks/use-toast';
 import LoadingButton from '@/components/LoadingButton';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 
 // Reset password form component
 export default function ResetPasswordForm({
@@ -107,10 +107,6 @@ export default function ResetPasswordForm({
     );
   };
 
-  useEffect(() => {
-    handleSendVerifyCode();
-  }, [handleSendVerifyCode]);
-
   return (
     <div>
       <Form {...form}>
@@ -123,7 +119,7 @@ export default function ResetPasswordForm({
               <FormItem className='flex-1'>
                 <FormLabel>Verify code</FormLabel>
                 <FormControl>
-                  <div className='flex items-center gap-x-5'>
+                  <div className='flex gap-x-5 items-center'>
                     <Input
                       className='flex-1'
                       placeholder='Enter 6-digit verification code'
@@ -140,7 +136,7 @@ export default function ResetPasswordForm({
                       loading={sendingVerifyCode}
                       onClick={handleSendVerifyCode}
                     >
-                      Send verify code
+                      Send again
                     </CountdownButton>
                   </div>
                 </FormControl>
@@ -180,7 +176,7 @@ export default function ResetPasswordForm({
           />
 
           {/* Submit button */}
-          <LoadingButton loading={isPending} className='w-full mt-3'>
+          <LoadingButton loading={isPending} className='mt-3 w-full'>
             Reset Password
           </LoadingButton>
         </form>

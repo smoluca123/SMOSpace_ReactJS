@@ -1,8 +1,8 @@
-import FriendsRequest from '../components/FriendsRequest';
+import FriendsRequest from '../components/FriendRequests';
 
 export default function FriendsPage() {
   return (
-    <section className='w-full px-2 lg:max-w-md xl:max-w-full'>
+    <section className='px-2 w-full lg:max-w-md xl:max-w-full'>
       <FriendsRequest />
     </section>
   );

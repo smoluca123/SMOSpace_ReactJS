@@ -7,6 +7,8 @@ import {
   IFollowerType,
   IFollowingType,
   IFollowUserType,
+  IFriendRequestWithFriendDataType,
+  IFriendRequestWithUserDataType,
   IPaginationParamsType,
   IUserDataType,
   IUserDataWithFollowedStatusType,
@@ -107,7 +109,6 @@ export const getUserFollowingsAPI = async ({
         },
       },
     );
-    console.log(data);
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;
@@ -129,17 +130,17 @@ export const getMyInfomationAPI = async (): Promise<
 
 export const getUserInfomationAPI = async ({
   userId,
-  followerId,
+  currentUserId,
 }: {
   userId: UUID | string;
-  followerId?: UUID;
+  currentUserId?: UUID;
 }) => {
   try {
     const { data } = await baseApi.get<IApiResponseWrapper<IUserDataWithFollowedStatusType>>(
       `/user/${userId}`,
       {
         params: {
-          followerId,
+          currentUserId,
         },
       },
     );
@@ -168,13 +169,13 @@ export const getAllUsersInfomationAPI = async ({
   page = 1,
   limit = 10,
   keywords,
-  followerId,
+  currentUserId,
 }: {
   userId?: UUID;
   page?: number;
   limit?: number;
   keywords?: string;
-  followerId?: UUID;
+  currentUserId?: UUID;
 }) => {
   try {
     const { data } = await baseApi.get<
@@ -185,7 +186,7 @@ export const getAllUsersInfomationAPI = async ({
         page,
         limit,
         keywords,
-        followerId,
+        currentUserId,
       },
     });
     return data;
@@ -212,6 +213,28 @@ export const updateAvatarAPI = async ({ userId, imageFile }: { userId: UUID; ima
 
     const { data } = await baseApi.post<IApiResponseWrapper<IUserDataType>>(
       `/user/avatar/${userId}`,
+      formData,
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const updateCoverImageAPI = async ({
+  userId,
+  imageFile,
+}: {
+  userId: UUID;
+  imageFile: File;
+}) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', imageFile);
+
+    const { data } = await baseApi.post<IApiResponseWrapper<IUserDataType>>(
+      `/user/cover-image/${userId}`,
       formData,
     );
     return data;
@@ -283,6 +306,71 @@ export const resetPasswordAPI = async ({
         password,
       },
     );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const getMyFriendRequestsAPI = async ({ limit = 10, page = 1 }: IPaginationParamsType) => {
+  try {
+    const { data } = await baseApi.get<
+      IApiPaginationResponseWrapper<IFriendRequestWithFriendDataType>
+    >('/user/friends/pending', {
+      params: {
+        limit,
+        page,
+      },
+    });
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const changeFriendRequestStatusAPI = async ({
+  userId,
+  status,
+}: {
+  userId: UUID;
+  status: 'ACCEPTED' | 'REJECTED';
+}) => {
+  try {
+    const { data } = await baseApi.post<
+      IApiResponseWrapper<IFriendRequestWithUserDataType & IFriendRequestWithFriendDataType>
+    >('/user/friend/status/' + userId, {
+      status,
+    });
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const acceptFriendRequestAPI = async ({ userId }: { userId: UUID }) => {
+  try {
+    return await changeFriendRequestStatusAPI({ userId, status: 'ACCEPTED' });
+  } catch (error) {
+    throw new Error(error as string);
+  }
+};
+
+export const cancelFriendRequestAPI = async ({ userId }: { userId: UUID }) => {
+  try {
+    return await changeFriendRequestStatusAPI({ userId, status: 'REJECTED' });
+  } catch (error) {
+    throw new Error(error as string);
+  }
+};
+
+export const deleteFriendAPI = async ({ userId }: { userId: UUID }) => {
+  try {
+    const { data } = await baseApi.delete<
+      IApiResponseWrapper<IFriendRequestWithFriendDataType & IFriendRequestWithUserDataType>
+    >('/user/friend/' + userId);
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;

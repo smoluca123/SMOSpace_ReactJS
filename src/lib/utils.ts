@@ -41,10 +41,12 @@ export const getCroppedImg = ({
   imageSrc,
   croppedAreaPixels,
   isCircle = false,
+  format = 'png',
 }: {
   imageSrc: string;
   croppedAreaPixels: ICroppedAreaType;
   isCircle?: boolean;
+  format?: 'png' | 'jpeg' | 'webp';
 }): Promise<Blob> => {
   return new Promise((resolve, reject) => {
     const image = new Image();
@@ -53,13 +55,17 @@ export const getCroppedImg = ({
 
     image.onload = () => {
       const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { alpha: true });
 
       // Đặt kích thước canvas bằng kích thước phần đã cắt
       canvas.width = croppedAreaPixels.width;
       canvas.height = croppedAreaPixels.height;
 
       if (!ctx) return;
+
+      // Xóa canvas để đảm bảo nền trong suốt
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       // Vẽ phần ảnh đã cắt lên canvas
       ctx.drawImage(
         image,
@@ -75,18 +81,17 @@ export const getCroppedImg = ({
 
       // Nếu yêu cầu hình tròn, ta sẽ vẽ hình tròn lên canvas
       if (isCircle) {
-        ctx.globalCompositeOperation = 'destination-in'; // Cắt phần bên ngoài hình tròn
+        ctx.globalCompositeOperation = 'destination-in';
         ctx.beginPath();
         ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2, 0, 2 * Math.PI);
         ctx.fill();
       }
 
-      // Trả về ảnh đã cắt dưới dạng Blob hoặc base64
+      // Trả về ảnh đã cắt dưới dạng Blob với định dạng PNG để giữ độ trong suốt
       canvas.toBlob((blob) => {
         if (!blob) return;
-        // const url = URL.createObjectURL(blob)
-        resolve(blob); // Trả về Blob của ảnh đã cắt
-      }, 'image/jpeg');
+        resolve(blob);
+      }, 'image/' + format);
     };
 
     image.onerror = (error) => reject(error);

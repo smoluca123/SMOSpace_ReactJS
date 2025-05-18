@@ -1,18 +1,21 @@
 import RefreshButton from '@/components/RefreshButton';
 import ContentWrapper from '@/modules/home/components/ContentWrapper';
 import FriendRequestList from './FriendRequestList';
+import { useGetMyFriendRequests } from '@/modules/friends/components/FriendRequests/querys';
 
 export default function FriendsRequest() {
+  const query = useGetMyFriendRequests();
+
   return (
     <ContentWrapper>
       {/* title */}
-      <div className='flex items-center justify-between w-full mb-2 '>
+      <div className='flex justify-between items-center mb-2 w-full'>
         <h1 className='text-2xl font-bold text-foreground'>Friend request </h1>
 
-        <RefreshButton />
+        <RefreshButton onClick={() => query.refetch()} />
       </div>
 
-      <FriendRequestList />
+      <FriendRequestList friendRequestsQuery={query} />
     </ContentWrapper>
   );
 }

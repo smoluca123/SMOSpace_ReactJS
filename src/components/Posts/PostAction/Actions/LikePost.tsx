@@ -4,21 +4,40 @@ import { usePostContext } from '@/hooks/usePostContext';
 import { cn } from '@/lib/utils';
 import { ThumbsUp } from 'lucide-react';
 import { AnimationControls, motion, useAnimationControls } from 'framer-motion';
+import { useEffect, useOptimistic, useTransition } from 'react';
 
 export default function LikePost() {
   const { post } = usePostContext();
-  const { mutate: likePost } = useLikePostMutation();
+  const { mutateAsync: likePost } = useLikePostMutation();
+  const [optimisticIsLiked, addOptimistic] = useOptimistic<boolean, boolean>(
+    post.isLiked,
+    (state) => !state,
+  );
+
+  const [isPending, startTransition] = useTransition();
+
   const controls = useAnimationControls();
 
   const handleLike = () => {
-    likePost({ postId: post.id });
-    controls.start('click');
+    try {
+      controls.start('click');
+      startTransition(async () => {
+        addOptimistic(!optimisticIsLiked);
+        if (isPending) return;
+        await likePost({ postId: post.id });
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
+  useEffect(() => {
+    console.log('optimisticIsLiked', optimisticIsLiked);
+  }, [optimisticIsLiked]);
   return (
     <Button
-      className={cn('flex items-center gap-2', {
-        'text-primary hover:text-primary': post.isLiked,
+      className={cn('flex gap-2 items-center', {
+        'text-primary hover:text-primary': optimisticIsLiked,
       })}
       variant='ghost'
       onClick={handleLike}
