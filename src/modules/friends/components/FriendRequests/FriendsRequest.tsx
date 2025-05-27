@@ -6,13 +6,15 @@ import { useGetMyFriendRequests } from '@/modules/friends/components/FriendReque
 export default function FriendsRequest() {
   const query = useGetMyFriendRequests();
 
+  const { refetch, isFetching } = query;
+
   return (
     <ContentWrapper>
       {/* title */}
       <div className='flex justify-between items-center mb-2 w-full'>
         <h1 className='text-2xl font-bold text-foreground'>Friend request </h1>
 
-        <RefreshButton onClick={() => query.refetch()} />
+        <RefreshButton isLoading={isFetching} onClick={() => refetch()} />
       </div>
 
       <FriendRequestList friendRequestsQuery={query} />

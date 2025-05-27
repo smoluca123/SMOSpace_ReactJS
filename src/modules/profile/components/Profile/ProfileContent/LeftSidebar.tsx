@@ -1,6 +1,7 @@
 import Followers from '@/components/Followers';
 import Followings from '@/components/Followings';
 import { useProfileContext } from '@/hooks/useProfileContext';
+import FriendList from '@/modules/profile/components/Profile/ProfileContent/FriendList';
 import ProfileInfo from '@/modules/profile/components/Profile/ProfileContent/ProfileInfo';
 
 export default function LeftSidebar() {
@@ -10,6 +11,7 @@ export default function LeftSidebar() {
       <ProfileInfo />
       <Followers userId={userData.id} />
       <Followings userId={userData.id} />
+      <FriendList />
     </div>
   );
 }

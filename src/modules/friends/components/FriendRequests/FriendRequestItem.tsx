@@ -6,6 +6,8 @@ import useFriendRequestContext from '@/hooks/useFriendRequestContext';
 import { DeleteFriendButton } from '@/components/FriendButtons';
 import { Button } from '@/components/ui/button';
 import { Trash, User } from 'lucide-react';
+import NameWithVerifiedIcon from '@/components/NameWithVerifiedIcon';
+import NameWithBadge from '@/components/NameWithBadge';
 
 export default function FriendRequestItem() {
   const { friendRequest } = useFriendRequestContext();
@@ -30,7 +32,11 @@ export default function FriendRequestItem() {
         <div className='block gap-y-4 justify-between md:flex'>
           <div className='flex-1 truncate whitespace-pre-line break-words line-clamp-1'>
             <ProfileLink username={friend.username} className='font-bold text-foreground'>
-              {friend.fullName}
+              <NameWithBadge userData={friend}>
+                <NameWithVerifiedIcon isVerified={friend.isVerified}>
+                  {friend.fullName}
+                </NameWithVerifiedIcon>
+              </NameWithBadge>
             </ProfileLink>
           </div>
           <p className='ml-auto text-sm text-primary'>

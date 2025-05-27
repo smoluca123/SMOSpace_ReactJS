@@ -1,13 +1,18 @@
 import {
   getAllUsersInfomationAPI,
+  getFriendByUserIdAPI,
   getUserFollowersAPI,
   getUserFollowingsAPI,
 } from './../apis/userApi';
 import { getMyFollowersAPI, getMyInfomationAPI, getUserInfomationAPI } from '@/apis/userApi';
-import { IPaginationParamsType, IUserDataWithFollowedStatusType } from '@/lib/types/interfaces';
+import {
+  IPaginationParamsType,
+  IUserDataType,
+  IUserDataWithFollowedStatusType,
+} from '@/lib/types/interfaces';
 import { useAppSelector } from '@/redux/hooks';
 import { selectAuth } from '@/redux/slices/authSlice';
-import { useInfiniteQuery, useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { QueryOptions, useInfiniteQuery, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 
 export const getMyFollowersQueryKey = ['followers', 'me'];
@@ -146,6 +151,7 @@ export function useGetUserInfomation(
   const query = useQuery({
     queryKey: getUserInfomationQueryKey({ userId }),
     queryFn: getUserInfomation,
+    staleTime: 1000 * 60 * 5, // 5 minutes
     ...options,
   });
 
@@ -180,6 +186,36 @@ export function useGetAllUsersInfomation({ keywords }: { keywords: string }) {
     initialPageParam: 1,
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchInterval: 1000 * 60 * 5, // 5 minutes
+  });
+
+  return query;
+}
+
+export const getFriendByUserIdQueryKey = ({ userId }: { userId: UUID }) => [
+  'friend',
+  {
+    userId,
+  },
+];
+
+export function useGetFriendByUserId(
+  { userId }: { userId: UUID },
+  options?: QueryOptions<IUserDataType, Error> & { enabled?: boolean },
+) {
+  const getFriendByUserId = async () => {
+    try {
+      const { data } = await getFriendByUserIdAPI({ userId });
+      return data;
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  };
+
+  const query = useQuery({
+    queryKey: getFriendByUserIdQueryKey({ userId }),
+    queryFn: getFriendByUserId,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    ...options,
   });
 
   return query;

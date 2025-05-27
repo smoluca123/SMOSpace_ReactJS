@@ -1,6 +1,7 @@
 import InfiniteScrollContainer from '@/components/InfiniteScrollContainer';
 import { FollowNotificationItem } from '@/components/Notification/EntityNotifications';
 import CommentNotificationItem from '@/components/Notification/EntityNotifications/CommentNotificationItem';
+import FriendRequestNotificationItem from '@/components/Notification/EntityNotifications/FriendRequestNotificationItem';
 import { IApiPaginationResponseWrapper, INotificationType } from '@/lib/types/interfaces';
 import { InfiniteData } from '@tanstack/react-query';
 
@@ -34,6 +35,13 @@ export default function Notifications({
                 case 'COMMENT':
                   return (
                     <CommentNotificationItem notification={notification} key={notification.id} />
+                  );
+                case 'FRIENDSHIP':
+                  return (
+                    <FriendRequestNotificationItem
+                      notification={notification}
+                      key={notification.id}
+                    />
                   );
                 default:
                   return null;
