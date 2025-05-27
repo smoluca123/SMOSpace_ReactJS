@@ -377,3 +377,57 @@ export const deleteFriendAPI = async ({ userId }: { userId: UUID }) => {
     throw error.message;
   }
 };
+
+export const getMyFriendsAPI = async ({ page, limit }: IPaginationParamsType) => {
+  try {
+    const { data } = await baseApi.get<
+      IApiPaginationResponseWrapper<IUserDataType> & {
+        user: IUserDataType;
+      }
+    >('/user/friends', {
+      params: {
+        page,
+        limit,
+      },
+    });
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const getUserFriendsAPI = async ({
+  userId,
+  page,
+  limit,
+}: IPaginationParamsType & { userId: UUID }) => {
+  try {
+    const { data } = await baseApi.get<
+      IApiPaginationResponseWrapper<IUserDataType> & {
+        user: IUserDataType;
+      }
+    >(`/user/friends/${userId}`, {
+      params: {
+        page,
+        limit,
+      },
+    });
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const getFriendByUserIdAPI = async ({ userId }: { userId: UUID }) => {
+  try {
+    const { data } = await baseApi.get<IApiResponseWrapper<IUserDataType>>(
+      `/user/friend/get-friend/${userId}`,
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};

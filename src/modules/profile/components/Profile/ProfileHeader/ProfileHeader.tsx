@@ -1,7 +1,9 @@
 import NameWithBadge from '@/components/NameWithBadge';
 import NameWithVerifiedIcon from '@/components/NameWithVerifiedIcon';
 import { useProfileContext } from '@/hooks/useProfileContext';
+import { useGetFriendByUserId } from '@/lib/querys';
 import { ProfileCoverImage } from '@/modules/profile/components/Profile/ProfileHeader';
+import ProfileActions from '@/modules/profile/components/Profile/ProfileHeader/ProfileActions';
 import ProfileAvatarImage from '@/modules/profile/components/Profile/ProfileHeader/ProfileAvatarImage';
 import { EditCoverImageButton } from '@/modules/profile/components/Profile/ProfileHeader/ProfileCoverImage';
 
@@ -33,12 +35,24 @@ export default function ProfileHeader() {
         </div>
 
         {/* Edit Profile Button */}
-        {isMe && (
-          <div className='absolute right-10 bottom-10'>
-            <EditCoverImageButton />
-          </div>
-        )}
+        <div className='flex absolute right-10 bottom-10 gap-4'>
+          {isMe && <EditCoverImageButton />}
+          <ProfileHeaderActions />
+        </div>
       </div>
     </div>
   );
+}
+
+export function ProfileHeaderActions() {
+  const { userData, isMe } = useProfileContext();
+  const { isSuccess, data } = useGetFriendByUserId(
+    { userId: userData.id },
+    {
+      enabled: !isMe,
+    },
+  );
+  const isFriend = isSuccess && !!data;
+  if (!userData) return null;
+  return <>{!isMe && isFriend && <ProfileActions />}</>;
 }

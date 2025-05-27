@@ -231,7 +231,7 @@ export interface INotificationType {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata: any;
   content: INotificationContent;
-  entityType: 'FOLLOW' | 'COMMENT';
+  entityType: 'FOLLOW' | 'COMMENT' | 'FRIENDSHIP';
   recipientId: string;
   readAt: null;
   sender: IUserDataType;
@@ -245,6 +245,10 @@ export interface ICommentNotificationType extends INotificationType {
   metadata: IMetadataComment;
 }
 
+export interface IFriendRequestNotificationType extends INotificationType {
+  metadata: IFriendRequestNotificationMetadata;
+}
+
 interface INotificationContent {
   title: string;
   message: string;
@@ -252,6 +256,15 @@ interface INotificationContent {
 
 interface IFollowNotificationMetadata {
   follower: IMetadataFollower;
+}
+
+interface IFriendRequestNotificationMetadata {
+  friend: {
+    id: UUID;
+    avatar: string;
+    fullName: string;
+    username: string;
+  };
 }
 
 interface IMetadataFollower {
@@ -273,7 +286,7 @@ interface IMetadataComment {
 
 interface ITypeNotification {
   id: string;
-  type: 'FOLLOW_USER' | 'REPLY_COMMENT' | 'COMMENT_POST';
+  type: 'FOLLOW_USER' | 'REPLY_COMMENT' | 'COMMENT_POST' | 'FRIEND_REQUEST';
 }
 
 export interface IFriendRequestDataType {
