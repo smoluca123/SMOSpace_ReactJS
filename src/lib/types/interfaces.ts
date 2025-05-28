@@ -59,7 +59,7 @@ export interface IUserDataType {
   isVerified: boolean;
   isBanned: boolean;
   createdAt: string;
-  upstringdAt: string;
+  updatedAt: string;
   credits: number;
   followerCount: number;
   followingCount: number;
@@ -130,7 +130,7 @@ export interface IPostDataType {
   content: string;
   authorId: string;
   createdAt: string;
-  upstringdAt: string;
+  updatedAt: string;
   isPrivate: boolean;
   likeCount: number;
   commentCount: number;
@@ -154,7 +154,7 @@ export interface IPostDataWithLikedStatusType extends IPostDataType {
 //   isVerified: boolean;
 //   isBanned: boolean;
 //   createdAt: string;
-//   upstringdAt: string;
+//   updatedAt: string;
 //   credits: number;
 //   userType: IUserDataType;
 //   avatar: null;
