@@ -34,6 +34,7 @@
     "@radix-ui/react-toast": "^1.2.2",
     "@radix-ui/react-tooltip": "^1.1.8",
     "@reduxjs/toolkit": "^2.3.0",
+    "@tanstack/react-pacer": "^0.8.0",
     "@tanstack/react-query": "^5.62.8",
     "@tanstack/react-query-devtools": "^5.62.8",
     "@tiptap/extension-heading": "^2.11.0",

@@ -431,3 +431,13 @@ export const getFriendByUserIdAPI = async ({ userId }: { userId: UUID }) => {
     throw error.message;
   }
 };
+
+export const deleteUserAPI = async (userId: UUID) => {
+  try {
+    const { data } = await baseApi.delete<IApiResponseWrapper<IUserDataType>>('/user/' + userId);
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
