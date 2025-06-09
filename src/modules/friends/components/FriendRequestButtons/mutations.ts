@@ -1,6 +1,11 @@
 import { acceptFriendRequestAPI, cancelFriendRequestAPI } from '@/apis/userApi';
+import { notificationsQueryKey } from '@/components/Notification/querys';
 import useUpdateDataInfomation from '@/hooks/useUpdateDataInfomation';
-import { getUserInfomationQueryKey } from '@/lib/querys';
+import {
+  getUserFollowersQueryKey,
+  getUserFollowingsQueryKey,
+  getUserInfomationQueryKey,
+} from '@/lib/querys';
 import {
   IApiPaginationResponseWrapper,
   IFriendRequestWithFriendDataType,
@@ -94,9 +99,35 @@ export const useAcceptFriendRequest = () => {
         queryKey: getUserFriendsQueryKey(newData.user.id),
       };
 
+      const myFollowersQueryFilter = {
+        queryKey: getUserFollowersQueryKey({ userId: newData.friend.id }),
+      };
+
+      const userFollowersQueryFilter = {
+        queryKey: getUserFollowersQueryKey({ userId: newData.user.id }),
+      };
+
+      const myFollowingsQueryFilter = {
+        queryKey: getUserFollowingsQueryKey({ userId: newData.friend.id }),
+      };
+
+      const userFollowingsQueryFilter = {
+        queryKey: getUserFollowingsQueryKey({ userId: newData.user.id }),
+      };
+
+      const notificationQueryFilter = {
+        queryKey: notificationsQueryKey,
+      };
+
       // Cancel any ongoing queries that match the query filter
       queryClient.cancelQueries(friendRequestQueryFilter);
       queryClient.cancelQueries(userDataQueryFilter);
+      queryClient.cancelQueries(myFriendListQueryFilter);
+      queryClient.cancelQueries(userFriendListQueryFilter);
+      queryClient.invalidateQueries(myFollowersQueryFilter);
+      queryClient.invalidateQueries(userFollowersQueryFilter);
+      queryClient.invalidateQueries(myFollowingsQueryFilter);
+      queryClient.invalidateQueries(userFollowingsQueryFilter);
 
       // Update the cached data for the friend requests query
       queryClient.setQueriesData<
@@ -168,6 +199,8 @@ export const useAcceptFriendRequest = () => {
         };
       });
       // queryClient.invalidateQueries(myFriendListQueryFilter);
+
+      queryClient.invalidateQueries(notificationQueryFilter);
 
       // Update additional data information with the new friend's data
       updateDataInfomation({
