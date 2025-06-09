@@ -198,7 +198,7 @@ export const getAllUsersInfomationAPI = async ({
 
 export const updateInfomationAPI = async (newData: IUpdateInfomationType) => {
   try {
-    const { data } = await baseApi.put<IApiResponseWrapper<IUserDataType>>('/user/me', newData);
+    const { data } = await baseApi.patch<IApiResponseWrapper<IUserDataType>>('/user/me', newData);
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;

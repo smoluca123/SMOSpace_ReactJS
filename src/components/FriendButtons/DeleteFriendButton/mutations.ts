@@ -1,6 +1,11 @@
 import { deleteFriendAPI } from '@/apis/userApi';
+import { notificationsQueryKey } from '@/components/Notification/querys';
 import useUpdateDataInfomation from '@/hooks/useUpdateDataInfomation';
-import { getUserInfomationQueryKey } from '@/lib/querys';
+import {
+  getUserFollowersQueryKey,
+  getUserFollowingsQueryKey,
+  getUserInfomationQueryKey,
+} from '@/lib/querys';
 import {
   IApiPaginationResponseWrapper,
   IFriendRequestWithFriendDataType,
@@ -47,10 +52,36 @@ export function useDeleteFriend() {
         queryKey: getUserFriendsQueryKey(newData.user.id),
       };
 
+      const myFollowersQueryFilter = {
+        queryKey: getUserFollowersQueryKey({ userId: newData.friend.id }),
+      };
+
+      const userFollowersQueryFilter = {
+        queryKey: getUserFollowersQueryKey({ userId: newData.user.id }),
+      };
+
+      const myFollowingsQueryFilter = {
+        queryKey: getUserFollowingsQueryKey({ userId: newData.friend.id }),
+      };
+
+      const userFollowingsQueryFilter = {
+        queryKey: getUserFollowingsQueryKey({ userId: newData.user.id }),
+      };
+
+      const notificationQueryFilter = {
+        queryKey: notificationsQueryKey,
+      };
+
       // Cancel any ongoing queries that match the friend request query filter
       queryClient.cancelQueries(friendRequestQueryFilter);
       // Cancel any ongoing queries that match the friend list query filter
       queryClient.cancelQueries(myFriendListQueryFilter);
+
+      queryClient.invalidateQueries(myFollowersQueryFilter);
+      queryClient.invalidateQueries(userFollowersQueryFilter);
+      queryClient.invalidateQueries(myFollowingsQueryFilter);
+      queryClient.invalidateQueries(userFollowingsQueryFilter);
+      queryClient.invalidateQueries(notificationQueryFilter);
 
       // Update the cached data for the friend requests query
       queryClient.setQueriesData<

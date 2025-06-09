@@ -4,8 +4,9 @@ import UserAvatar from '../UserAvatar';
 import { PropsWithChildren } from 'react';
 import { INotificationType } from '@/lib/types/interfaces';
 import useTimeDistance from '@/hooks/useTimeDistance';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import NotificationDot from '@/components/Notification/NotificationDot';
+import { useChangeNotificationStatus } from '@/components/Notification/mutations';
 
 interface NotificationItemProps extends PropsWithChildren {
   notification: INotificationType;
@@ -14,11 +15,19 @@ interface NotificationItemProps extends PropsWithChildren {
 
 export default function NotificationItem({ children, notification, to }: NotificationItemProps) {
   const timeDistance = useTimeDistance({ dateString: notification.createdAt });
+  const { mutateAsync: changeNotificationStatus } = useChangeNotificationStatus();
+  const navigate = useNavigate();
 
   return (
     <PopoverClose className='w-full'>
-      <Link
-        to={to ?? ''}
+      <div
+        onClick={() => {
+          changeNotificationStatus({
+            notificationId: notification.id,
+            isRead: true,
+          });
+          navigate(to ?? '');
+        }}
         className='flex relative gap-4 items-center p-3 w-full text-left rounded-sm transition-colors duration-300 cursor-pointer hover:bg-accent'
       >
         {/* Avatar */}
@@ -45,7 +54,7 @@ export default function NotificationItem({ children, notification, to }: Notific
 
         {/* Unreaded dot */}
         {!notification.isRead && <NotificationDot />}
-      </Link>
+      </div>
     </PopoverClose>
   );
 }

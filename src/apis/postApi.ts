@@ -223,7 +223,7 @@ export const updatePostAPI = async ({
   isPrivate: boolean;
 }) => {
   try {
-    const { data } = await baseApi.put<IApiResponseWrapper<IPostDataType>>(`/post/${postId}`, {
+    const { data } = await baseApi.patch<IApiResponseWrapper<IPostDataType>>(`/post/${postId}`, {
       content,
       isPrivate,
     });
@@ -284,7 +284,7 @@ export const updateCommentAPI = async ({
   content: string;
 }) => {
   try {
-    const { data } = await baseApi.put<IApiResponseWrapper<ICommentDataType>>(
+    const { data } = await baseApi.patch<IApiResponseWrapper<ICommentDataType>>(
       `/post/comment/${commentId}`,
       { content },
     );

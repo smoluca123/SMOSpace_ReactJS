@@ -2,7 +2,7 @@ import { getNotificationsAPI } from '@/apis/notificationApi';
 import { IPaginationParamsType } from '@/lib/types/interfaces';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-const notificationsQueryKey = ['notifications'];
+export const notificationsQueryKey = ['notifications'];
 
 export function useGetNotifications(options?: { enabled?: boolean }) {
   const getNotifications = async ({ page, limit }: IPaginationParamsType) => {
