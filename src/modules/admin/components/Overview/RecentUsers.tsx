@@ -2,15 +2,18 @@ import { IUserDataType } from '@/lib/types/interfaces';
 import InfiniteScrollContainer from '@/components/InfiniteScrollContainer';
 import UserAvatar from '@/components/UserAvatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users } from 'lucide-react';
+import { Loader2, Users } from 'lucide-react';
 import { useGetAllUsersInfomation } from '@/lib/querys';
 import { Badge } from '@/components/ui/badge';
 import { formatDate } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 export default function RecentUsers() {
   const getUserBagVariant = (user: IUserDataType) => (user.isActive ? 'default' : 'secondary');
 
-  const { data, fetchNextPage, hasNextPage } = useGetAllUsersInfomation({ keywords: '' });
+  const { data, isLoading, fetchNextPage, hasNextPage } = useGetAllUsersInfomation({
+    keywords: '',
+  });
 
   return (
     <Card>
@@ -35,9 +38,21 @@ export default function RecentUsers() {
               >
                 <UserAvatar avatarUrl={user.avatar} />
                 <div className='flex-1 space-y-1'>
-                  <p className='text-sm font-medium text-foreground'>{user.fullName}</p>
-                  <p className='text-xs text-muted-foreground'>{user.email}</p>
-                  <p className='text-xs text-muted-foreground'>{user.followerCount} followers</p>
+                  <p
+                    className={cn('text-sm font-medium text-foreground', {
+                      'text-destructive line-through': user.isBanned,
+                    })}
+                  >
+                    {user.fullName}
+                  </p>
+                  <div
+                    className={cn('text-muted-foreground', {
+                      'text-destructive line-through': user.isBanned,
+                    })}
+                  >
+                    <p>{user.email}</p>
+                    <p>{user.followerCount} followers</p>
+                  </div>
                 </div>
                 <div className='space-y-1 text-right'>
                   <Badge variant={getUserBagVariant(user)}>
@@ -50,6 +65,8 @@ export default function RecentUsers() {
               </div>
             )),
           )}
+
+          {isLoading && <Loader2 className='mx-auto text-primary animate-spin' />}
         </InfiniteScrollContainer>
       </CardContent>
     </Card>

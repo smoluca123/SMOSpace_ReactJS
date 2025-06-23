@@ -1,7 +1,6 @@
 import { Bell, Search, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import ModeToggle from '@/components/ModeToggle';
 import UserButton from '@/components/UserButton';
 
@@ -33,12 +32,9 @@ export default function AdminHeader() {
           <ModeToggle />
 
           {/* Notifications */}
-          <Button variant='ghost' size='icon' className='relative'>
-            <Bell className='w-5 h-5' />
-            <Badge className='absolute w-5 h-5 p-0 text-xs -top-1 -right-1 bg-destructive text-destructive-foreground'>
-              3
-            </Badge>
-          </Button>
+          <button className='~p-2/4 rounded-md hover:bg-accent'>
+            <Bell />
+          </button>
 
           {/* User Menu */}
 

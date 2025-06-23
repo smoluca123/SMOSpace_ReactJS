@@ -14,7 +14,7 @@ import usePostsManagementContext from '@/hooks/usePostsManagementContext';
 import { IPostDataType } from '@/lib/types/interfaces';
 import { formatDate, formatDistanceToNow } from 'date-fns';
 import PostStatusBadge from '../../PostStatusBadge';
-import { Calendar, FileText, Heart, MessageSquare, SortAsc, SortDesc } from 'lucide-react';
+import { Calendar, FileText, Heart, MessageSquare } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import parse from 'html-react-parser';
 
@@ -24,37 +24,8 @@ interface PostsTableContentProps {
   sortedPosts: IPostDataType[];
 }
 
-export default function PostsTableContent({
-  setIsDeleteDialogOpen,
-  setIsEditDialogOpen,
-  sortedPosts,
-}: PostsTableContentProps) {
-  const {
-    setSelectedPosts,
-    sortDirection,
-    sortField,
-    selectedPosts,
-    setSortField,
-    setSortDirection,
-  } = usePostsManagementContext();
-
-  const handleSort = (field: string) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('desc');
-    }
-  };
-
-  const getSortIcon = (field: string) => {
-    if (sortField !== field) return null;
-    return sortDirection === 'asc' ? (
-      <SortAsc className='w-4 h-4' />
-    ) : (
-      <SortDesc className='w-4 h-4' />
-    );
-  };
+export default function PostsTableContent({ sortedPosts }: PostsTableContentProps) {
+  const { setSelectedPosts, selectedPosts } = usePostsManagementContext();
 
   const handleSelectPost = (post: IPostDataType) => {
     setSelectedPosts((prev) => {
@@ -85,49 +56,25 @@ export default function PostsTableContent({
                 onCheckedChange={handleSelectAll}
               />
             </TableHead>
-            <TableHead
-              className='transition-colors cursor-pointer hover:bg-muted/50'
-              onClick={() => handleSort('title')}
-            >
-              <div className='flex items-center space-x-2'>
-                <span>Post</span>
-                {getSortIcon('title')}
-              </div>
-            </TableHead>
-            <TableHead
-              className='transition-colors cursor-pointer hover:bg-muted/50'
-              onClick={() => handleSort('author')}
-            >
+
+            <TableHead className='transition-colors cursor-pointer hover:bg-muted/50'>
               <div className='flex items-center space-x-2'>
                 <span>Author</span>
-                {getSortIcon('author')}
               </div>
             </TableHead>
-            <TableHead
-              className='transition-colors cursor-pointer hover:bg-muted/50'
-              onClick={() => handleSort('status')}
-            >
+            <TableHead className='transition-colors cursor-pointer hover:bg-muted/50'>
               <div className='flex items-center space-x-2'>
                 <span>Status</span>
-                {getSortIcon('status')}
               </div>
             </TableHead>
-            <TableHead
-              className='transition-colors cursor-pointer hover:bg-muted/50'
-              onClick={() => handleSort('category')}
-            >
+            <TableHead className='transition-colors cursor-pointer hover:bg-muted/50'>
               <div className='flex items-center space-x-2'>
                 <span>Category</span>
-                {getSortIcon('category')}
               </div>
             </TableHead>
-            <TableHead
-              className='hidden transition-colors cursor-pointer lg:table-cell hover:bg-muted/50'
-              onClick={() => handleSort('createdAt')}
-            >
+            <TableHead className='hidden transition-colors cursor-pointer lg:table-cell hover:bg-muted/50'>
               <div className='flex items-center space-x-2'>
                 <span>Created</span>
-                {getSortIcon('createdAt')}
               </div>
             </TableHead>
             <TableHead className='hidden lg:table-cell'>Reports</TableHead>
@@ -211,11 +158,7 @@ export default function PostsTableContent({
                 </Badge>
               </TableCell>
               <TableCell className='text-right'>
-                <PostAction
-                  post={post}
-                  setIsEditDialogOpen={setIsEditDialogOpen}
-                  setIsDeleteDialogOpen={setIsDeleteDialogOpen}
-                />
+                <PostAction post={post} />
               </TableCell>
             </TableRow>
           ))}

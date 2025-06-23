@@ -441,3 +441,52 @@ export const deleteUserAPI = async (userId: UUID) => {
     throw error.message;
   }
 };
+
+export const adminToggleBanUserAPI = async ({
+  userId,
+  isBanned,
+}: {
+  userId: UUID;
+  isBanned: boolean;
+}) => {
+  try {
+    const { data } = await baseApi.put<IApiResponseWrapper<IUserDataType>>('/user/ban/' + userId, {
+      isBanned,
+    });
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const adminUpdateUserInfomationAPI = async ({
+  userId,
+  newUserData,
+}: {
+  userId: UUID;
+  newUserData: IUpdateInfomationType;
+}) => {
+  try {
+    const { data } = await baseApi.patch<IApiResponseWrapper<IUserDataType>>(
+      '/user/' + userId,
+      newUserData,
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const adminToggleBanUsers = async (banList: { userId: UUID; isBanned: boolean }[]) => {
+  try {
+    const { data } = await baseApi.patch<IApiResponseWrapper<IUserDataType[]>>('/user/ban/users', {
+      banList,
+    });
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};

@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import usePostsManagementContext from '@/hooks/usePostsManagementContext';
+import { useAdminDeletePosts } from '../../mutations';
 
 export default function MultiplePostDeleteDialog({
   onClose,
@@ -23,10 +24,18 @@ export default function MultiplePostDeleteDialog({
   };
 
   const { selectedPosts } = usePostsManagementContext();
+  const { mutate } = useAdminDeletePosts();
 
-  const handleMutipleDelete = () => console.log(123);
-
-  console.log(selectedPosts);
+  const handleMutipleDelete = () => {
+    mutate(
+      selectedPosts.map((post) => post.id),
+      {
+        onSuccess: () => {
+          onClose();
+        },
+      },
+    );
+  };
 
   return (
     <>
