@@ -84,6 +84,12 @@ export default function UpdateUserDetailsForm() {
       },
       onError: (error) => {
         setError(error.message);
+        toast({
+          title: 'Error',
+          description: error.message,
+          className: 'w-[300px] md:w-auto',
+          variant: 'destructive',
+        });
       },
     });
   };

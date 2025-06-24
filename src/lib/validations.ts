@@ -50,7 +50,7 @@ export const updateUserInfomationSchema = z.object({
     .number()
     .int()
     .max(130, { message: 'You age is too old' })
-    .min(10, 'Must be at least 10 years old'),
+    .min(0, 'Must be at least 10 years old'),
 });
 
 export const verifySchema = z.object({
@@ -73,6 +73,9 @@ export const resetPasswordSchema = verifySchema
     path: ['confirmPassword'],
   });
 
+export const adminUpdateUserInfomatonSchema =
+  updateUserInfomationSchema.merge(updateUserDetailsSchema);
+
 export type LoginValues = z.infer<typeof loginSchema>;
 export type RegisterValues = z.infer<typeof registerSchema>;
 export type CommentValues = z.infer<typeof commentSchema>;
@@ -81,3 +84,4 @@ export type UpdateUserInfomationValues = z.infer<typeof updateUserInfomationSche
 export type VerifyValues = z.infer<typeof verifySchema>;
 export type ForgetPasswordValues = z.infer<typeof forgetPasswordSchema>;
 export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
+export type AdminUpdateUserInfomatonValues = z.infer<typeof adminUpdateUserInfomatonSchema>;

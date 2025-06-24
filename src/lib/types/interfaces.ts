@@ -303,3 +303,12 @@ export interface IFriendRequestWithUserDataType extends IFriendRequestDataType {
 export interface IFriendRequestWithFriendDataType extends IFriendRequestDataType {
   friend: IUserDataType;
 }
+
+export interface StatItem {
+  title: string;
+  value: string;
+  change: string;
+  trend: 'up' | 'down';
+  icon: React.ElementType;
+  description: string;
+}

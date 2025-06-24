@@ -14,12 +14,12 @@ export default function SubmitPostBox() {
 
   return (
     <>
-      <ContentWrapper className='flex gap-x-4 items-center'>
+      <ContentWrapper className='flex items-center gap-x-4'>
         {user && (
           <>
             <UserAvatar fallbackName={user.fullName} avatarUrl={user.avatar} />
             <div
-              className='grid place-items-center w-full h-9 rounded-lg border cursor-text bg-background hover:bg-background/70 border-border'
+              className='grid w-full border rounded-lg place-items-center h-9 cursor-text bg-background hover:bg-background/70 border-border'
               onClick={() => setOpen(true)}
             >
               <span className='text-sm text-muted-foreground'>Write your post...</span>
@@ -28,7 +28,7 @@ export default function SubmitPostBox() {
         )}
         {!user && (
           <Link className='block w-full' to='/auth/login'>
-            <div className='grid place-items-center w-full h-9 rounded-lg border cursor-pointer bg-background hover:bg-background/70 border-border'>
+            <div className='grid w-full border rounded-lg cursor-pointer place-items-center h-9 bg-background hover:bg-background/70 border-border'>
               <span className='text-sm text-muted-foreground'>Sign in to submit a post</span>
             </div>
           </Link>

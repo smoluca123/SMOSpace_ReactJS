@@ -9,6 +9,6 @@ export interface IUpdateInfomationType {
     hometown?: string;
     website?: string;
     jobs?: string[];
-    birthDate?: string;
+    birthDate?: string | null;
   };
 }

@@ -14,6 +14,12 @@ import useNotificationSocket from '@/hooks/useNotifiicationSocket';
 import ForgetPassword from '@/modules/auth/components/ForgetPassword';
 import PostDetailPage from '@/modules/post-detail/pages/PostDetailPage';
 import FriendsPage from '@/modules/friends/pages/FriendsPage';
+import AdminPage from './modules/admin/pages/AdminPage';
+import OverviewPage from './modules/admin/pages/OverviewPage';
+import UsersManagementPage from './modules/admin/pages/UsersManagementPage';
+import UserDetailManagementPage from './modules/admin/pages/UserDetailManagementPage';
+import PostsManagementPage from './modules/admin/pages/PostsManagementPage';
+import AnalyticsPage from './modules/admin/pages/AnalyticsPage';
 
 const router = createBrowserRouter(
   [
@@ -87,6 +93,33 @@ const router = createBrowserRouter(
         {
           path: 'profile',
           element: <ProfileSettingPage />,
+        },
+      ],
+    },
+    {
+      path: '/admin',
+      element: <AdminPage />,
+      children: [
+        {
+          index: true,
+          element: <OverviewPage />,
+        },
+        {
+          path: 'users',
+          element: <UsersManagementPage />,
+        },
+        {
+          path: 'users/:username',
+          element: <UserDetailManagementPage />,
+        },
+        {
+          path: 'posts',
+          element: <PostsManagementPage />,
+        },
+
+        {
+          path: 'analytics',
+          element: <AnalyticsPage />,
         },
       ],
     },
