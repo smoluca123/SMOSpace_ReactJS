@@ -1,3 +1,5 @@
+import { UserType } from '@/lib/types/types';
+
 export interface IUpdateInfomationType {
   bio?: string;
   fullName?: string;
@@ -11,4 +13,9 @@ export interface IUpdateInfomationType {
     jobs?: string[];
     birthDate?: string | null;
   };
+  typeId?: UserType;
+  isActive?: boolean;
+  isVerified?: boolean;
+  isBanned?: boolean;
+  credits?: number;
 }

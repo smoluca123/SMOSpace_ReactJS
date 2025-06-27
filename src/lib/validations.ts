@@ -73,8 +73,28 @@ export const resetPasswordSchema = verifySchema
     path: ['confirmPassword'],
   });
 
-export const adminUpdateUserInfomatonSchema =
-  updateUserInfomationSchema.merge(updateUserDetailsSchema);
+export const adminUpdateUserInfomatonSchema = updateUserInfomationSchema
+  .merge(updateUserDetailsSchema)
+  .merge(
+    z.object({
+      isBanned: z.boolean(),
+      isVerified: z.boolean(),
+      isActive: z.boolean(),
+      typeId: z.string(),
+      credits: z.number(),
+    }),
+  );
+
+export const adminCreateUserSchema = registerSchema.merge(
+  z.object({
+    isBanned: z.boolean(),
+    isVerified: z.boolean(),
+    isActive: z.boolean(),
+    credits: z.number(),
+    bio: z.optional(z.string()),
+    typeId: z.string(),
+  }),
+);
 
 export type LoginValues = z.infer<typeof loginSchema>;
 export type RegisterValues = z.infer<typeof registerSchema>;
@@ -85,3 +105,4 @@ export type VerifyValues = z.infer<typeof verifySchema>;
 export type ForgetPasswordValues = z.infer<typeof forgetPasswordSchema>;
 export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 export type AdminUpdateUserInfomatonValues = z.infer<typeof adminUpdateUserInfomatonSchema>;
+export type AdminCreateUserType = z.infer<typeof adminCreateUserSchema>;

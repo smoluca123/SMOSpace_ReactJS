@@ -1,0 +1,6 @@
+export enum UserType {
+  USER = '0c2d5733-69d0-4268-8a60-b39997f656b6',
+  VIP_USER = 'e741110a-432d-4c02-acf4-4ba4428f37b7',
+  MODERATOR = '588b1a65-426a-468c-9365-dc1c9b851a79',
+  SUPER_ADMIN = '7c2f4d9a-b10a-4746-9e5b-f9551660bd4c',
+}

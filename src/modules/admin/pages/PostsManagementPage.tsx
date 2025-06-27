@@ -1,18 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import StatCard from '../components/StatCard';
-import { IApiPaginationResponseWrapper, IPostDataType, StatItem } from '@/lib/types/interfaces';
+import { StatItem } from '@/lib/types/interfaces';
 import CreatePostDialog from '@/components/Posts/Editor/CreatePostDialog';
-import PostsTable from '../components/PostsManagement/PostsTable';
 import PostsManagementProvider from '../components/PostsManagement/PostsManagementProvider';
 import { Download, Clock, Plus, Upload, FileText, CheckCircle, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-
 import MultiplePostDeleteDialog from '../components/AdminActions/PostActions/MultiplePostDeleteDialog';
-import { useGetAdminPostListQuery } from '../components/querys';
+import { useGetAdminPostListQuery, useGetPostCountQuery } from '../components/querys';
 import { useSearchParams } from 'react-router-dom';
 import { useDebounce } from '@uidotdev/usehooks';
-import { UseQueryResult } from '@tanstack/react-query';
+import PostsTable from '../components/PostsManagement/PostsTable';
 
 export default function PostsManagementPage() {
   return (
@@ -25,15 +23,26 @@ export default function PostsManagementPage() {
 const PostsManagementSection = () => {
   const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
   const [searchParam, setSearchParam] = useSearchParams();
-
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
+  const page = Number(searchParam.get('page')) || 1;
+  const limit = Number(searchParam.get('limit')) || 10;
+
   const query = useGetAdminPostListQuery({
     keywords: debouncedSearchTerm,
-    page: parseInt(searchParam.get('page') || '1'),
-    limit: parseInt(searchParam.get('limit') || '10'),
+    page,
+    limit,
   });
+
+  useEffect(() => {
+    if (query.isSuccess && page > query.data?.data.totalPage) {
+      setSearchParam({
+        page: '1',
+        limit: limit.toString(),
+      });
+    }
+  }, [query, setSearchParam, limit, page]);
 
   return (
     <div className='space-y-6'>
@@ -41,7 +50,7 @@ const PostsManagementSection = () => {
       <PostsManagementHeader />
 
       {/* Enhanced Stats Cards */}
-      <StatSection query={query} />
+      <StatSection />
 
       {/* Enhanced Search and Filter */}
       <div className='relative flex-1'>
@@ -52,8 +61,8 @@ const PostsManagementSection = () => {
           onChange={(e) => {
             setSearchTerm(e.target.value);
             setSearchParam({
-              page: '1',
-              limit: searchParam.get('limit') || '10',
+              page: page.toFixed(),
+              limit: limit.toString(),
             });
           }}
           className='pl-10 transition-colors bg-background/50 border-muted focus:border-primary'
@@ -106,15 +115,15 @@ const PostsManagementHeader = () => {
   );
 };
 
-const StatSection = ({
-  query,
-}: {
-  query: UseQueryResult<IApiPaginationResponseWrapper<IPostDataType>, Error>;
-}) => {
+const StatSection = () => {
+  const { data: postCountData } = useGetPostCountQuery();
+
+  if (!postCountData) return null;
+
   const stats: StatItem[] = [
     {
       title: 'Total Posts',
-      value: query.data?.data.totalCount.toString() || '0',
+      value: postCountData.totalPostsCount.toString(),
       change: '+12%',
       trend: 'up',
       icon: FileText,
@@ -122,7 +131,7 @@ const StatSection = ({
     },
     {
       title: 'Published',
-      value: query?.data?.data?.items?.filter((post) => !post.isPrivate).length.toString() || '0',
+      value: postCountData.publicPostsCount.toString(),
       change: '+5%',
       trend: 'up',
       icon: CheckCircle,
@@ -130,7 +139,7 @@ const StatSection = ({
     },
     {
       title: 'Private',
-      value: query?.data?.data?.items?.filter((post) => post.isPrivate).length.toString() || '0',
+      value: postCountData.privatePostsCount.toString(),
       change: '-2%',
       trend: 'down',
       icon: Clock,

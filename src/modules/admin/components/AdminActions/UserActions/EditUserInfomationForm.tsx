@@ -1,7 +1,6 @@
 'use no memo';
 
 import LoadingButton from '@/components/LoadingButton';
-import RequiredLabel from '@/components/RequiredLabel';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Form,
@@ -13,21 +12,26 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { IUserDataWithFollowedStatusType } from '@/lib/types/interfaces';
-import { cn } from '@/lib/utils';
 import { adminUpdateUserInfomatonSchema, AdminUpdateUserInfomatonValues } from '@/lib/validations';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { SetStateAction, useCallback, useEffect, useState } from 'react';
-import { useFieldArray, useForm, UseFormReturn } from 'react-hook-form';
-import BioEditor from '../../Editor/BioEditor';
-import { Button } from '@/components/ui/button';
-import { Plus, X } from 'lucide-react';
-import PasswordInput from '@/components/PasswordInput';
-import { DatetimePicker } from '@/components/DatetimePicker';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
-import { useAdminUpdateUserInfomation } from '../../mutations';
 import { formatISO } from 'date-fns';
+import { useAdminUpdateUserInfoMutation } from '../../mutations';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { UserType } from '@/lib/types/types';
+import PersonalInfoFields from './PersonalInfoFields';
+import ContactInfoFields from './ContactInfoFields';
+import SecurityInfoFields from './SecurityInfoFields';
+import AdditionalInfoFields from './AdditionalInfoFields';
+import UserDetailFields from './UserDetailFields';
 
 export default function EditUserInfomationForm({
   user,
@@ -44,7 +48,7 @@ export default function EditUserInfomationForm({
   const websites =
     user?.additionalInfo?.websites?.map((website) => ({ websiteName: website })) || [];
 
-  const { mutate, isPending } = useAdminUpdateUserInfomation({ userId: user.id });
+  const { mutate, isPending } = useAdminUpdateUserInfoMutation({ userId: user.id });
 
   const form = useForm<AdminUpdateUserInfomatonValues>({
     defaultValues: {
@@ -62,10 +66,17 @@ export default function EditUserInfomationForm({
       hometown: user?.additionalInfo?.hometown || undefined,
       jobs,
       websites,
+      isActive: false,
+      isBanned: false,
+      isVerified: false,
+      typeId: '',
+      credits: 0,
     },
     resolver: zodResolver(adminUpdateUserInfomatonSchema),
     mode: 'onTouched',
   });
+
+  const stringToBoolean = (str: string) => (str == 'true' ? true : false);
 
   const handleUpdateInfomation = (value: AdminUpdateUserInfomatonValues) => {
     const newUserData = {
@@ -136,323 +147,126 @@ export default function EditUserInfomationForm({
             useBirthDate={useBirthDate}
             setUseBirthDate={setUseBirthDate}
           />
+
+          <FormField
+            control={form.control}
+            name='credits'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Credits</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder='credits'
+                    type='number'
+                    value={field.value}
+                    onChange={(e) =>
+                      field.onChange(e.target.value === '' ? '' : Number(e.target.value))
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <UserDetailFields form={form} />
+          <div className=' space-y-4'>
+            <FormField
+              control={form.control}
+              name='isBanned'
+              render={() => (
+                <FormItem>
+                  <FormLabel>Is Banned</FormLabel>
+                  <Select
+                    onValueChange={(value) => form.setValue('isBanned', stringToBoolean(value))}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder='Select banned state' />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value='true'>True</SelectItem>
+                      <SelectItem value='false'>False</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='isActive'
+              render={() => (
+                <FormItem>
+                  <FormLabel>Is Active</FormLabel>
+                  <Select
+                    onValueChange={(value) => form.setValue('isActive', stringToBoolean(value))}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder='Select active state' />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value='true'>True</SelectItem>
+                      <SelectItem value='false'>False</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='isVerified'
+              render={() => (
+                <FormItem>
+                  <FormLabel>Is Verified</FormLabel>
+                  <Select
+                    onValueChange={(value) => form.setValue('isVerified', stringToBoolean(value))}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder='Select verified state' />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value='true'>True</SelectItem>
+                      <SelectItem value='false'>False</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='typeId'
+              render={() => (
+                <FormItem>
+                  <FormLabel>Account Type</FormLabel>
+                  <Select onValueChange={(value) => form.setValue('typeId', value)}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder='Select Account Type' />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value={UserType.USER}>User</SelectItem>
+                      <SelectItem value={UserType.VIP_USER}>VIP User</SelectItem>
+                      <SelectItem value={UserType.MODERATOR}>Moderator</SelectItem>
+                      <SelectItem value={UserType.SUPER_ADMIN}>Super Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
 
-        <UserDetail form={form} />
-
         {/* Submit button */}
-        <LoadingButton loading={isPending} className='text-white'>
+        <LoadingButton loading={isPending} className='text-white w-full'>
           Update
         </LoadingButton>
       </form>
     </Form>
-  );
-}
-
-type FormProps = {
-  form: UseFormReturn<AdminUpdateUserInfomatonValues>;
-  useBirthDate?: boolean;
-  setUseBirthDate?: React.Dispatch<SetStateAction<boolean>>;
-};
-
-/* Fullname / Age / Username */
-function PersonalInfoFields({ form, useBirthDate }: FormProps) {
-  return (
-    <>
-      <FormField
-        control={form.control}
-        name='fullName'
-        render={({ field }) => (
-          <FormItem>
-            <RequiredLabel>Full Name</RequiredLabel>
-            <FormControl>
-              <Input {...field} placeholder='Ex: Yukicute' />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name='age'
-        render={({ field }) => (
-          <FormItem>
-            <RequiredLabel>Age</RequiredLabel>
-            <FormControl>
-              <Input disabled={useBirthDate} type='number' {...field} placeholder='Ex: 25' />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name='username'
-        render={({ field }) => (
-          <FormItem>
-            <RequiredLabel>Username</RequiredLabel>
-            <FormControl>
-              <Input {...field} placeholder='Ex: Yukidev123' />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </>
-  );
-}
-
-/* Email */
-function ContactInfoFields({ form }: FormProps) {
-  return (
-    <>
-      <FormField
-        control={form.control}
-        name='email'
-        render={({ field }) => (
-          <FormItem>
-            <RequiredLabel>Email</RequiredLabel>
-            <FormControl>
-              <Input {...field} placeholder='Ex: Yukidev2005@smoteam.com' />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name='phoneNumber'
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Phone Number</FormLabel>
-            <FormControl>
-              <Input {...field} placeholder='Ex: 0123456789' />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </>
-  );
-}
-
-/* Password */
-function SecurityInfoFields({ form }: FormProps) {
-  return (
-    <FormField
-      control={form.control}
-      name='password'
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>Password</FormLabel>
-          <FormControl>
-            <PasswordInput {...field} placeholder='Enter your password' />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-}
-
-/* Date of birth */
-function AdditionalInfoFields({ form, useBirthDate, setUseBirthDate }: FormProps) {
-  // Calcula user age
-  const calculatorAge = useCallback(
-    (value?: Date) => {
-      if (!value) return;
-
-      const currentYear = new Date().getFullYear();
-      const yearValue = value.getFullYear();
-      const userAge = currentYear - yearValue;
-
-      form.setValue('age', userAge);
-      form.setValue('birthDate', value);
-    },
-    [form],
-  );
-
-  useEffect(() => {
-    calculatorAge(form.watch('birthDate'));
-  }, [useBirthDate, calculatorAge, form]);
-
-  return (
-    <FormField
-      control={form.control}
-      name='birthDate'
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>Date of birth</FormLabel>
-          <FormControl>
-            <div className='space-y-2 '>
-              <DatetimePicker
-                {...field}
-                disabled={!useBirthDate}
-                format={[['months', 'days', 'years'], []]}
-                onChange={calculatorAge}
-              />
-
-              {/* Checkbox */}
-              <div className='flex items-center gap-x-2'>
-                <Checkbox
-                  onCheckedChange={(checked) => setUseBirthDate?.(!!checked)}
-                  checked={useBirthDate}
-                  id='terms'
-                />
-                <Label htmlFor='terms' className='text-sm text-muted-foreground'>
-                  Use birthdate to automatically calculate your age
-                </Label>
-              </div>
-            </div>
-          </FormControl>
-        </FormItem>
-      )}
-    />
-  );
-}
-
-// User Detall
-function UserDetail({ form }: FormProps) {
-  // Initialize dynamic form arrays for jobs and websites
-  const jobFieldArray = useFieldArray({
-    control: form.control,
-    name: 'jobs',
-  });
-
-  const websiteFieldArray = useFieldArray({
-    control: form.control,
-    name: 'websites',
-  });
-
-  return (
-    <div>
-      {/* Bio Section */}
-      <FormField
-        control={form.control}
-        name='bio'
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className='flex items-center justify-between w-full gap-x-5'>
-              <span>Bio</span>
-              <span
-                className={cn('font-semibold text-muted-foreground', {
-                  'text-destructive': form.getValues('bio').length > 201,
-                })}
-              >
-                {form.getValues('bio').length}/201
-              </span>
-            </FormLabel>
-            <FormControl>
-              <div>
-                <BioEditor
-                  onChangeContent={(content) => field.onChange(content)}
-                  content={field.value}
-                />
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      {/* City Section */}
-      <FormField
-        name='living'
-        control={form.control}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>City</FormLabel>
-            <FormControl>
-              <Input {...field} placeholder='where are you live ?' />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      {/* Country Section */}
-      <FormField
-        name='hometown'
-        control={form.control}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Country</FormLabel>
-            <FormControl>
-              <Input {...field} placeholder='Where are you from ?' />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      {/* Jobs Section */}
-      <div className='space-y-4'>
-        <FormLabel className='block'>Jobs</FormLabel>
-        {jobFieldArray.fields.map((field, index) => (
-          <FormField
-            key={field.id}
-            control={form.control}
-            name={`jobs.${index}.jobName`}
-            render={({ field }) => (
-              <FormItem className='mb-6'>
-                <div className='flex gap-2'>
-                  <Input {...field} placeholder='Enter job title' className='flex-1' />
-                  <Button
-                    type='button'
-                    variant='ghost'
-                    className='text-destructive'
-                    onClick={() => jobFieldArray.remove(index)}
-                  >
-                    <X className='size-4' />
-                  </Button>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        ))}
-
-        {/* Add job button */}
-        <Button
-          disabled={
-            jobFieldArray.fields.length >= 5 ||
-            jobFieldArray.fields.some((_, index) => !form.watch(`jobs.${index}.jobName`))
-          }
-          variant='ghost'
-          type='button'
-          className='w-full text-white bg-secondary'
-          onClick={() => jobFieldArray.append({ jobName: '' })}
-        >
-          <Plus className='size-6' />
-        </Button>
-      </div>
-      {/* Websites Section */}
-      <div className='space-y-4'>
-        <FormLabel className='block'>Websites</FormLabel>
-        {websiteFieldArray.fields.map((field, index) => (
-          <FormField
-            key={field.id}
-            control={form.control}
-            name={`websites.${index}.websiteName`}
-            render={({ field }) => (
-              <FormItem className='mb-6'>
-                <div className='flex gap-2'>
-                  <Input {...field} placeholder='Enter website name' className='flex-1' />
-                  <Button
-                    type='button'
-                    variant='ghost'
-                    className='text-destructive'
-                    onClick={() => websiteFieldArray.remove(index)}
-                  >
-                    <X className='size-4' />
-                  </Button>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        ))}
-      </div>
-    </div>
   );
 }

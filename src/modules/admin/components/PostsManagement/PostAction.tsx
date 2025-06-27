@@ -13,6 +13,7 @@ import { MoreVertical, Eye, Edit, Trash2 } from 'lucide-react';
 import DeletePostDialog from '../AdminActions/PostActions/DeletePostDialog';
 import EditPostDialog from '../AdminActions/PostActions/EditPostDialog';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 interface PostActionProps {
   post: IPostDataType;
@@ -34,10 +35,12 @@ export default function PostAction({ post }: PostActionProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-48'>
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem>
-            <Eye className='w-4 h-4 mr-2' />
-            View Post
-          </DropdownMenuItem>
+          <Link target='_blank' to={'/post/' + post.id}>
+            <DropdownMenuItem>
+              <Eye className='w-4 h-4 mr-2' />
+              View Post
+            </DropdownMenuItem>
+          </Link>
           <DropdownMenuItem
             onClick={() => {
               setSelectedPost(post);
