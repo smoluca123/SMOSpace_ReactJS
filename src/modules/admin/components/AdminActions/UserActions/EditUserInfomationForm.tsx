@@ -66,11 +66,11 @@ export default function EditUserInfomationForm({
       hometown: user?.additionalInfo?.hometown || undefined,
       jobs,
       websites,
-      isActive: false,
-      isBanned: false,
-      isVerified: false,
-      typeId: '',
-      credits: 0,
+      isActive: user.isActive,
+      isBanned: user.isBanned,
+      isVerified: user.isVerified,
+      typeId: user.userType.id,
+      credits: +user.credits,
     },
     resolver: zodResolver(adminUpdateUserInfomatonSchema),
     mode: 'onTouched',
@@ -79,25 +79,19 @@ export default function EditUserInfomationForm({
   const stringToBoolean = (str: string) => (str == 'true' ? true : false);
 
   const handleUpdateInfomation = (value: AdminUpdateUserInfomatonValues) => {
-    const newUserData = {
-      fullName: value.fullName,
-      age: value.age,
-      email: value.email,
-      phoneNumber: value.phoneNumber,
-      username: value.username,
-      password: value.password,
-      bio: value.bio,
-      additionalInfo: {
-        living: value.living,
-        hometown: value.hometown,
-        websites: value.websites.map((wed) => wed.websiteName),
-        jobs: value.jobs.map((job) => job.jobName),
-        birthDate: value.birthDate ? formatISO(value.birthDate) : null,
-      },
-    };
-
     mutate(
-      { newUserData },
+      {
+        newUserData: {
+          ...value,
+          additionalInfo: {
+            living: value.living,
+            hometown: value.hometown,
+            website: value.websites.map((wed) => wed.websiteName),
+            jobs: value.jobs.map((job) => job.jobName),
+            birthDate: value.birthDate ? formatISO(value.birthDate) : null,
+          },
+        },
+      },
       {
         onSuccess: () => {
           toast({
@@ -243,7 +237,10 @@ export default function EditUserInfomationForm({
               render={() => (
                 <FormItem>
                   <FormLabel>Account Type</FormLabel>
-                  <Select onValueChange={(value) => form.setValue('typeId', value)}>
+                  <Select
+                    defaultValue={form.getValues('typeId')}
+                    onValueChange={(value) => form.setValue('typeId', value)}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder='Select Account Type' />
