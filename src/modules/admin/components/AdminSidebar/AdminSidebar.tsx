@@ -1,5 +1,14 @@
 import { cn } from '@/lib/utils';
-import { BarChart3, Home, MessageSquare, Users, Menu, X } from 'lucide-react';
+import {
+  BarChart3,
+  Home,
+  MessageSquare,
+  Users,
+  Menu,
+  X,
+  ChevronsLeft,
+  ChevronsRight,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
@@ -30,7 +39,9 @@ const navigation = [
 export function AdminSidebar() {
   const { pathname } = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
+  // Hide sidebar on small screens, show collapse button on large screens
   return (
     <>
       {/* Mobile menu button */}
@@ -48,28 +59,63 @@ export function AdminSidebar() {
       {/* Sidebar */}
       <div
         className={cn(
-          'bg-card border-r border-border w-64 flex-shrink-0 transition-transform duration-200',
+          'bg-card border-r border-border flex-shrink-0 transition-all duration-200',
+          isCollapsed ? 'w-16' : 'w-64',
           'lg:translate-x-0',
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full',
           'fixed lg:relative inset-y-0 left-0 z-40 shadow-lg lg:shadow-none',
+          'lg:block', // always block on large screens
         )}
+        style={{
+          // Hide sidebar on small screens unless open
+          display: isMobileMenuOpen ? 'block' : undefined,
+        }}
       >
         <div className='flex flex-col h-full'>
+          {/* Collapse/Expand button (only on large screens, bottom left) */}
+          <div
+            className={cn(
+              'absolute z-50 hidden lg:flex items-center justify-center',
+              'top-4 right-[-18px]',
+            )}
+          >
+            <Button
+              variant='outline'
+              size='icon'
+              className='shadow-md bg-background p-0 w-8 h-8 border'
+              onClick={() => setIsCollapsed((prev) => !prev)}
+              tabIndex={-1}
+            >
+              {isCollapsed ? (
+                <ChevronsRight className='w-4 h-4' />
+              ) : (
+                <ChevronsLeft className='w-4 h-4' />
+              )}
+            </Button>
+          </div>
+
           {/* Logo */}
-          <div className='p-6 border-b border-border'>
+          <div
+            className={cn(
+              'p-6 border-b border-border flex items-center',
+              isCollapsed && 'justify-center p-2',
+            )}
+          >
             <div className='flex items-center space-x-3'>
               <div className='flex items-center justify-center w-8 h-8 rounded-lg bg-primary'>
                 <span className='text-sm font-bold text-primary-foreground'>SM</span>
               </div>
-              <div>
-                <h2 className='text-lg font-semibold text-foreground'>SMO Space</h2>
-                <p className='text-xs text-muted-foreground'>Management Panel</p>
-              </div>
+              {!isCollapsed && (
+                <div>
+                  <h2 className='text-lg font-semibold text-foreground'>SMO Space</h2>
+                  <p className='text-xs text-muted-foreground'>Management Panel</p>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className='flex-1 p-4 space-y-1'>
+          <nav className={cn('flex-1 p-4 space-y-1', isCollapsed && 'p-2')}>
             {navigation.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -78,24 +124,31 @@ export function AdminSidebar() {
                   to={item.href}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={cn(
-                    'flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                    'flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                    isCollapsed ? 'justify-center space-x-0' : 'space-x-3',
                     isActive
                       ? 'bg-primary text-primary-foreground'
                       : 'text-muted-foreground hover:text-foreground hover:bg-accent',
                   )}
+                  title={isCollapsed ? item.name : undefined}
                 >
                   <item.icon className='w-5 h-5' />
-                  <span>{item.name}</span>
+                  {!isCollapsed && <span>{item.name}</span>}
                 </Link>
               );
             })}
           </nav>
 
           {/* Footer */}
-          <div className='p-4 border-t border-border'>
-            <div className='text-xs text-muted-foreground'>
-              <p>Version 1.0.0</p>
-              <p>© 2025 SMO Space Admin</p>
+          <div className={cn('p-4 border-t border-border', isCollapsed && 'p-2')}>
+            <div className={cn('text-xs text-muted-foreground', isCollapsed && 'text-center')}>
+              {!isCollapsed && (
+                <>
+                  <p>Version 1.0.0</p>
+                  <p>© 2025 SMO Space Admin</p>
+                </>
+              )}
+              {isCollapsed && <span>v1.0.0</span>}
             </div>
           </div>
         </div>

@@ -79,17 +79,17 @@ export default function EditUserInfomationForm({
   const stringToBoolean = (str: string) => (str == 'true' ? true : false);
 
   const handleUpdateInfomation = (value: AdminUpdateUserInfomatonValues) => {
+    const { living, hometown, websites, jobs, birthDate, ...newUserData } = value;
+
     mutate(
       {
-        newUserData: {
-          ...value,
-          additionalInfo: {
-            living: value.living,
-            hometown: value.hometown,
-            website: value.websites.map((wed) => wed.websiteName),
-            jobs: value.jobs.map((job) => job.jobName),
-            birthDate: value.birthDate ? formatISO(value.birthDate) : null,
-          },
+        ...newUserData,
+        additionalInfo: {
+          living,
+          hometown,
+          websites: websites.map((wed) => wed.websiteName),
+          jobs: jobs.map((job) => job.jobName),
+          birthDate: birthDate ? formatISO(birthDate) : null,
         },
       },
       {

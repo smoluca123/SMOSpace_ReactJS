@@ -109,11 +109,7 @@ export const useAdminUpdateUserInfoMutation = ({ userId }: { userId: UUID }) => 
   const isMe = user?.id === userId;
   const { update } = useUpdateDataInfomation();
 
-  const handleUpdateUserInfomation = async ({
-    newUserData,
-  }: {
-    newUserData: IUpdateInfomationType;
-  }) => {
+  const handleUpdateUserInfomation = async (newUserData: IUpdateInfomationType) => {
     try {
       const { data } = await adminUpdateUserInfomationAPI({ userId, newUserData });
       return data;

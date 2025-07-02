@@ -1,9 +1,11 @@
-import { PropsWithChildren, Suspense } from 'react';
+import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { AdminSidebar } from '../components/AdminSidebar/AdminSidebar';
 import AdminHeader from '../components/AdminHeader';
 
-export default function AdminPage({ children }: PropsWithChildren) {
+export default function AdminPage() {
+  // Always render <Outlet /> for nested routes, don't use children
+  // This fixes the issue where OverviewPage doesn't show up
   return (
     <div className='flex h-screen overflow-hidden bg-background'>
       {/* Sidebar */}
@@ -17,7 +19,7 @@ export default function AdminPage({ children }: PropsWithChildren) {
         {/* Page Content */}
         <main className='flex-1 p-4 overflow-auto md:p-6'>
           <Suspense fallback={<div className='text-muted-foreground'>Loading...</div>}>
-            {children || <Outlet />}
+            <Outlet />
           </Suspense>
         </main>
       </div>
