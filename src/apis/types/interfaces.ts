@@ -7,8 +7,13 @@ export interface IUpdateInfomationType {
   additionalInfo?: {
     living?: string;
     hometown?: string;
-    website?: string;
+    websites?: string[];
     jobs?: string[];
     birthDate?: string | null;
   };
+  typeId?: string;
+  isActive?: boolean;
+  isVerified?: boolean;
+  isBanned?: boolean;
+  credits?: number;
 }

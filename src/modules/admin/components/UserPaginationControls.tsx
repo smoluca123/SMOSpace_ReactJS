@@ -30,7 +30,7 @@ export default function UserPaginationControls({
     data.data.pageSize > data.data.totalCount ? data.data.totalCount : data.data.pageSize;
 
   const handleItemsPerPageChange = (newLimit: string) => {
-    setSearchParam({ limit: newLimit, page: searchParam.get('page') || '1' });
+    setSearchParam({ limit: newLimit, page: '1' });
   };
 
   const currentPage = parseInt(searchParam.get('page') || '1', 10);
@@ -73,8 +73,8 @@ export default function UserPaginationControls({
             <Button
               variant='outline'
               size='sm'
-              onClick={() => handlePageChange(data.data.currentPage - 2)}
-              disabled={currentPage <= 2}
+              onClick={() => handlePageChange(1)}
+              disabled={currentPage == 1}
             >
               <ChevronsLeft className='w-4 h-4' />
             </Button>
@@ -97,8 +97,8 @@ export default function UserPaginationControls({
             <Button
               variant='outline'
               size='sm'
-              onClick={() => handlePageChange(data.data.currentPage + 2)}
-              disabled={currentPage >= data.data.totalPage - 1}
+              onClick={() => handlePageChange(data.data.totalPage)}
+              disabled={currentPage == data.data.totalPage}
             >
               <ChevronsRight className='w-4 h-4' />
             </Button>

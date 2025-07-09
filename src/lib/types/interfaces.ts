@@ -312,3 +312,21 @@ export interface StatItem {
   icon: React.ElementType;
   description: string;
 }
+
+export interface IPostCountDataType {
+  totalPostsCount: number;
+  publicPostsCount: number;
+  privatePostsCount: number;
+}
+
+export interface IUserCountDataType {
+  totalUser: number;
+  totalUserActive: number;
+  totalUserBanned: number;
+  totalAdmin: number;
+}
+
+export interface IUserTypeType {
+  id: UUID;
+  typeName: string;
+}

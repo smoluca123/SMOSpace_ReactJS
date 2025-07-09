@@ -5,6 +5,7 @@ import {
   ICommentDataType,
   IGeneratePostResponseType,
   IPaginationParamsType,
+  IPostCountDataType,
   IPostDataType,
   IPostDataWithLikedStatusType,
   IPostLikeType,
@@ -376,6 +377,43 @@ export const adminDeletePostsAPI = async (postIds: string[]) => {
     const { data } = await baseApi.delete('/post/admin/delete-posts', {
       data: { postIds },
     });
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const getPostCountAPI = async () => {
+  try {
+    const { data } = await baseApi.get<IApiResponseWrapper<IPostCountDataType>>('/post/count');
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const adminGetPostsByUserIdAPI = async ({
+  userId,
+  limit,
+  page,
+  keywords,
+}: IPaginationParamsType & {
+  keywords: string;
+  userId: UUID;
+}) => {
+  try {
+    const { data } = await baseApi.get<IApiPaginationResponseWrapper<IPostDataType>>(
+      '/post/admin/get-post/' + userId,
+      {
+        params: {
+          page,
+          limit,
+          keywords,
+        },
+      },
+    );
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;
