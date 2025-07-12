@@ -186,7 +186,7 @@ export default function MessageBox({
       {messages && (
         <MessageList
           messages={messages}
-          conversation={currentConversation!}
+          //   conversation={currentConversation!}
           isGroup={false}
           //   onAddReaction={handleAddReaction}
           //   onShowReadReceipts={() => {}}
