@@ -1,3 +1,5 @@
+'use no memo';
+
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import LoadingButton from '@/components/LoadingButton';
@@ -23,6 +25,8 @@ import {
 } from '@/components/ui/select';
 import { RotateCcw } from 'lucide-react';
 import { useGeneratePostImagesMutation } from '@/components/Posts/Editor/Features/GeneratePostImages/mutations';
+import { useCaculatePostImagesPrice } from '@/components/Posts/Editor/Features/GeneratePostImages/querys';
+import { useDebounce } from '@uidotdev/usehooks';
 
 interface GeneratePostImagesFormProps {
   setImages: (images: string[]) => void;
@@ -59,6 +63,19 @@ export default function GeneratePostImagesForm({
     },
     resolver: zodResolver(generatePostImagesSchema),
   });
+
+  // Watch only fields that affect price (excluding prompt)
+  const watchedValues = form.watch(['numImages', 'imageSize', 'seed', 'steps']);
+  const debouncedFormValues = useDebounce(watchedValues, 500);
+
+  const { data: price, isFetching: isCaculatePriceFetching } = useCaculatePostImagesPrice({
+    prompt: 'Empty prompt',
+    numImages: +debouncedFormValues[0] || 1,
+    imageSize: debouncedFormValues[1] || '1024x1024',
+    seed: debouncedFormValues[2] || -1,
+    steps: debouncedFormValues[3] || 1,
+  });
+
   const { mutate: generatePostImages, isPending } = useGeneratePostImagesMutation();
 
   const handleGeneratePost = (values: GeneratePostImagesValues) => {
@@ -93,6 +110,7 @@ export default function GeneratePostImagesForm({
 
                       <button
                         className='absolute right-2 top-1/2 p-1 rounded-full -translate-y-1/2 text-primary bg-card hover:bg-card/80'
+                        type='button'
                         onClick={() => {
                           field.onChange(Math.floor(Math.random() * 100000000));
                         }}
@@ -113,7 +131,18 @@ export default function GeneratePostImagesForm({
                 <FormItem className='col-span-6'>
                   <FormLabel>Steps</FormLabel>
                   <FormControl>
-                    <Input {...field} type='number' min={1} max={60} />
+                    <Input
+                      {...field}
+                      type='number'
+                      min={1}
+                      max={60}
+                      onChange={(e) => {
+                        const value = +e.target.value;
+                        if (value >= 1 && value <= 60) {
+                          field.onChange(value);
+                        }
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -132,7 +161,7 @@ export default function GeneratePostImagesForm({
             name='imageSize'
             render={({ field }) => (
               <FormItem className='col-span-6'>
-                <FormLabel>Image Count</FormLabel>
+                <FormLabel>Image Size</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <SelectTrigger>
@@ -165,7 +194,9 @@ export default function GeneratePostImagesForm({
                     max={4}
                     step={1}
                     value={[field.value]}
-                    onValueChange={field.onChange}
+                    onValueChange={(value) => {
+                      field.onChange(+value);
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -192,11 +223,11 @@ export default function GeneratePostImagesForm({
           />
 
           <LoadingButton
-            loading={isPending}
+            loading={isPending || isCaculatePriceFetching}
             className='ml-auto'
-            disabled={!form.formState.isValid || isPending}
+            disabled={!form.formState.isValid || isPending || isCaculatePriceFetching}
           >
-            Generate
+            {isCaculatePriceFetching ? 'Calculating price...' : `Generate (${price?.price} Points)`}
           </LoadingButton>
         </form>
       </Form>

@@ -405,6 +405,25 @@ export const generatePostImagesAPI = async ({
   }
 };
 
+export const caculatePostImagesPriceAPI = async ({
+  prompt,
+  numImages,
+  imageSize,
+  seed,
+  steps,
+}: GeneratePostImagesValues) => {
+  try {
+    const { data } = await baseApi.post<IApiResponseWrapper<{ price: number }>>(
+      '/post/ai/generate-images/price',
+      { prompt, numImages, imageSize, seed, steps },
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
 export const getPostCountAPI = async () => {
   try {
     const { data } = await baseApi.get<IApiResponseWrapper<IPostCountDataType>>('/post/count');
