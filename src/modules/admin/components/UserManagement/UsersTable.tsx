@@ -23,7 +23,7 @@ import { UserTableSkeleton } from '../Skeletons/UserTableSkeleton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import { Archive } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import MultipleToggleBanUserDialog from '../AdminActions/UserActions/MultipleToggleBanUserDialog';
 
@@ -79,29 +79,26 @@ export default function UsersTable({
         <CardHeader className='pb-4'>
           <div className='flex items-center justify-between'>
             <div className='flex gap-x-5'>
-              <Checkbox
-                checked={
-                  selectedUsers.length === data?.data.items.length && data?.data.items.length > 0
-                }
-                onCheckedChange={handleSelectAll}
-              />
               <CardTitle className='text-xl'>Users Database</CardTitle>
             </div>
-            {selectedUsers.length > 0 && (
-              <div className='flex items-center gap-2'>
-                <span className='text-sm text-muted-foreground'>
-                  {selectedUsers.length} selected
-                </span>
-                <Button
-                  onClick={() => setMultipleToggleBanUserDialog(true)}
-                  variant='destructive'
-                  size='sm'
-                >
-                  <Archive className='w-4 h-4 mr-2' />
-                  Delete All
-                </Button>
-              </div>
-            )}
+            <div
+              className={cn(
+                'flex items-center gap-4 transition-all duration-200',
+                selectedUsers.length === 0
+                  ? 'opacity-0 pointer-events-none'
+                  : 'opacity-100 pointer-events-auto',
+              )}
+            >
+              <span className='text-sm text-muted-foreground'>{selectedUsers.length} selected</span>
+              <Button
+                disabled={selectedUsers.length == 0}
+                onClick={() => setMultipleToggleBanUserDialog(true)}
+                size='sm'
+              >
+                <Settings className='w-4 h-4 mr-2' />
+                Toggle All
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>

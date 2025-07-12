@@ -1,7 +1,8 @@
-import { adminGetAllPostAPI } from '@/apis/postApi';
-import { getAllUsersInfomationAPI } from '@/apis/userApi';
+import { adminGetAllPostAPI, adminGetPostsByUserIdAPI, getPostCountAPI } from '@/apis/postApi';
+import { getAllUsersInfomationAPI, getUserCountAPI } from '@/apis/userApi';
 import { IPaginationParamsType } from '@/lib/types/interfaces';
 import { useQuery } from '@tanstack/react-query';
+import { UUID } from 'crypto';
 
 export const getAdminPostListQueryKey = ({
   page,
@@ -13,6 +14,21 @@ export const getAdminPostListQueryKey = ({
     keywords,
     limit,
     page,
+  },
+];
+
+export const getAdminPostListByUserIdQueryKey = ({
+  page,
+  limit,
+  keywords,
+  userId,
+}: IPaginationParamsType & { keywords: string; userId: UUID }) => [
+  'admin-posts',
+  {
+    keywords,
+    limit,
+    page,
+    userId,
   },
 ];
 
@@ -55,6 +71,37 @@ export const useGetAdminPostListQuery = ({
   return query;
 };
 
+export const useGetAdminPostListByUserIdQuery = ({
+  userId,
+  limit,
+  page,
+  keywords,
+}: IPaginationParamsType & {
+  keywords: string;
+  userId: UUID;
+}) => {
+  const handleGetPostListByUserId = async () => {
+    try {
+      const data = await adminGetPostsByUserIdAPI({
+        userId,
+        limit,
+        page,
+        keywords,
+      });
+      return data;
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  };
+
+  const query = useQuery({
+    queryKey: getAdminPostListByUserIdQueryKey({ userId, limit, page, keywords }),
+    queryFn: handleGetPostListByUserId,
+  });
+
+  return query;
+};
+
 export const useGetAdminUserListQuery = ({
   page,
   limit,
@@ -76,6 +123,42 @@ export const useGetAdminUserListQuery = ({
       keywords,
     }),
     queryFn: () => handleGetAdminUsers(),
+  });
+
+  return query;
+};
+
+export const useGetPostCountQuery = () => {
+  const handleGetPostCount = async () => {
+    try {
+      const { data } = await getPostCountAPI();
+      return data;
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  };
+
+  const query = useQuery({
+    queryKey: ['post-count'],
+    queryFn: handleGetPostCount,
+  });
+
+  return query;
+};
+
+export const useGetUserCountQuery = () => {
+  const handleGetUserCount = async () => {
+    try {
+      const { data } = await getUserCountAPI();
+      return data;
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  };
+
+  const query = useQuery({
+    queryKey: ['user-count'],
+    queryFn: handleGetUserCount,
   });
 
   return query;

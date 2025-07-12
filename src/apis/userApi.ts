@@ -10,11 +10,13 @@ import {
   IFriendRequestWithFriendDataType,
   IFriendRequestWithUserDataType,
   IPaginationParamsType,
+  IUserCountDataType,
   IUserDataType,
   IUserDataWithFollowedStatusType,
+  IUserTypeType,
   IUserWithAccessTokenType,
 } from '@/lib/types/interfaces';
-import { LoginValues, RegisterValues } from '@/lib/validations';
+import { AdminCreateUserType, LoginValues, RegisterValues } from '@/lib/validations';
 import { UUID } from 'crypto';
 
 export const loginAPI = async (
@@ -450,9 +452,12 @@ export const adminToggleBanUserAPI = async ({
   isBanned: boolean;
 }) => {
   try {
-    const { data } = await baseApi.put<IApiResponseWrapper<IUserDataType>>('/user/ban/' + userId, {
-      isBanned,
-    });
+    const { data } = await baseApi.patch<IApiResponseWrapper<IUserDataType>>(
+      '/user/ban/' + userId,
+      {
+        isBanned,
+      },
+    );
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;
@@ -500,6 +505,39 @@ export const getAllUsersAPI = async (
         ...params,
       },
     });
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const getUserCountAPI = async () => {
+  try {
+    const { data } = await baseApi.get<IApiResponseWrapper<IUserCountDataType>>('/user/count');
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const adminCreateUserAPI = async (credentials: AdminCreateUserType) => {
+  try {
+    const { data } = await baseApi.post<IApiResponseWrapper<IUserDataType>>(
+      '/user/admin/create-user',
+      credentials,
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const getUserTypeList = async () => {
+  try {
+    const { data } = await baseApi.get<IApiResponseWrapper<IUserTypeType[]>>('/user/types');
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;

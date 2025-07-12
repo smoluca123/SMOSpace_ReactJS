@@ -6,6 +6,7 @@ import {
   ICommentDataType,
   IGeneratePostResponseType,
   IPaginationParamsType,
+  IPostCountDataType,
   IPostDataType,
   IPostDataWithLikedStatusType,
   IPostLikeType,
@@ -396,6 +397,43 @@ export const generatePostImagesAPI = async ({
     const { data } = await baseApi.post<IApiResponseWrapper<IGeneratePostImagesResponseType>>(
       'post/ai/generate-images',
       { prompt, numImages, imageSize, seed, steps },
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const getPostCountAPI = async () => {
+  try {
+    const { data } = await baseApi.get<IApiResponseWrapper<IPostCountDataType>>('/post/count');
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const adminGetPostsByUserIdAPI = async ({
+  userId,
+  limit,
+  page,
+  keywords,
+}: IPaginationParamsType & {
+  keywords: string;
+  userId: UUID;
+}) => {
+  try {
+    const { data } = await baseApi.get<IApiPaginationResponseWrapper<IPostDataType>>(
+      '/post/admin/get-post/' + userId,
+      {
+        params: {
+          page,
+          limit,
+          keywords,
+        },
+      },
     );
     return data;
   } catch (error: any) {

@@ -1,15 +1,21 @@
-import { Users, MessageSquare, Heart, TrendingUp } from 'lucide-react';
+import { Users, MessageSquare } from 'lucide-react';
 import { StatItem } from '@/lib/types/interfaces';
 import StatCard from '../components/StatCard';
 
 import RecentUsers from '../components/Overview/RecentUsers';
 import RecentPosts from '../components/Overview/RecentPosts';
+import { useGetPostCountQuery, useGetUserCountQuery } from '../components/querys';
 
 export default function OverviewPage() {
+  const { data: postCountData } = useGetPostCountQuery();
+  const { data: userCountData } = useGetUserCountQuery();
+
+  if (!postCountData || !userCountData) return null;
+
   const stats: StatItem[] = [
     {
       title: 'Total Users',
-      value: '12,345',
+      value: userCountData.totalUser.toString(),
       change: '+12%',
       trend: 'up',
       icon: Users,
@@ -17,27 +23,11 @@ export default function OverviewPage() {
     },
     {
       title: 'Total Posts',
-      value: '8,967',
+      value: postCountData.totalPostsCount.toString(),
       change: '+8%',
       trend: 'up',
       icon: MessageSquare,
       description: 'Posts created this month',
-    },
-    {
-      title: 'Engagement',
-      value: '156,789',
-      change: '+23%',
-      trend: 'up',
-      icon: Heart,
-      description: 'Total likes and comments',
-    },
-    {
-      title: 'Growth Rate',
-      value: '15.2%',
-      change: '-2%',
-      trend: 'down',
-      icon: TrendingUp,
-      description: 'User growth this month',
     },
   ];
 

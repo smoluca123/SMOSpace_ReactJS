@@ -21,16 +21,15 @@ export default function PostPaginationControls({
   const { data } = query;
   if (!data) return null;
 
-  const limit = searchParam.get('limit');
+  const page = Number(searchParam.get('page')) || '1';
+  const limit = Number(searchParam.get('limit')) || '10';
 
   const newPageSIze =
     data.data.pageSize > data.data.totalCount ? data.data.totalCount : data.data.pageSize;
 
   const handleItemsPerPageChange = (newLimit: string) => {
-    setSearchParam({ limit: newLimit, page: searchParam.get('page') || '10' });
+    setSearchParam({ page: '1', limit: newLimit });
   };
-
-  const currentPage = searchParam.get('page') || '1';
 
   const handlePageChange = (newPage: number) => {
     setSearchParam({
@@ -49,7 +48,7 @@ export default function PostPaginationControls({
       <div className='flex items-center space-x-6'>
         <div className='flex items-center space-x-2'>
           <p className='text-sm font-medium'>Rows per page</p>
-          <Select value={limit || '10'} onValueChange={handleItemsPerPageChange}>
+          <Select value={limit.toString() || '10'} onValueChange={handleItemsPerPageChange}>
             <SelectTrigger className='h-8 w-[70px]'>
               <SelectValue />
             </SelectTrigger>
@@ -69,8 +68,8 @@ export default function PostPaginationControls({
             <Button
               variant='outline'
               size='sm'
-              onClick={() => handlePageChange(data.data.currentPage - 2)}
-              disabled={+currentPage <= 2}
+              onClick={() => handlePageChange(1)}
+              disabled={+page <= 2}
             >
               <ChevronsLeft className='w-4 h-4' />
             </Button>
@@ -78,7 +77,7 @@ export default function PostPaginationControls({
               variant='outline'
               size='sm'
               onClick={() => handlePageChange(data.data.currentPage - 1)}
-              disabled={+currentPage === 1}
+              disabled={+page === 1}
             >
               <ChevronLeft className='w-4 h-4' />
             </Button>
@@ -86,17 +85,15 @@ export default function PostPaginationControls({
               variant='outline'
               size='sm'
               onClick={() => handlePageChange(data.data.currentPage + 1)}
-              disabled={+currentPage === data.data.totalPage}
+              disabled={+page === data.data.totalPage}
             >
               <ChevronRight className='w-4 h-4' />
             </Button>
             <Button
               variant='outline'
               size='sm'
-              onClick={() => handlePageChange(data.data.currentPage + 2)}
-              disabled={
-                +currentPage === data.data.totalPage - 1 || +currentPage === data.data.totalPage
-              }
+              onClick={() => handlePageChange(data.data.totalPage)}
+              disabled={+page === data.data.totalPage}
             >
               <ChevronsRight className='w-4 h-4' />
             </Button>
