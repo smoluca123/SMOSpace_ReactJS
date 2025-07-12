@@ -12,7 +12,7 @@ export default function NameWithBadge({ children, className, userData }: IProps)
   return (
     <div className={cn('flex gap-x-1 items-center', className)}>
       {children}
-      {userData.userType.typeName === 'Administrator' && <AdministratorBadge />}
+      {userData.userType.typeName === 'SUPER_ADMIN' && <AdministratorBadge />}
     </div>
   );
 }

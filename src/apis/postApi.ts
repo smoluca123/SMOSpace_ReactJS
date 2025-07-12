@@ -1,4 +1,5 @@
 import baseApi from '@/apis/baseApi';
+import { IGeneratePostImagesResponseType } from '@/apis/types/post.interfaces';
 import {
   IApiPaginationResponseWrapper,
   IApiResponseWrapper,
@@ -11,6 +12,7 @@ import {
   IPostLikeType,
   ITrendingTopicType,
 } from '@/lib/types/interfaces';
+import { GeneratePostImagesValues } from '@/lib/validations';
 import { UUID } from 'crypto';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -377,6 +379,25 @@ export const adminDeletePostsAPI = async (postIds: string[]) => {
     const { data } = await baseApi.delete('/post/admin/delete-posts', {
       data: { postIds },
     });
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const generatePostImagesAPI = async ({
+  prompt,
+  numImages,
+  imageSize,
+  seed,
+  steps,
+}: GeneratePostImagesValues) => {
+  try {
+    const { data } = await baseApi.post<IApiResponseWrapper<IGeneratePostImagesResponseType>>(
+      'post/ai/generate-images',
+      { prompt, numImages, imageSize, seed, steps },
+    );
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;
