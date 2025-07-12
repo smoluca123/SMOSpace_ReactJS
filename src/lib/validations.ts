@@ -76,6 +76,14 @@ export const resetPasswordSchema = verifySchema
 export const adminUpdateUserInfomatonSchema =
   updateUserInfomationSchema.merge(updateUserDetailsSchema);
 
+export const generatePostImagesSchema = z.object({
+  prompt: requiredString('Prompt').max(1000, 'Prompt must be less than 1000 characters'),
+  numImages: z.coerce.number().min(1, 'Image count must be at least 1'),
+  imageSize: z.enum(['1024x1024', '1344x768', '1280x960', '960x1280', '768x1344']),
+  seed: z.coerce.number().min(-1, 'Seed must be at least -1'),
+  steps: z.coerce.number().min(1, 'Steps must be at least 1'),
+});
+
 export type LoginValues = z.infer<typeof loginSchema>;
 export type RegisterValues = z.infer<typeof registerSchema>;
 export type CommentValues = z.infer<typeof commentSchema>;
@@ -85,3 +93,4 @@ export type VerifyValues = z.infer<typeof verifySchema>;
 export type ForgetPasswordValues = z.infer<typeof forgetPasswordSchema>;
 export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 export type AdminUpdateUserInfomatonValues = z.infer<typeof adminUpdateUserInfomatonSchema>;
+export type GeneratePostImagesValues = z.infer<typeof generatePostImagesSchema>;

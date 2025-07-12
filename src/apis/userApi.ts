@@ -490,3 +490,19 @@ export const adminToggleBanUsers = async (banList: { userId: UUID; isBanned: boo
     throw error.message;
   }
 };
+
+export const getAllUsersAPI = async (
+  params?: IPaginationParamsType & { keywords?: string; currentUserId?: string },
+) => {
+  try {
+    const { data } = await baseApi.get<IApiPaginationResponseWrapper<IUserDataType>>('/user', {
+      params: {
+        ...params,
+      },
+    });
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};

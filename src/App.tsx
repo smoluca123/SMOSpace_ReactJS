@@ -20,6 +20,7 @@ import UsersManagementPage from './modules/admin/pages/UsersManagementPage';
 import UserDetailManagementPage from './modules/admin/pages/UserDetailManagementPage';
 import PostsManagementPage from './modules/admin/pages/PostsManagementPage';
 import AnalyticsPage from './modules/admin/pages/AnalyticsPage';
+import GroupChatInterface from '@/modules/chat/pages/ChatPage';
 
 const router = createBrowserRouter(
   [
@@ -51,6 +52,13 @@ const router = createBrowserRouter(
         },
       ],
     },
+
+    // Chat page
+    {
+      path: '/chat/',
+      element: <GroupChatInterface />,
+    },
+
     // Auth page
     {
       path: '/auth',

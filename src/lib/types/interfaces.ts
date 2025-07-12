@@ -84,7 +84,7 @@ export interface IWithAccessTokenType {
 
 export interface ITypeUserType {
   id: UUID;
-  typeName: 'Member' | 'VIP Member' | 'Manager' | 'Administrator';
+  typeName: 'USER' | 'VIP_USER' | 'MODERATOR' | 'SUPER_ADMIN';
 }
 
 export interface IUserSessionType {

@@ -83,12 +83,20 @@ export default function AnalyticsPage() {
     },
   ];
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({
+    active,
+    payload,
+    label,
+  }: {
+    active: boolean;
+    payload: { dataKey: string; value: string; color: string }[];
+    label: string;
+  }) => {
     if (active && payload && payload.length) {
       return (
-        <div className='p-3 border rounded-lg shadow-sm bg-card border-border'>
+        <div className='p-3 rounded-lg border shadow-sm bg-card border-border'>
           <p className='font-medium text-foreground'>{`${label}`}</p>
-          {payload.map((entry: any, index: number) => (
+          {payload.map((entry, index: number) => (
             <p key={index} style={{ color: entry.color }} className='text-sm'>
               {`${entry.dataKey}: ${entry.value}`}
             </p>
@@ -111,7 +119,7 @@ export default function AnalyticsPage() {
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
         {stats.map((stat, index) => (
           <Card key={index} className='transition-shadow hover:shadow-md'>
-            <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
+            <CardHeader className='flex flex-row justify-between items-center pb-2 space-y-0'>
               <CardTitle className='text-sm font-medium text-muted-foreground'>
                 {stat.title}
               </CardTitle>
@@ -120,7 +128,7 @@ export default function AnalyticsPage() {
             <CardContent>
               <div className='text-2xl font-bold text-foreground'>{stat.value}</div>
               <div className='flex items-center mt-1 text-xs text-muted-foreground'>
-                <TrendingUp className='w-3 h-3 mr-1 text-green-500' />
+                <TrendingUp className='mr-1 w-3 h-3 text-green-500' />
                 <span className='text-green-500'>{stat.change}</span>
                 <span className='ml-1'>from last month</span>
               </div>
@@ -143,7 +151,7 @@ export default function AnalyticsPage() {
                 <CartesianGrid strokeDasharray='3 3' className='stroke-muted' />
                 <XAxis dataKey='month' className='text-muted-foreground' fontSize={12} />
                 <YAxis className='text-muted-foreground' fontSize={12} />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<CustomTooltip active={false} payload={[]} label={''} />} />
                 <Area
                   type='monotone'
                   dataKey='users'
@@ -185,7 +193,7 @@ export default function AnalyticsPage() {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<CustomTooltip active={false} payload={[]} label={''} />} />
               </PieChart>
             </ResponsiveContainer>
             <div className='flex justify-center mt-4 space-x-6'>
@@ -214,7 +222,7 @@ export default function AnalyticsPage() {
               <CartesianGrid strokeDasharray='3 3' className='stroke-muted' />
               <XAxis dataKey='day' className='text-muted-foreground' fontSize={12} />
               <YAxis className='text-muted-foreground' fontSize={12} />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip active={false} payload={[]} label={''} />} />
               <Line type='monotone' dataKey='posts' stroke='#3b82f6' strokeWidth={2} />
               <Line type='monotone' dataKey='likes' stroke='#10b981' strokeWidth={2} />
               <Line type='monotone' dataKey='comments' stroke='#f59e0b' strokeWidth={2} />
@@ -236,7 +244,7 @@ export default function AnalyticsPage() {
               <CartesianGrid strokeDasharray='3 3' className='stroke-muted' />
               <XAxis dataKey='category' className='text-muted-foreground' fontSize={12} />
               <YAxis className='text-muted-foreground' fontSize={12} />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip active={false} payload={[]} label={''} />} />
               <Bar dataKey='posts' fill='#3b82f6' />
               <Bar dataKey='engagement' fill='#10b981' />
             </BarChart>
