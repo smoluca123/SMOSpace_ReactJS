@@ -25,13 +25,13 @@ function AdministratorBadge({ className }: IAdministratorBadgeProps) {
       <TooltipTrigger asChild>
         <ShieldCheck className={cn('w-4 h-4 text-[#ce3df3]', className)} />
       </TooltipTrigger>
-      <TooltipContent className='bg-secondary'>
+      <TooltipContent className='z-[9999] bg-secondary'>
         {/* <p className='text-[#ce3df3]'>Administrator</p> */}
-        <div className='flex justify-center items-center'>
-          <span className='box-content flex absolute mx-auto font-medium text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-teal-500 to-pink-500 border blur-xl select-none w-fit'>
+        <div className='flex items-center justify-center'>
+          <span className='box-content absolute flex mx-auto font-medium text-center text-transparent border select-none bg-clip-text bg-gradient-to-r from-blue-500 via-teal-500 to-pink-500 blur-xl w-fit'>
             Administrator
           </span>
-          <h1 className='flex relative top-0 justify-center items-center h-auto font-medium text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-teal-500 to-pink-500 select-auto w-fit'>
+          <h1 className='relative top-0 flex items-center justify-center h-auto font-medium text-center text-transparent select-auto bg-clip-text bg-gradient-to-r from-blue-500 via-teal-500 to-pink-500 w-fit'>
             Administrator
           </h1>
         </div>

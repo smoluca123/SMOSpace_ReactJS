@@ -29,9 +29,11 @@ export default function useNotificationSocket(props?: UseNotificationSocketProps
         onNewNotification(newNotification);
       }
 
+      // Cancel pending queries
       queryClient.cancelQueries({ queryKey: ['notifications'] });
+      queryClient.cancelQueries({ queryKey: ['grouped-notifications'] });
 
-      // Cập nhật cache của react-query
+      // Update flat notifications cache
       queryClient.setQueriesData(
         {
           queryKey: ['notifications'],
@@ -52,7 +54,10 @@ export default function useNotificationSocket(props?: UseNotificationSocketProps
         },
       );
 
-      // Hiển thị thông báo có bài viết mới (optional)
+      // Invalidate grouped notifications to refetch with new grouping
+      queryClient.invalidateQueries({ queryKey: ['grouped-notifications'] });
+
+      // Show toast notification (optional)
       toast({
         title: 'New notification',
         description: newNotification.content.message,
@@ -62,7 +67,7 @@ export default function useNotificationSocket(props?: UseNotificationSocketProps
 
     notificationSocket.on('connect', handleConnect);
 
-    // Nếu socket đã connected sẵn thì emit luôn
+    // If socket is already connected, emit subscribe immediately
     if (notificationSocket.connected) {
       handleConnect();
     }

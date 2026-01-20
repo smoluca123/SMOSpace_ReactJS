@@ -18,7 +18,7 @@ import ThemeToggleMenuItem from '@/components/UserButton/ThemeToggleMenuItem';
 import { IUserWithAccessTokenType } from '@/lib/types/interfaces';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { logout, selectAuth } from '@/redux/slices/authSlice';
-import { Coins, LogOut, Settings } from 'lucide-react';
+import { Coins, LogOut, Settings, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface UserButtonProps {
@@ -31,32 +31,44 @@ const UserMenuContent = ({
 }: {
   user: IUserWithAccessTokenType;
   onLogout: () => void;
-}) => (
-  <>
-    <DropdownMenuLabel>My Account</DropdownMenuLabel>
-    <DropdownMenuSeparator />
+}) => {
+  const hasPermission =
+    user.userType.typeName === 'SUPER_ADMIN' || user.userType.typeName === 'MODERATOR';
+  return (
+    <>
+      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+      <DropdownMenuSeparator />
 
-    <UserMenuItem user={user} />
-    <DropdownMenuItemWithIcon Icon={Coins} className='h-12'>
-      Points: {user.credits}
-    </DropdownMenuItemWithIcon>
-
-    <Link to='/settings'>
-      <DropdownMenuItemWithIcon Icon={Settings} className='h-12'>
-        Settings
+      <UserMenuItem user={user} />
+      <DropdownMenuItemWithIcon Icon={Coins} className='h-12'>
+        Points: {user.credits}
       </DropdownMenuItemWithIcon>
-    </Link>
 
-    <DropdownMenuItemWithIcon
-      Icon={LogOut}
-      className='h-12'
-      variant='destructive'
-      onClick={onLogout}
-    >
-      Logout
-    </DropdownMenuItemWithIcon>
-  </>
-);
+      <Link to='/settings'>
+        <DropdownMenuItemWithIcon Icon={Settings} className='h-12'>
+          Settings
+        </DropdownMenuItemWithIcon>
+      </Link>
+
+      {hasPermission && (
+        <Link to='/admin' target='_blank'>
+          <DropdownMenuItemWithIcon Icon={Shield} className='h-12'>
+            Admin Panel
+          </DropdownMenuItemWithIcon>
+        </Link>
+      )}
+
+      <DropdownMenuItemWithIcon
+        Icon={LogOut}
+        className='h-12'
+        variant='destructive'
+        onClick={onLogout}
+      >
+        Logout
+      </DropdownMenuItemWithIcon>
+    </>
+  );
+};
 
 const UserMenuItem = ({ user }: { user: IUserWithAccessTokenType }) => (
   <DropdownMenuItem className='py-0'>

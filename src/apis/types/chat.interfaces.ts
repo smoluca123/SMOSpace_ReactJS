@@ -17,7 +17,7 @@ export interface IChatRoomsDataType {
   participants: IRoomParticipantsDataType[];
 }
 
-interface IRoomParticipantsDataType {
+export interface IRoomParticipantsDataType {
   id: string;
   leftAt: null;
   joinedAt: string;

@@ -5,7 +5,7 @@ import { Conversation, Participant } from '@/lib/types/chat';
 import { CreateGroupDialog } from '@/modules/chat/components/CreateGroupDialog';
 import ConversationList from '@/modules/chat/components/Conversation/ConversationList';
 import { MessageBox } from '@/modules/chat/components/Message';
-import { useGroupChatInterfaceContext } from '@/hooks/useGroupChatInterfaceContext';
+import { useParams } from 'react-router-dom';
 
 const AVAILABLE_USERS: Participant[] = [
   {
@@ -107,7 +107,7 @@ export default function GroupChatInterface() {
     },
   ]);
 
-  const { activeConversationId, setActiveConversationId } = useGroupChatInterfaceContext();
+  const activeConversationId = useParams().id;
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showGroupDialog, setShowGroupDialog] = useState(false);
@@ -130,7 +130,6 @@ export default function GroupChatInterface() {
     };
 
     setConversations((prev) => [newGroup, ...prev]);
-    setActiveConversationId(newGroup.id);
   };
 
   useEffect(() => {
@@ -142,7 +141,7 @@ export default function GroupChatInterface() {
   }, [activeConversationId]);
 
   return (
-    <div className='flex overflow-hidden w-full h-full bg-background'>
+    <div className='flex w-full h-full overflow-hidden bg-background'>
       <ConversationList onCreateGroup={() => setShowGroupDialog(true)} sidebarOpen={sidebarOpen} />
 
       {activeConversationId && (

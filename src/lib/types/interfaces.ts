@@ -231,7 +231,7 @@ export interface INotificationType {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata: any;
   content: INotificationContent;
-  entityType: 'FOLLOW' | 'COMMENT' | 'FRIENDSHIP';
+  entityType: 'FOLLOW' | 'COMMENT' | 'FRIENDSHIP' | 'POST';
   recipientId: string;
   readAt: null;
   sender: IUserDataType;
@@ -243,6 +243,11 @@ export interface IFollowNotificationType extends INotificationType {
 
 export interface ICommentNotificationType extends INotificationType {
   metadata: IMetadataComment;
+}
+
+export interface ILikePostNotificationType extends INotificationType {
+  metadata: ILikePostNotificationMetadata;
+  entityType: 'POST';
 }
 
 export interface IFriendRequestNotificationType extends INotificationType {
@@ -284,9 +289,49 @@ interface IMetadataComment {
   };
 }
 
+interface ILikePostNotificationMetadata {
+  postId: UUID;
+  liker: {
+    avatar: string;
+    fullName: string;
+    username: string;
+  };
+}
+
 interface ITypeNotification {
   id: string;
-  type: 'FOLLOW_USER' | 'REPLY_COMMENT' | 'COMMENT_POST' | 'FRIEND_REQUEST';
+  type:
+    | 'FOLLOW_USER'
+    | 'REPLY_COMMENT'
+    | 'COMMENT_POST'
+    | 'FRIEND_REQUEST'
+    | 'LIKE_POST'
+    | 'FRIEND_ACCEPT';
+}
+
+// ==================== GROUPED NOTIFICATIONS ====================
+
+export interface ISenderSummary {
+  id: string;
+  username: string;
+  fullName: string;
+  avatar: string | null;
+}
+
+export interface IGroupedNotificationType {
+  groupKey: string;
+  type: ITypeNotification;
+  entityType: 'FOLLOW' | 'COMMENT' | 'FRIENDSHIP' | 'POST' | null;
+  entityId: string | null;
+  count: number;
+  senders: ISenderSummary[];
+  content: INotificationContent;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  metadata: any;
+  priority: 'NORMAL' | 'HIGH' | 'LOW' | 'URGENT';
+  createdAt: string;
+  isRead: boolean;
+  notificationIds: string[];
 }
 
 export interface IFriendRequestDataType {

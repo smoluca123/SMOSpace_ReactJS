@@ -14,7 +14,7 @@ const LeftSection = () => (
     <NavSidebar />
     <div className='flex items-center lg:justify-between lg:w-[20rem]'>
       <AppLogo className='w-[11rem] hidden lg:block' />
-      <Link to='/' className='flex gap-x-2 items-center p-2 text-white rounded-md bg-primary'>
+      <Link to='/' className='flex items-center p-2 text-white rounded-md gap-x-2 bg-primary'>
         <Home size={18} />
         <span className='hidden text-sm sm:inline-block'>Home</span>
       </Link>
@@ -24,12 +24,12 @@ const LeftSection = () => (
 
 const ActionButtons = () => (
   <div className='flex ~gap-x-0/2 justify-between items-center'>
-    <button className='~p-2/4 rounded-md hover:bg-accent'>
+    <Link to='/friends' className='~p-2/4 rounded-md hover:bg-accent'>
       <UserPlus />
-    </button>
-    <button className='~p-2/4 rounded-md hover:bg-accent'>
+    </Link>
+    <Link to='/chat' className='~p-2/4 rounded-md hover:bg-accent'>
       <MessageCircleCode />
-    </button>
+    </Link>
     {/* <button className='~p-2/4 rounded-md hover:bg-accent'>
       <Bell />
     </button> */}

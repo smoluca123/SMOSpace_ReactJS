@@ -17,9 +17,9 @@ import { Edit, Ellipsis, Trash } from 'lucide-react';
 import { useState } from 'react';
 
 export default function PostMoreButton({ className }: PropsWithClassName) {
-  const { user } = useAppSelector(selectAuth);
+  const { user, isAdmin } = useAppSelector(selectAuth);
   const { post } = usePostContext();
-  if (!user || user.id !== post.author.id) return null;
+  if (!user || (user.id !== post.author.id && !isAdmin)) return null;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>

@@ -24,6 +24,7 @@ import PostMedia from '@/components/Posts/Editor/PostMedia/';
 import GeneratePostImagesDialog from '@/components/Posts/Editor/Features/GeneratePostImages';
 import axios from 'axios';
 import { blobToFile } from '@/lib/utils';
+import EditorToolbar from '@/components/Posts/Editor/EditorToolbar';
 
 export default function PostEditor({
   content,
@@ -52,8 +53,48 @@ export default function PostEditor({
         },
         italic: {
           HTMLAttributes: {
-            class: 'font-italic',
+            class: 'italic',
           },
+        },
+        strike: {
+          HTMLAttributes: {
+            class: 'line-through',
+          },
+        },
+        code: {
+          HTMLAttributes: {
+            class: 'bg-muted px-1.5 py-0.5 rounded text-sm font-mono',
+          },
+        },
+        blockquote: {
+          HTMLAttributes: {
+            class: 'border-l-4 border-primary pl-4 italic',
+          },
+        },
+        bulletList: {
+          HTMLAttributes: {
+            class: 'list-disc list-inside',
+          },
+        },
+        orderedList: {
+          HTMLAttributes: {
+            class: 'list-decimal list-inside',
+          },
+        },
+        listItem: {
+          HTMLAttributes: {
+            class: 'ml-4',
+          },
+        },
+        codeBlock: {
+          HTMLAttributes: {
+            class: 'bg-muted p-4 rounded-lg font-mono text-sm',
+          },
+        },
+        // History is enabled by default in StarterKit for undo/redo
+        history: {
+          depth: 100,
+          newGroupDelay: 500,
         },
       }),
       Placeholder.configure({
@@ -70,8 +111,8 @@ export default function PostEditor({
   if (!user) return <Navigate to='/' replace />;
 
   return (
-    <div className='overflow-x-hidden px-1 space-y-5 w-full max-w-full rounded-md shadow-sm'>
-      <div className='flex justify-between items-center'>
+    <div className='w-full max-w-full px-1 space-y-5 overflow-x-hidden rounded-md shadow-sm'>
+      <div className='flex items-center justify-between'>
         {/* Author Info */}
         <AuthorInfo />
 
@@ -86,7 +127,7 @@ export default function PostEditor({
       </div>
 
       <div className='w-full min-h-[8rem] max-h-[20rem] overflow-y-auto bg-card lg:rounded-xl rounded-lg px-5 py-3  max-w-full border-border border space-y-2'>
-        {/* {editor && <MenuBar editor={editor} />} */}
+        {editor && <EditorToolbar editor={editor} />}
         <EditorContent editor={editor} className='' />
       </div>
 
@@ -108,7 +149,7 @@ function AuthorInfo() {
   const { user } = useAppSelector(selectAuth);
   if (!user) return null;
   return (
-    <div className='flex gap-x-4 items-center'>
+    <div className='flex items-center gap-x-4'>
       <UserAvatar
         avatarUrl={user.avatar}
         fallbackName={user.fullName}

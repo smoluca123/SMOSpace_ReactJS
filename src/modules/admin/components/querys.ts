@@ -1,5 +1,5 @@
 import { adminGetAllPostAPI, adminGetPostsByUserIdAPI, getPostCountAPI } from '@/apis/postApi';
-import { getAllUsersInfomationAPI, getUserCountAPI } from '@/apis/userApi';
+import { adminGetAllUsersAPI, getUserCountAPI } from '@/apis/userApi';
 import { IPaginationParamsType } from '@/lib/types/interfaces';
 import { useQuery } from '@tanstack/react-query';
 import { UUID } from 'crypto';
@@ -109,7 +109,7 @@ export const useGetAdminUserListQuery = ({
 }: IPaginationParamsType & { keywords: string }) => {
   const handleGetAdminUsers = async () => {
     try {
-      const data = await getAllUsersInfomationAPI({ page, limit, keywords });
+      const data = await adminGetAllUsersAPI({ page, limit, keywords });
       return data;
     } catch (error) {
       throw new Error(error as string);

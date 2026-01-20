@@ -10,13 +10,13 @@ export default function CommentNotificationItem({ notification }: CommentNotific
     case 'REPLY_COMMENT':
       return (
         <NotificationItem notification={notification} to={`/post/${notification.metadata.postId}`}>
-          <span>replied to your comment</span>
+          <span className='text-sm'>replied to your comment</span>
         </NotificationItem>
       );
     case 'COMMENT_POST':
       return (
         <NotificationItem notification={notification} to={`/post/${notification.metadata.postId}`}>
-          <span>commented on your post</span>
+          <span className='text-sm'>commented on your post</span>
         </NotificationItem>
       );
     default:

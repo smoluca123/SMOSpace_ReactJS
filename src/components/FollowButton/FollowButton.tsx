@@ -1,5 +1,5 @@
 import { UserMinus, UserPlus } from 'lucide-react';
-import { useFollowUserMutation } from './mutations';
+import { useFollowUserMutation, useUnfollowUserMutation } from './mutations';
 import { useGetUserInfomation } from '@/lib/querys';
 import LoadingButton from '../LoadingButton';
 import { cn } from '@/lib/utils';
@@ -7,10 +7,18 @@ import { UUID } from 'crypto';
 
 export default function FollowButton({ userId, className }: { userId: UUID; className?: string }) {
   const { data: userInfo } = useGetUserInfomation({ userId });
-  const { mutate, isPending } = useFollowUserMutation({ userId });
+  const { mutate: followUser, isPending } = useFollowUserMutation({ userId });
+  const { mutate: unfollowUser, isPending: isUnfollowPending } = useUnfollowUserMutation({
+    userId,
+  });
 
   const handleToggleFollowUser = () => {
-    mutate();
+    if (!userInfo) return;
+    if (userInfo.isFollowedByUser) {
+      unfollowUser();
+    } else {
+      followUser();
+    }
   };
 
   return (
@@ -34,9 +42,9 @@ export default function FollowButton({ userId, className }: { userId: UUID; clas
             onClick={handleToggleFollowUser}
             className={cn('text-foreground', className)}
             variant='secondary'
-            loading={isPending}
+            loading={isUnfollowPending}
           >
-            {!isPending && <UserPlus />}
+            {!isUnfollowPending && <UserPlus />}
             Follow
           </LoadingButton>
         )}

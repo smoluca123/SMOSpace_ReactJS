@@ -25,18 +25,20 @@ export default function MessageList({ messages, isGroup }: MessageListProps) {
   console.log(messages);
   return (
     <>
-      <ScrollArea className='overflow-auto flex-1 p-4 h-full'>
+      <ScrollArea className='h-full p-4 overflow-auto'>
         <div className='space-y-4'>
           {messages.pages
             .flatMap((page) => page.items)
             .map((message) => (
-              <MessageItem
-                key={message.id}
-                message={message}
-                isGroup={isGroup}
-                // onAddReaction={onAddReaction}
-                // onShowReadReceipts={onShowReadReceipts}
-              />
+              <>
+                <MessageItem
+                  key={message.id}
+                  message={message}
+                  isGroup={isGroup}
+                  // onAddReaction={onAddReaction}
+                  // onShowReadReceipts={onShowReadReceipts}
+                />
+              </>
             ))}
 
           {/* Typing Indicators */}

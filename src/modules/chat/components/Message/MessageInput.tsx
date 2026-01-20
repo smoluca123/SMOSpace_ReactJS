@@ -52,16 +52,16 @@ export default function MessageInput({ isGroup }: MessageInputProps) {
       {/* Image Preview */}
       {imagePreview && (
         <div className='p-4 bg-muted/50'>
-          <div className='inline-block relative'>
+          <div className='relative inline-block'>
             <img
               src={imagePreview || '/placeholder.svg'}
               alt='Preview'
-              className='max-w-full max-h-32 rounded-lg'
+              className='max-w-full rounded-lg max-h-32'
             />
             <Button
               variant='destructive'
               size='sm'
-              className='absolute -top-2 -right-2 p-0 w-6 h-6 rounded-full'
+              className='absolute w-6 h-6 p-0 rounded-full -top-2 -right-2'
               onClick={removeImage}
             >
               ×
@@ -72,43 +72,45 @@ export default function MessageInput({ isGroup }: MessageInputProps) {
 
       {/* Message Input */}
       <div className='p-4'>
-        <div className='flex items-end space-x-2'>
-          <div className='flex-1'>
-            <div className='flex items-center px-4 py-2 space-x-2 rounded-full bg-muted'>
-              <Input
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder={isGroup ? 'Message group...' : 'Type a message...'}
-                className='flex-1 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0'
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSendMessage();
-                  }
-                }}
-              />
-              <div className='flex items-center space-x-1'>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='w-8 h-8 rounded-full'
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <ImageIcon className='w-4 h-4' />
-                </Button>
-                <Button variant='ghost' size='icon' className='w-8 h-8 rounded-full'>
-                  <Smile className='w-4 h-4' />
-                </Button>
+        <div className='flex items-end'>
+          <div className='flex items-center w-full gap-2'>
+            <div className='flex-1 '>
+              <div className='flex items-center px-4 py-2 space-x-2 rounded-full bg-muted'>
+                <Input
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder={isGroup ? 'Message group...' : 'Type a message...'}
+                  className='flex-1 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0'
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSendMessage();
+                    }
+                  }}
+                />
+                <div className='flex items-center space-x-1'>
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    className='w-8 h-8 rounded-full'
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <ImageIcon className='w-4 h-4' />
+                  </Button>
+                  <Button variant='ghost' size='icon' className='w-8 h-8 rounded-full'>
+                    <Smile className='w-4 h-4' />
+                  </Button>
+                </div>
               </div>
             </div>
+            <Button
+              onClick={handleSendMessage}
+              disabled={!newMessage.trim() && !selectedImage}
+              className='w-10 h-10 p-0 rounded-full'
+            >
+              <Send className='w-4 h-4' />
+            </Button>
           </div>
-          <Button
-            onClick={handleSendMessage}
-            disabled={!newMessage.trim() && !selectedImage}
-            className='p-0 w-10 h-10 rounded-full'
-          >
-            <Send className='w-4 h-4' />
-          </Button>
         </div>
 
         <input

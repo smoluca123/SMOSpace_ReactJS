@@ -26,14 +26,14 @@ export default function ConversationList({ onCreateGroup, sidebarOpen }: Convers
       >
         {/* Sidebar Header */}
         <div className='p-4 border-b'>
-          <div className='flex justify-between items-center mb-4'>
+          <div className='flex items-center justify-between mb-4'>
             <h1 className='text-xl font-semibold'>Messages</h1>
             <Button variant='ghost' size='icon' onClick={onCreateGroup}>
               <Plus className='w-5 h-5' />
             </Button>
           </div>
           <div className='relative'>
-            <Search className='absolute left-3 top-1/2 w-4 h-4 transform -translate-y-1/2 text-muted-foreground' />
+            <Search className='absolute w-4 h-4 transform -translate-y-1/2 left-3 top-1/2 text-muted-foreground' />
             <Input
               placeholder='Search conversations...'
               className='pl-10'
@@ -44,8 +44,8 @@ export default function ConversationList({ onCreateGroup, sidebarOpen }: Convers
         </div>
 
         {/* Conversations List */}
-        <ScrollArea className='block flex-1 w-full'>
-          <div className='p-2 w-80'>
+        <ScrollArea className='flex-1 block w-full '>
+          <div className='p-2 space-y-2 w-80'>
             {activeRooms && (
               <>
                 {activeRooms.pages

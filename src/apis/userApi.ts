@@ -165,38 +165,49 @@ export const followUserAPI = async ({ userId }: { userId: UUID }) => {
     throw error.message;
   }
 };
-
-export const getAllUsersInfomationAPI = async ({
-  userId,
-  page = 1,
-  limit = 10,
-  keywords,
-  currentUserId,
-}: {
-  userId?: UUID;
-  page?: number;
-  limit?: number;
-  keywords?: string;
-  currentUserId?: UUID;
-}) => {
+export const unfollowUserAPI = async ({ userId }: { userId: UUID }) => {
   try {
-    const { data } = await baseApi.get<
-      IApiPaginationResponseWrapper<IUserDataWithFollowedStatusType>
-    >('/user', {
-      params: {
-        userId,
-        page,
-        limit,
-        keywords,
-        currentUserId,
-      },
-    });
+    const { data } = await baseApi.post<IApiResponseWrapper<IFollowUserType>>(
+      '/user/unfollow/' + userId,
+    );
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;
     throw error.message;
   }
 };
+
+// export const getAllUsersInfomationAPI = async ({
+//   userId,
+//   page = 1,
+//   limit = 10,
+//   keywords,
+//   currentUserId,
+// }: {
+//   userId?: UUID;
+//   page?: number;
+//   limit?: number;
+//   keywords?: string;
+//   currentUserId?: UUID;
+// }) => {
+//   try {
+//     const { data } = await baseApi.get<
+//       IApiPaginationResponseWrapper<IUserDataWithFollowedStatusType>
+//     >('/user', {
+//       params: {
+//         userId,
+//         page,
+//         limit,
+//         keywords,
+//         currentUserId,
+//       },
+//     });
+//     return data;
+//   } catch (error: any) {
+//     if (error.response) throw error.response.data.message;
+//     throw error.message;
+//   }
+// };
 
 export const updateInfomationAPI = async (newData: IUpdateInfomationType) => {
   try {
@@ -505,6 +516,25 @@ export const getAllUsersAPI = async (
         ...params,
       },
     });
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const adminGetAllUsersAPI = async (
+  params?: IPaginationParamsType & { keywords?: string; currentUserId?: string },
+) => {
+  try {
+    const { data } = await baseApi.get<IApiPaginationResponseWrapper<IUserDataType>>(
+      '/user/admin/users',
+      {
+        params: {
+          ...params,
+        },
+      },
+    );
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;
