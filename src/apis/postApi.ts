@@ -127,15 +127,23 @@ export const submitPostAPI = async ({
   content,
   isPrivate = false,
   images,
+  mentionedUserIds,
 }: {
   content: string;
   isPrivate?: boolean;
   images: File[];
+  mentionedUserIds?: string[];
 }) => {
   try {
     const formData = new FormData();
     formData.append('content', content);
     formData.append('isPrivate', isPrivate.toString());
+
+    // Add mentionedUserIds if provided
+    if (mentionedUserIds && mentionedUserIds.length > 0) {
+      formData.append('mentionedUserIds', JSON.stringify(mentionedUserIds));
+    }
+
     images.forEach((file) => {
       formData.append('images', file);
     });
@@ -259,10 +267,12 @@ export const submitCommentAPI = async ({
   postId,
   content,
   replyTo,
+  mentionedUserIds,
 }: {
   postId: UUID;
   content: string;
   replyTo?: UUID;
+  mentionedUserIds?: string[];
 }) => {
   try {
     const { data } = await baseApi.post<IApiResponseWrapper<ICommentDataType>>(
@@ -270,6 +280,7 @@ export const submitCommentAPI = async ({
       {
         content,
         replyToId: replyTo,
+        mentionedUserIds,
       },
     );
     return data;

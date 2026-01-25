@@ -1,16 +1,16 @@
 import { Ellipsis } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { Button } from '../ui/button';
-import { IUserDataWithFollowedStatusType } from '@/lib/types/interfaces';
+import { IUserDataType } from '@/lib/types/interfaces';
 import ProfileCardMenu from './ProfileCardMenu';
 
 interface IProps {
-  user: IUserDataWithFollowedStatusType;
+  user: IUserDataType;
 }
 
 export default function ProfileCardDropdownMenu({ user }: IProps) {
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button variant='secondary' className='rounded-full text-foreground'>
           <Ellipsis />

@@ -1,6 +1,8 @@
+import EditorToolbar from '@/components/Posts/Editor/EditorToolbar';
+import { getBaseExtensions } from '@/components/Posts/Editor/Extensions/editorExtensions';
+import { sanitizeHtml } from '@/utils/sanitizeHtml';
 import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
 import { useEffect } from 'react';
 
 export default function BioEditor({
@@ -12,25 +14,16 @@ export default function BioEditor({
 }) {
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({
-        bold: {
-          HTMLAttributes: {
-            class: 'font-bold',
-          },
-        },
-        italic: {
-          HTMLAttributes: {
-            class: 'font-italic',
-          },
-        },
-      }),
+      ...getBaseExtensions(),
       Placeholder.configure({
         placeholder: 'How about you ?',
       }),
     ],
     content: content,
     onUpdate: ({ editor }) => {
-      onChangeContent(editor.getHTML());
+      const text = editor.getText().trim();
+      const html = text ? editor.getHTML() : '';
+      onChangeContent(text ? sanitizeHtml(html) : '');
     },
   });
 
@@ -43,6 +36,7 @@ export default function BioEditor({
   return (
     <div className='w-full'>
       <div className='w-full min-h-[3rem] max-h-[10rem] overflow-y-auto lg:rounded-xl rounded-lg px-5 py-3  max-w-full border-border border space-y-2 hover:border-primary'>
+        <EditorToolbar editor={editor} />
         <EditorContent editor={editor} className='' />
       </div>
     </div>

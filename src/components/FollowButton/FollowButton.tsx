@@ -5,14 +5,30 @@ import LoadingButton from '../LoadingButton';
 import { cn } from '@/lib/utils';
 import { UUID } from 'crypto';
 
-export default function FollowButton({ userId, className }: { userId: UUID; className?: string }) {
+interface IProps {
+  userId: UUID;
+  className?: string;
+  followLabel?: string;
+  unfollowLabel?: string;
+  hiddenLabel?: boolean;
+}
+
+export default function FollowButton({
+  userId,
+  className,
+  followLabel,
+  unfollowLabel,
+  hiddenLabel,
+}: IProps) {
   const { data: userInfo } = useGetUserInfomation({ userId });
-  const { mutate: followUser, isPending } = useFollowUserMutation({ userId });
+  const { mutate: followUser, isPending: isFollowPending } = useFollowUserMutation({ userId });
   const { mutate: unfollowUser, isPending: isUnfollowPending } = useUnfollowUserMutation({
     userId,
   });
 
-  const handleToggleFollowUser = () => {
+  const handleToggleFollowUser = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (!userInfo) return;
     if (userInfo.isFollowedByUser) {
       unfollowUser();
@@ -20,19 +36,18 @@ export default function FollowButton({ userId, className }: { userId: UUID; clas
       followUser();
     }
   };
-
   return (
     userInfo && (
       <>
         {/* Unfollow button */}
         {userInfo.isFollowedByUser && (
           <LoadingButton
-            loading={isPending}
+            loading={isUnfollowPending}
             onClick={handleToggleFollowUser}
             className={cn('text-white', className)}
           >
-            {!isPending && <UserMinus />}
-            Unfollow
+            {!isUnfollowPending && <UserMinus />}
+            {hiddenLabel ? '' : unfollowLabel || 'Unfollow'}
           </LoadingButton>
         )}
 
@@ -42,10 +57,10 @@ export default function FollowButton({ userId, className }: { userId: UUID; clas
             onClick={handleToggleFollowUser}
             className={cn('text-foreground', className)}
             variant='secondary'
-            loading={isUnfollowPending}
+            loading={isFollowPending}
           >
-            {!isUnfollowPending && <UserPlus />}
-            Follow
+            {!isFollowPending && <UserPlus />}
+            {hiddenLabel ? '' : followLabel || 'Follow'}
           </LoadingButton>
         )}
       </>

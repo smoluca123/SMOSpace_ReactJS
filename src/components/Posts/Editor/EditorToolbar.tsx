@@ -57,21 +57,6 @@ export default function EditorToolbar({ editor }: EditorToolbarProps) {
     },
   ];
 
-  //   const historyButtons = [
-  //     {
-  //       icon: Undo,
-  //       label: 'Undo (Ctrl+Z)',
-  //       action: () => editor.chain().focus().undo().run(),
-  //       isDisabled: () => !editor.can().undo(),
-  //     },
-  //     {
-  //       icon: Redo,
-  //       label: 'Redo (Ctrl+Y)',
-  //       action: () => editor.chain().focus().redo().run(),
-  //       isDisabled: () => !editor.can().redo(),
-  //     },
-  //   ];
-
   return (
     <TooltipProvider>
       <div className='flex flex-wrap items-center gap-1 pb-2 mb-2 border-b border-border'>
@@ -124,31 +109,6 @@ export default function EditorToolbar({ editor }: EditorToolbarProps) {
             </Tooltip>
           ))}
         </div>
-
-        {/* <Separator orientation='vertical' className='h-6' /> */}
-
-        {/* History (Undo/Redo) */}
-        {/* <div className='flex items-center gap-1'>
-          {historyButtons.map((button, index) => (
-            <Tooltip key={index}>
-              <TooltipTrigger asChild>
-                <Button
-                  type='button'
-                  variant='ghost'
-                  size='sm'
-                  onClick={button.action}
-                  disabled={button.isDisabled()}
-                  className='w-8 h-8 p-0'
-                >
-                  <button.icon className='w-4 h-4' />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className='text-xs'>{button.label}</p>
-              </TooltipContent>
-            </Tooltip>
-          ))}
-        </div> */}
       </div>
     </TooltipProvider>
   );

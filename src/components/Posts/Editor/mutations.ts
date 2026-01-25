@@ -5,8 +5,9 @@ import {
   IPostDataWithLikedStatusType,
 } from '@/lib/types/interfaces';
 import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS } from '@/constants/queryKeys';
 
-export function useSubmitPostMutaion() {
+export function useSubmitPostMutation() {
   const queryClient = useQueryClient();
   const { update: updateUserInfomation } = useUpdateDataInfomation();
 
@@ -14,21 +15,24 @@ export function useSubmitPostMutaion() {
     content,
     isPrivate,
     images,
+    mentionedUserIds,
   }: {
     content: string;
     isPrivate?: boolean;
     images: File[];
+    mentionedUserIds?: string[];
   }) => {
     try {
       const data = await submitPostAPI({
         content,
         isPrivate,
         images,
+        mentionedUserIds,
       });
       return data;
     } catch (error) {
-      console.log(error);
-      throw new Error(error as string);
+      console.error('Failed to submit post:', error);
+      throw error instanceof Error ? error : new Error('Failed to submit post');
     }
   };
 
@@ -36,7 +40,7 @@ export function useSubmitPostMutaion() {
     mutationFn: submitPost,
     onSuccess: (newPost) => {
       const postsQueryFilter = {
-        queryKey: ['posts'],
+        queryKey: QUERY_KEYS.POSTS,
       };
 
       // update the first page of the posts query

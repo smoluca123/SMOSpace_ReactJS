@@ -136,12 +136,16 @@ export default function UpdateProfileCoverForm({ userData, onClose }: IProps) {
                     animate={controls}
                     onLoad={() => setImageLoaded(true)}
                     key={image}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // open();
+                    }}
                   />
 
                   {/* Remove button */}
                   <Button
                     type='button'
-                    variant='destructive'
+                    variant='outline-destructive'
                     size='icon'
                     className='absolute top-4 right-4'
                     onClick={(e) => {
@@ -157,7 +161,7 @@ export default function UpdateProfileCoverForm({ userData, onClose }: IProps) {
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className='absolute inset-0 bg-primary/10 backdrop-blur-sm flex flex-col items-center justify-center gap-4 pointer-events-none'
+                      className='absolute inset-0 flex flex-col items-center justify-center gap-4 pointer-events-none bg-primary/10 backdrop-blur-sm'
                     >
                       <Upload className='w-16 h-16 text-primary animate-bounce' />
                       <p className='text-lg font-semibold text-primary'>Drop to replace image</p>
@@ -179,7 +183,7 @@ export default function UpdateProfileCoverForm({ userData, onClose }: IProps) {
                   ) : (
                     <>
                       <ImageIcon className='w-20 h-20 text-muted-foreground/50' />
-                      <div className='text-center space-y-2'>
+                      <div className='space-y-2 text-center'>
                         <p className='text-lg font-medium text-foreground'>
                           No cover image selected
                         </p>
@@ -212,7 +216,7 @@ export default function UpdateProfileCoverForm({ userData, onClose }: IProps) {
 
             {/* Helper text below preview */}
             {image && !isDragging && (
-              <p className='text-xs text-muted-foreground mt-2 text-center'>
+              <p className='mt-2 text-xs text-center text-muted-foreground'>
                 💡 Drag the image up/down to adjust position, or drag new image to replace
               </p>
             )}
@@ -221,7 +225,7 @@ export default function UpdateProfileCoverForm({ userData, onClose }: IProps) {
       </Dropzone>
 
       {/* Actions */}
-      <div className='flex gap-2 justify-end pt-4'>
+      <div className='flex justify-end gap-2 pt-4'>
         <Button variant='outline' onClick={onClose} disabled={isPending || isPendingUpdateAvatar}>
           Cancel
         </Button>

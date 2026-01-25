@@ -10,6 +10,8 @@ import { selectAuth } from '@/redux/slices/authSlice';
 import { UUID } from 'crypto';
 import { SendIcon } from 'lucide-react';
 import { Dispatch, SetStateAction, useState } from 'react';
+import { useMentionTracking } from '@/hooks/useMentionTracking';
+import type { Editor } from '@tiptap/react';
 
 export default function CommentInput({
   replyToCommentId,
@@ -25,6 +27,10 @@ export default function CommentInput({
   const { post } = usePostContext();
   const { user } = useAppSelector(selectAuth);
   const [content, setContent] = useState('');
+  const [editor, setEditor] = useState<Editor | null>(null);
+
+  // Track mentioned user IDs
+  const mentionedUserIds = useMentionTracking(editor);
 
   const {
     mutation: { mutate: submitComment, isPending },
@@ -33,7 +39,12 @@ export default function CommentInput({
   const handleSubmit = () => {
     const values = commentSchema.parse({ content });
     submitComment(
-      { postId: post.id, content: values.content, replyTo: replyToCommentId },
+      {
+        postId: post.id,
+        content: values.content,
+        replyTo: replyToCommentId,
+        mentionedUserIds, // Send mentioned user IDs
+      },
       {
         onSuccess: () => {
           setContent('');
@@ -54,7 +65,7 @@ export default function CommentInput({
     <div>
       <div className='flex gap-2 items-center'>
         <UserAvatar avatarUrl={user.avatar} fallbackName={user.fullName} />
-        <CommentEditor content={content} onChangeContent={setContent} />
+        <CommentEditor content={content} onChangeContent={setContent} onEditorReady={setEditor} />
         <LoadingButton
           className='h-[2.8rem]'
           onClick={handleSubmit}
