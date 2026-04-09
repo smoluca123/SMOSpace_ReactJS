@@ -26,8 +26,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { UserType } from '@/lib/types/types';
 import PersonalInfoFields from './PersonalInfoFields';
+import UserTypeSelect from '@/components/UserTypeSelect';
 import ContactInfoFields from './ContactInfoFields';
 import SecurityInfoFields from './SecurityInfoFields';
 import AdditionalInfoFields from './AdditionalInfoFields';
@@ -168,11 +168,12 @@ export default function EditUserInfomationForm({
             <FormField
               control={form.control}
               name='isBanned'
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Is Banned</FormLabel>
                   <Select
-                    onValueChange={(value) => form.setValue('isBanned', stringToBoolean(value))}
+                    value={field.value?.toString()}
+                    onValueChange={(value) => field.onChange(stringToBoolean(value))}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -184,17 +185,19 @@ export default function EditUserInfomationForm({
                       <SelectItem value='false'>False</SelectItem>
                     </SelectContent>
                   </Select>
+                  <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
               name='isActive'
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Is Active</FormLabel>
                   <Select
-                    onValueChange={(value) => form.setValue('isActive', stringToBoolean(value))}
+                    value={field.value?.toString()}
+                    onValueChange={(value) => field.onChange(stringToBoolean(value))}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -206,17 +209,19 @@ export default function EditUserInfomationForm({
                       <SelectItem value='false'>False</SelectItem>
                     </SelectContent>
                   </Select>
+                  <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
               name='isVerified'
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Is Verified</FormLabel>
                   <Select
-                    onValueChange={(value) => form.setValue('isVerified', stringToBoolean(value))}
+                    value={field.value?.toString()}
+                    onValueChange={(value) => field.onChange(stringToBoolean(value))}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -228,31 +233,23 @@ export default function EditUserInfomationForm({
                       <SelectItem value='false'>False</SelectItem>
                     </SelectContent>
                   </Select>
+                  <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
               name='typeId'
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Account Type</FormLabel>
-                  <Select
-                    defaultValue={form.getValues('typeId')}
-                    onValueChange={(value) => form.setValue('typeId', value)}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder='Select Account Type' />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value={UserType.USER}>User</SelectItem>
-                      <SelectItem value={UserType.VIP_USER}>VIP User</SelectItem>
-                      <SelectItem value={UserType.MODERATOR}>Moderator</SelectItem>
-                      <SelectItem value={UserType.SUPER_ADMIN}>Super Admin</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <UserTypeSelect
+                      value={field.value}
+                      onValueChange={(value) => field.onChange(value)}
+                    />
+                  </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
