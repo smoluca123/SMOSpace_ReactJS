@@ -21,6 +21,7 @@ import UserDetailManagementPage from './modules/admin/pages/UserDetailManagement
 import PostsManagementPage from './modules/admin/pages/PostsManagementPage';
 import AnalyticsPage from './modules/admin/pages/AnalyticsPage';
 import GroupChatInterface from '@/modules/chat/pages/ChatPage';
+import AuthenticationRoute from '@/routes/AuthenticationRoute';
 
 const router = createBrowserRouter(
   [
@@ -48,7 +49,11 @@ const router = createBrowserRouter(
         // Friends page
         {
           path: '/friends',
-          element: <FriendsPage />,
+          element: (
+            <AuthenticationRoute>
+              <FriendsPage />
+            </AuthenticationRoute>
+          ),
         },
       ],
     },
@@ -57,6 +62,12 @@ const router = createBrowserRouter(
     {
       path: '/chat/',
       element: <GroupChatInterface />,
+      children: [
+        {
+          path: ':id',
+          element: <GroupChatInterface />,
+        },
+      ],
     },
 
     // Auth page
@@ -92,7 +103,11 @@ const router = createBrowserRouter(
     // Settings page
     {
       path: '/settings',
-      element: <SettingPage />,
+      element: (
+        <AuthenticationRoute>
+          <SettingPage />
+        </AuthenticationRoute>
+      ),
       children: [
         {
           index: true,
@@ -106,7 +121,11 @@ const router = createBrowserRouter(
     },
     {
       path: '/admin',
-      element: <AdminPage />,
+      element: (
+        <AuthenticationRoute roles={['SUPER_ADMIN', 'MODERATOR']}>
+          <AdminPage />
+        </AuthenticationRoute>
+      ),
       children: [
         {
           index: true,

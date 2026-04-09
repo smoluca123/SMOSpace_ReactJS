@@ -30,29 +30,36 @@ export default function NotificationItem({ children, notification, to }: Notific
         }}
         className='flex relative gap-4 items-center p-3 w-full text-left rounded-sm transition-colors duration-300 cursor-pointer hover:bg-accent'
       >
-        {/* Avatar */}
-        <UserAvatar
-          avatarUrl={notification.sender.avatar}
-          fallbackName={notification.sender.fullName}
-        />
+        {/* Avatar with border wrapper */}
+        <div className='relative border-2 border-background rounded-full'>
+          <UserAvatar
+            avatarUrl={notification.sender.avatar}
+            fallbackName={notification.sender.fullName}
+            className='w-8 h-8'
+          />
+        </div>
 
         {/* Notification content */}
         <div className='flex-1'>
           <div className='gap-3 justify-between items-center md:flex'>
             <div className='line-clamp-3'>
-              <ProfileLink
-                username={notification.sender.username}
-                className='inline-block font-semibold text-foreground'
-              >
-                {notification.sender.fullName}
-              </ProfileLink>{' '}
-              {children}
+              <span className='text-sm'>
+                <ProfileLink
+                  username={notification.sender.username}
+                  className='inline-block text-foreground'
+                >
+                  {notification.sender.fullName}
+                </ProfileLink>{' '}
+                {children}
+              </span>
             </div>
           </div>
-          <p className='ml-auto text-sm text-primary'>{timeDistance}</p>
+          <div className='flex items-center gap-2 mt-1'>
+            <p className='text-sm text-primary'>{timeDistance}</p>
+          </div>
         </div>
 
-        {/* Unreaded dot */}
+        {/* Unread dot */}
         {!notification.isRead && <NotificationDot />}
       </div>
     </PopoverClose>

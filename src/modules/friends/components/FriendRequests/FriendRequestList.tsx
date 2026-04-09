@@ -35,7 +35,7 @@ export default function FriendRequestList({
         </div>
       )}
 
-      {!data && !isPending && <EmptyRequest />}
+      {!data || (data && data.pages[0].totalCount === 0 && !isPending && <EmptyRequest />)}
       {isPending && <RequestLoader />}
     </div>
   );
@@ -44,7 +44,7 @@ export default function FriendRequestList({
 // Sub-components
 const RequestLoader = () => {
   return (
-    <div className='my-2 w-full'>
+    <div className='w-full my-2'>
       <Loader2 className='mx-auto animate-spin text-primary' />
     </div>
   );
@@ -55,11 +55,11 @@ const EmptyRequest = () => {
     <>
       {/* don't have request */}
       <div className='text-center'>
-        <h1 className='my-5 text-2xl font-bold text-muted-foreground'>
+        <h1 className='my-5 text-base text-muted-foreground'>
           You don{"'"}t have any friend request !
         </h1>
       </div>
-      <Link className='flex gap-x-2 ml-3 text-primary' to={'/'}>
+      <Link className='flex ml-3 gap-x-2 text-primary' to={'/'}>
         <ChevronLeft />
         Return to home page
       </Link>

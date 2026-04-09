@@ -4,7 +4,7 @@ import { usePostContext } from '@/hooks/usePostContext';
 import { cn } from '@/lib/utils';
 import { ThumbsUp } from 'lucide-react';
 import { AnimationControls, motion, useAnimationControls } from 'framer-motion';
-import { useEffect, useOptimistic, useTransition } from 'react';
+import { useOptimistic, useTransition } from 'react';
 
 export default function LikePost() {
   const { post } = usePostContext();
@@ -31,9 +31,6 @@ export default function LikePost() {
     }
   };
 
-  useEffect(() => {
-    console.log('optimisticIsLiked', optimisticIsLiked);
-  }, [optimisticIsLiked]);
   return (
     <Button
       className={cn('flex gap-2 items-center', {

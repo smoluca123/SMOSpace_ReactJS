@@ -28,7 +28,12 @@ export function useGetPosts(
 ) {
   const getPosts = async ({ page }: { page?: number }) => {
     try {
-      const data = await getAllPostsAPI({ page, likeUserId, keywords, userId });
+      const data = await getAllPostsAPI({
+        page,
+        likeUserId: likeUserId || userId,
+        keywords,
+        userId,
+      });
       return data.data;
     } catch (error) {
       console.log(error);
@@ -42,7 +47,6 @@ export function useGetPosts(
       userId,
     }),
     queryFn: ({ pageParam }) => getPosts({ page: pageParam }),
-    maxPages: 5,
     getPreviousPageParam: ({ hasPreviousPage, currentPage }) =>
       hasPreviousPage ? currentPage - 1 : undefined,
     getNextPageParam: ({ hasNextPage, currentPage }) => (hasNextPage ? currentPage + 1 : undefined),

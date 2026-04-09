@@ -1,5 +1,5 @@
 import {
-  getAllUsersInfomationAPI,
+  adminGetAllUsersAPI,
   getFriendByUserIdAPI,
   getUserFollowersAPI,
   getUserFollowingsAPI,
@@ -169,7 +169,7 @@ export function useGetAllUsersInfomation({ keywords }: { keywords: string }) {
 
   const getAllUsersInfomation = async ({ page }: { page: number }) => {
     try {
-      const { data } = await getAllUsersInfomationAPI({ page, keywords, currentUserId });
+      const { data } = await adminGetAllUsersAPI({ page, keywords, currentUserId });
       return data;
     } catch (error) {
       throw new Error(error as string);

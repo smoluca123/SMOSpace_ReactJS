@@ -1,4 +1,4 @@
-import { deletePostAPI, likePostAPI, updatePostAPI } from '@/apis/postApi';
+import { adminDeletePostAPI, deletePostAPI, likePostAPI, updatePostAPI } from '@/apis/postApi';
 import { UUID } from 'crypto';
 import { InfiniteData, QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -8,6 +8,8 @@ import {
 import { getLikedUsersQueryKey } from '@/components/Posts/PostEngagementMetrics/LikedUsersDialog/querys';
 import { getPostQueryKey } from '@/modules/post-detail/components/PostDetail/querys';
 import useUpdateDataInfomation from '@/hooks/useUpdateDataInfomation';
+import { useAppSelector } from '@/redux/hooks';
+import { selectAuth } from '@/redux/slices/authSlice';
 
 export function useLikePostMutation() {
   const queryClient = useQueryClient();
@@ -92,11 +94,12 @@ export function useLikePostMutation() {
 
 export function useDeletePostMutation() {
   const queryClient = useQueryClient();
+  const { isAdmin, user } = useAppSelector(selectAuth);
   const { update: updateUserInfomation } = useUpdateDataInfomation();
 
   const deletePost = async ({ postId }: { postId: UUID }) => {
     try {
-      const { data } = await deletePostAPI({ postId });
+      const { data } = await (isAdmin ? adminDeletePostAPI : deletePostAPI)({ postId });
       return data;
     } catch (error) {
       console.log(error);
@@ -124,7 +127,9 @@ export function useDeletePostMutation() {
         };
       });
       // update the user data in the query cache
-      updateUserInfomation({ data: newData.author });
+      if (user?.id === newData.author.id) {
+        updateUserInfomation({ data: newData.author });
+      }
     },
   });
   return mutation;

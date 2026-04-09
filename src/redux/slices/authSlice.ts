@@ -9,15 +9,20 @@ interface AuthState {
   user: IUserWithAccessTokenType | null;
   isLoading: boolean;
   error: { message: string } | null;
+  isAdmin: boolean;
 }
 
-const isAuthenticated = JSON.parse(localStorage.getItem('isAuthenticated') || 'false');
-const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+export const isAuthenticated = JSON.parse(localStorage.getItem('isAuthenticated') || 'false');
+export const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+export const isAdmin =
+  currentUser?.userType.typeName === 'MODERATOR' ||
+  currentUser?.userType.typeName === 'SUPER_ADMIN';
 
 const initialState: AuthState = {
   isAuthenticated,
   user: currentUser,
   isLoading: false,
+  isAdmin,
   error: null,
 };
 
@@ -48,8 +53,22 @@ const authSlice = createSlice({
         payload: IUserWithAccessTokenType;
       },
     ) {
-      state.user = action.payload;
-      localStorage.setItem('currentUser', JSON.stringify(action.payload));
+      const accessToken = JSON.parse(localStorage.getItem('currentUser') || '{}').accessToken;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { accessToken: _accessToken, ...rest } = action.payload;
+      const newUser = {
+        ...state.user,
+        ...rest,
+        accessToken,
+      };
+      localStorage.setItem('currentUser', JSON.stringify(newUser));
+      return {
+        ...state,
+        user: newUser,
+        isAdmin:
+          action.payload.userType.typeName === 'MODERATOR' ||
+          action.payload.userType.typeName === 'SUPER_ADMIN',
+      };
     },
     updateUserCredits(state, { payload }: { payload: number }) {
       if (state.user) {
@@ -84,6 +103,9 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isAuthenticated = true;
         state.user = action.payload.data;
+        state.isAdmin =
+          action.payload.data.userType.typeName === 'MODERATOR' ||
+          action.payload.data.userType.typeName === 'SUPER_ADMIN';
         state.error = null;
         localStorage.setItem('currentUser', JSON.stringify(action.payload.data));
         localStorage.setItem('isAuthenticated', JSON.stringify(true));

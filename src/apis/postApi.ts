@@ -337,7 +337,7 @@ export const adminGetAllPostAPI = async ({
 
 export const adminDeletePostAPI = async ({ postId }: { postId: UUID }) => {
   try {
-    const { data } = await baseApi.delete<IApiPaginationResponseWrapper<IPostDataType>>(
+    const { data } = await baseApi.delete<IApiResponseWrapper<IPostDataType>>(
       '/post/admin/' + postId,
     );
     return data;

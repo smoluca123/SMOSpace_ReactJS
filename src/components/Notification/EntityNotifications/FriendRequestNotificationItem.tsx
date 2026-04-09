@@ -15,7 +15,7 @@ export default function FriendRequestNotificationItem({
           notification={notification}
           to={`/profile/${notification.metadata.friend.username}`}
         >
-          <span>sent you a friend request</span>
+          <span className='text-sm'>sent you a friend request</span>
         </NotificationItem>
       );
     default:

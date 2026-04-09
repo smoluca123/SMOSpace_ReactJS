@@ -8,7 +8,7 @@ interface FollowNotificationItemProps {
 export default function FollowNotificationItem({ notification }: FollowNotificationItemProps) {
   return (
     <NotificationItem notification={notification}>
-      <span>started following you</span>
+      <span className='text-sm'>started following you</span>
     </NotificationItem>
   );
 }
