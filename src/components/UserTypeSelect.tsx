@@ -8,7 +8,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
-import { useEffect } from 'react';
 
 interface UserTypeSelectProps {
   value?: string;
@@ -26,16 +25,6 @@ export default function UserTypeSelect({
     queryFn: getUserTypeList,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
-
-  // Debug: log the value and available types
-  useEffect(() => {
-    if (data?.data) {
-      console.log('Current value:', value);
-      console.log('Available types:', data.data);
-      const matchedType = data.data.find((type) => type.id === value);
-      console.log('Matched type:', matchedType);
-    }
-  }, [value, data]);
 
   if (isLoading) {
     return (

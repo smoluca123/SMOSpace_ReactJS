@@ -32,9 +32,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { UserType } from '@/lib/types/types';
 import BioEditor from '../../Editor/BioEditor';
 import { cn } from '@/lib/utils';
+import UserTypeSelect from '@/components/UserTypeSelect';
 
 export default function CreateUserDialog({
   onClose,
@@ -292,22 +292,16 @@ export default function CreateUserDialog({
               <FormField
                 control={form.control}
                 name='typeId'
-                render={() => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Account Type</FormLabel>
-                    <Select onValueChange={(value) => form.setValue('typeId', value)}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder='Select Account Type' />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={UserType.USER}>User</SelectItem>
-                        <SelectItem value={UserType.VIP_USER}>VIP User</SelectItem>
-                        <SelectItem value={UserType.MODERATOR}>Moderator</SelectItem>
-                        <SelectItem value={UserType.SUPER_ADMIN}>Super Admin</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <UserTypeSelect
+                        value={field.value}
+                        onValueChange={(value) => field.onChange(value)}
+                      />
+                    </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
