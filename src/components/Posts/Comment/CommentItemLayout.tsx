@@ -1,5 +1,6 @@
 'use no memo';
 import LinkifyHashTag from '@/components/LinkifyHashTag';
+import MentionLinkHandler from '@/components/MentionLinkHandler';
 import UserAvatar from '@/components/UserAvatar';
 import useTimeDistance from '@/hooks/useTimeDistance';
 import parse from 'html-react-parser';
@@ -29,9 +30,11 @@ export default function CommentItemLayout() {
                   </NameWithVerifiedIcon>
                 </NameWithBadge>
               </ProfileLink>
-              <LinkifyHashTag>
-                <article className='~text-sm/base'>{parse(comment.content)}</article>
-              </LinkifyHashTag>
+              <MentionLinkHandler>
+                <LinkifyHashTag>
+                  <article className='~text-sm/base'>{parse(comment.content)}</article>
+                </LinkifyHashTag>
+              </MentionLinkHandler>
             </div>
 
             {/* Comment More Button */}

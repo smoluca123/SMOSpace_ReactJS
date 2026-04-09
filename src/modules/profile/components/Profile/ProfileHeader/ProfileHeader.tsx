@@ -1,7 +1,6 @@
 import NameWithBadge from '@/components/NameWithBadge';
 import NameWithVerifiedIcon from '@/components/NameWithVerifiedIcon';
 import { useProfileContext } from '@/hooks/useProfileContext';
-import { useGetFriendByUserId } from '@/lib/querys';
 import { ProfileCoverImage } from '@/modules/profile/components/Profile/ProfileHeader';
 import ProfileActions from '@/modules/profile/components/Profile/ProfileHeader/ProfileActions';
 import ProfileAvatarImage from '@/modules/profile/components/Profile/ProfileHeader/ProfileAvatarImage';
@@ -46,13 +45,8 @@ export default function ProfileHeader() {
 
 export function ProfileHeaderActions() {
   const { userData, isMe } = useProfileContext();
-  const { isSuccess, data } = useGetFriendByUserId(
-    { userId: userData.id },
-    {
-      enabled: !isMe,
-    },
-  );
-  const isFriend = isSuccess && !!data;
-  if (!userData) return null;
-  return <>{!isMe && isFriend && <ProfileActions />}</>;
+
+  if (!userData || isMe) return null;
+
+  return <ProfileActions userId={userData.id} />;
 }

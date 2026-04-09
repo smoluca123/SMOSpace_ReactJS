@@ -1,8 +1,8 @@
 'use no memo';
 
 import { Editor, EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
+import { CustomMention } from '@/components/Posts/Editor/Extensions/CustomMention';
 import './style.css';
 import {
   Select,
@@ -25,6 +25,11 @@ import GeneratePostImagesDialog from '@/components/Posts/Editor/Features/Generat
 import axios from 'axios';
 import { blobToFile } from '@/lib/utils';
 import EditorToolbar from '@/components/Posts/Editor/EditorToolbar';
+import { PLACEHOLDERS } from '@/constants/placeholders';
+import { sanitizeHtml } from '@/utils/sanitizeHtml';
+import { useEffect } from 'react';
+import EmojiPickerButton from '@/components/Posts/Editor/Features/EmojiPickerButton';
+import { getBaseExtensions } from '@/components/Posts/Editor/Extensions/editorExtensions';
 
 export default function PostEditor({
   content,
@@ -33,6 +38,7 @@ export default function PostEditor({
   onChangeIsPrivate,
   media,
   onChangeMedia,
+  onEditorReady,
 }: {
   isPrivate: boolean;
   content: string;
@@ -40,73 +46,43 @@ export default function PostEditor({
   onChangeIsPrivate: (isPrivate: boolean) => void;
   media?: File[];
   onChangeMedia?: React.Dispatch<React.SetStateAction<File[]>>;
+  onEditorReady?: (editor: Editor) => void;
 }) {
   const { user } = useAppSelector(selectAuth);
 
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({
-        bold: {
-          HTMLAttributes: {
-            class: 'font-bold',
-          },
-        },
-        italic: {
-          HTMLAttributes: {
-            class: 'italic',
-          },
-        },
-        strike: {
-          HTMLAttributes: {
-            class: 'line-through',
-          },
-        },
-        code: {
-          HTMLAttributes: {
-            class: 'bg-muted px-1.5 py-0.5 rounded text-sm font-mono',
-          },
-        },
-        blockquote: {
-          HTMLAttributes: {
-            class: 'border-l-4 border-primary pl-4 italic',
-          },
-        },
-        bulletList: {
-          HTMLAttributes: {
-            class: 'list-disc list-inside',
-          },
-        },
-        orderedList: {
-          HTMLAttributes: {
-            class: 'list-decimal list-inside',
-          },
-        },
-        listItem: {
-          HTMLAttributes: {
-            class: 'ml-4',
-          },
-        },
-        codeBlock: {
-          HTMLAttributes: {
-            class: 'bg-muted p-4 rounded-lg font-mono text-sm',
-          },
-        },
-        // History is enabled by default in StarterKit for undo/redo
-        history: {
-          depth: 100,
-          newGroupDelay: 500,
-        },
-      }),
+      ...getBaseExtensions(),
       Placeholder.configure({
-        placeholder: "What's going on? #Hashtag... @Mention...",
+        placeholder: PLACEHOLDERS.POST_EDITOR,
       }),
+      CustomMention, // Use shared custom mention extension
     ],
     content: content,
     onUpdate: ({ editor }) => {
       const text = editor.getText().trim();
-      onChangeContent(text ? editor.getHTML() : '');
+      const html = text ? editor.getHTML() : '';
+      onChangeContent(text ? sanitizeHtml(html) : '');
     },
   });
+
+  // Sync editor content when content prop changes externally (e.g. loading draft)
+  useEffect(() => {
+    if (!editor) return;
+
+    // Only update if content is different to avoid infinite loop
+    const currentContent = editor.getHTML();
+    if (content !== currentContent) {
+      editor.commands.setContent(content);
+    }
+  }, [content, editor]);
+
+  // Notify parent when editor is ready
+  useEffect(() => {
+    if (editor && onEditorReady) {
+      onEditorReady(editor);
+    }
+  }, [editor, onEditorReady]);
 
   if (!user) return <Navigate to='/' replace />;
 
@@ -117,13 +93,7 @@ export default function PostEditor({
         <AuthorInfo />
 
         {/* Privacy Select */}
-        <PrivacySelect
-          isPrivate={isPrivate}
-          onChangeIsPrivate={(value) => {
-            onChangeIsPrivate(!!+value);
-            return value;
-          }}
-        />
+        <PrivacySelect isPrivate={isPrivate} onChangeIsPrivate={onChangeIsPrivate} />
       </div>
 
       <div className='w-full min-h-[8rem] max-h-[20rem] overflow-y-auto bg-card lg:rounded-xl rounded-lg px-5 py-3  max-w-full border-border border space-y-2'>
@@ -168,10 +138,13 @@ function PrivacySelect({
   onChangeIsPrivate,
 }: {
   isPrivate: boolean;
-  onChangeIsPrivate: (isPrivate: '1' | '0') => void;
+  onChangeIsPrivate: (isPrivate: boolean) => void;
 }) {
   return (
-    <Select value={isPrivate ? '1' : '0'} onValueChange={onChangeIsPrivate}>
+    <Select
+      value={isPrivate ? '1' : '0'}
+      onValueChange={(value) => onChangeIsPrivate(value === '1')}
+    >
       <SelectTrigger className='w-[100px]'>
         <SelectValue placeholder='Public' />
       </SelectTrigger>
@@ -227,6 +200,7 @@ function PostFeatures({
           >
             Generate Image (AI)
           </HotButton>
+          <EmojiPickerButton editor={editor} />
           <Button variant='outline-primary'>Feelings</Button>
         </div>
       </div>

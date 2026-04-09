@@ -16,6 +16,7 @@ import UserMetaData from '../UserMetaData';
 import ProfileCardProvider from './ProfileCardProvider';
 import useProfileCardContext from '@/hooks/useProfileCardContext';
 import ProfileCardSkeleton from './ProfileCardSkeleton';
+import ProfileCardDropdownMenu from '@/components/ProfileCard/ProfileCardDropdownMenu';
 
 interface IProps {
   userId: UUID;
@@ -95,10 +96,12 @@ function ProfileActions() {
   return (
     <div className='flex justify-around w-full gap-x-2'>
       <FollowButton className='w-1/2' userId={userData.id} />
+
       <Button variant='secondary' className='flex-1'>
         <MessageCircle />
         Message
       </Button>
+      <ProfileCardDropdownMenu user={userData} />
     </div>
   );
 }

@@ -2,6 +2,8 @@
 
 import { useUpdateBio } from '@/components/EditBio/mutations';
 import LoadingButton from '@/components/LoadingButton';
+import EditorToolbar from '@/components/Posts/Editor/EditorToolbar';
+import { getBaseExtensions } from '@/components/Posts/Editor/Extensions/editorExtensions';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -12,9 +14,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
+import { sanitizeHtml } from '@/utils/sanitizeHtml';
 import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
+// import { getBaseExtensions } from '@/components/Posts/Editor/Extensions/editorExtensions';
 
 interface IProps {
   open: boolean;
@@ -26,25 +29,16 @@ interface IProps {
 export default function EditBioDialog({ open, onClose, content = '', onChangeContent }: IProps) {
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({
-        bold: {
-          HTMLAttributes: {
-            class: 'font-bold',
-          },
-        },
-        italic: {
-          HTMLAttributes: {
-            class: 'font-italic',
-          },
-        },
-      }),
+      ...getBaseExtensions(),
       Placeholder.configure({
         placeholder: "What's going on? #Hashtag... @Mention...",
       }),
     ],
     content: content,
     onUpdate: ({ editor }) => {
-      onChangeContent?.(editor.getHTML());
+      const text = editor.getText().trim();
+      const html = text ? editor.getHTML() : '';
+      onChangeContent?.(text ? sanitizeHtml(html) : '');
     },
   });
 
@@ -80,6 +74,7 @@ export default function EditBioDialog({ open, onClose, content = '', onChangeCon
         {/* Editor */}
         <div className='w-full min-h-[8rem] max-h-[20rem] overflow-y-auto bg-card lg:rounded-xl rounded-lg px-5 py-3  max-w-full border-border border space-y-2'>
           {/* {editor && <MenuBar editor={editor} />} */}
+          <EditorToolbar editor={editor} />
           <EditorContent editor={editor} className='' />
         </div>
 

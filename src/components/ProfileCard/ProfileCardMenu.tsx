@@ -1,9 +1,9 @@
-import { IUserDataWithFollowedStatusType } from '@/lib/types/interfaces';
+import { IUserDataType } from '@/lib/types/interfaces';
 import { Flag, LockKeyhole, UserPlus } from 'lucide-react';
 import DropdownMenuItemWithIcon from '../DropdownMenuItemWithIcon';
 
 interface IProps {
-  user: IUserDataWithFollowedStatusType;
+  user: IUserDataType;
 }
 
 export default function ProfileCardMenu({ user }: IProps) {

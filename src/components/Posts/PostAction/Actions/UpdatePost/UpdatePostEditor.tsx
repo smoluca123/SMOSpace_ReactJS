@@ -1,8 +1,6 @@
 'use no memo';
 
 import { EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Placeholder from '@tiptap/extension-placeholder';
 import {
   Select,
   SelectContent,
@@ -19,6 +17,8 @@ import { useAppSelector } from '@/redux/hooks';
 import { selectAuth } from '@/redux/slices/authSlice';
 import { Navigate } from 'react-router-dom';
 import UserAvatar from '@/components/UserAvatar';
+import { getPostEditorExtensions } from '@/components/Posts/Editor/Extensions/editorExtensions';
+import { sanitizeHtml } from '@/utils/sanitizeHtml';
 
 export default function UpdatePostEditor({
   content,
@@ -35,35 +35,20 @@ export default function UpdatePostEditor({
   const { user } = useAppSelector(selectAuth);
 
   const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        bold: {
-          HTMLAttributes: {
-            class: 'font-bold',
-          },
-        },
-        italic: {
-          HTMLAttributes: {
-            class: 'font-italic',
-          },
-        },
-      }),
-      Placeholder.configure({
-        placeholder: "What's going on? #Hashtag... @Mention...",
-      }),
-    ],
+    extensions: [...getPostEditorExtensions()],
     content: content,
     onUpdate: ({ editor }) => {
-      console.log(editor.getText());
-      onChangeContent(editor.getHTML());
+      const text = editor.getText().trim();
+      const html = text ? editor.getHTML() : '';
+      onChangeContent(text ? sanitizeHtml(html) : '');
     },
   });
 
   if (!user) return <Navigate to='/' replace />;
 
   return (
-    <div className='overflow-x-hidden space-y-5 w-full max-w-full rounded-md shadow-sm'>
-      <div className='flex gap-x-4 items-center'>
+    <div className='w-full max-w-full space-y-5 overflow-x-hidden rounded-md shadow-sm'>
+      <div className='flex items-center gap-x-4'>
         <UserAvatar
           avatarUrl={user.avatar}
           fallbackName={user.fullName}
@@ -94,7 +79,7 @@ export default function UpdatePostEditor({
         </div>
       </div>
 
-      <div className='flex gap-2 justify-end'>
+      <div className='flex justify-end gap-2'>
         <Select
           value={isPrivate ? '1' : '0'}
           onValueChange={(value) => {

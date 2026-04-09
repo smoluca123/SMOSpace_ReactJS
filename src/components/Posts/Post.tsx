@@ -4,6 +4,7 @@ import { Globe, GlobeLock } from 'lucide-react';
 import parser from 'html-react-parser';
 import { formatRelativeDate } from '@/lib/utils';
 import LinkifyHashTag from '@/components/LinkifyHashTag';
+import MentionLinkHandler from '@/components/MentionLinkHandler';
 import { Link } from 'react-router-dom';
 import ContentWrapper from '@/modules/home/components/ContentWrapper';
 import { ProfileLinkWithCard } from '@/components/ProfileLink';
@@ -30,16 +31,21 @@ export default function Post({ isExpanded = false }: { isExpanded?: boolean }) {
 
         {/* Post Content */}
         <div className='whitespace-pre-line break-words'>
-          <LinkifyHashTag>
-            {parser(
-              isExpanded || post.content.length <= limit ? post.content : `${shortContent}...`,
-            )}
-            {!isExpanded && post.content.length > limit && (
-              <Link to={`/post/${post.id}`} className='font-semibold text-primary hover:underline'>
-                Read More
-              </Link>
-            )}
-          </LinkifyHashTag>
+          <MentionLinkHandler>
+            <LinkifyHashTag>
+              {parser(
+                isExpanded || post.content.length <= limit ? post.content : `${shortContent}...`,
+              )}
+              {!isExpanded && post.content.length > limit && (
+                <Link
+                  to={`/post/${post.id}`}
+                  className='font-semibold text-primary hover:underline'
+                >
+                  Read More
+                </Link>
+              )}
+            </LinkifyHashTag>
+          </MentionLinkHandler>
         </div>
         <PostMedia media={post.media} />
 

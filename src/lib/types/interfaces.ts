@@ -93,37 +93,37 @@ export interface IUserSessionType {
 }
 
 export interface IMediaDataType {
-  data: {
-    id: string;
-    url: string;
-    type: string;
-    size: number;
-    format: string;
-    createdAt: string;
-    updatedAt: string;
-    height: null;
-    width: null;
-    duration: null;
-    uploadedFile: IUploadedFileType;
-  };
+  // data: {
+  id: string;
   url: string;
+  type: 'IMAGE' | 'VIDEO';
+  size: number;
+  format: string;
+  createdAt: string;
+  updatedAt: string;
+  height?: null;
+  width?: null;
+  duration?: null;
+  // uploadedFile: IUploadedFileType;
+  // };
+  // url: string;
 }
 
-interface IUploadedFileType {
-  $metadata: IUploadedFileMetadataType;
-  ETag: string;
-  VersionId: string;
-  Bucket: string;
-  Key: string;
-  Location: string;
-}
+// interface IUploadedFileType {
+//   $metadata: IUploadedFileMetadataType;
+//   ETag: string;
+//   VersionId: string;
+//   Bucket: string;
+//   Key: string;
+//   Location: string;
+// }
 
-interface IUploadedFileMetadataType {
-  httpStatusCode: number;
-  requestId: string;
-  attempts: number;
-  totalRetryDelay: number;
-}
+// interface IUploadedFileMetadataType {
+//   httpStatusCode: number;
+//   requestId: string;
+//   attempts: number;
+//   totalRetryDelay: number;
+// }
 
 export interface IPostDataType {
   id: UUID;
@@ -306,7 +306,40 @@ interface ITypeNotification {
     | 'COMMENT_POST'
     | 'FRIEND_REQUEST'
     | 'LIKE_POST'
-    | 'FRIEND_ACCEPT';
+    | 'FRIEND_ACCEPT'
+    | 'POST_MENTION'
+    | 'COMMENT_MENTION';
+}
+
+// ==================== MENTION NOTIFICATIONS ====================
+
+export interface IPostMentionNotificationType extends INotificationType {
+  metadata: IPostMentionNotificationMetadata;
+  entityType: 'POST';
+}
+
+export interface ICommentMentionNotificationType extends INotificationType {
+  metadata: ICommentMentionNotificationMetadata;
+  entityType: 'COMMENT';
+}
+
+interface IPostMentionNotificationMetadata {
+  postId: UUID;
+  mentionedBy: {
+    username: string;
+    fullName: string;
+    avatar: string;
+  };
+}
+
+interface ICommentMentionNotificationMetadata {
+  postId: UUID;
+  commentId: UUID;
+  mentionedBy: {
+    username: string;
+    fullName: string;
+    avatar: string;
+  };
 }
 
 // ==================== GROUPED NOTIFICATIONS ====================

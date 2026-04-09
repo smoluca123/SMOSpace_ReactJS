@@ -24,7 +24,7 @@ export default function PostMediaGrid({ media, onImageClick }: PostMediaGridProp
           src={media[0].url}
           alt={`Post image 1`}
           className={cn(
-            'w-full h-full object-cover transition-opacity duration-300 border-2 border-black',
+            'w-full h-full object-cover transition-opacity duration-300 border-2 border-black cursor-pointer hover:opacity-90',
             loadedImages.has(0) ? 'opacity-100' : 'opacity-0',
           )}
           loading='lazy'
@@ -40,12 +40,12 @@ export default function PostMediaGrid({ media, onImageClick }: PostMediaGridProp
     return (
       <div className='grid grid-cols-2 gap-1'>
         {media.map((image, index) => (
-          <div key={image.url} className='overflow-hidden relative aspect-square'>
+          <div key={image.url} className='relative overflow-hidden aspect-square'>
             <img
               src={image.url}
               alt={`Post image ${index + 1}`}
               className={cn(
-                'w-full h-full object-cover transition-opacity duration-300 border-2 border-black',
+                'w-full h-full object-cover transition-opacity duration-300 border-2 border-black cursor-pointer hover:opacity-90',
                 loadedImages.has(index) ? 'opacity-100' : 'opacity-0',
               )}
               loading='lazy'
@@ -62,12 +62,12 @@ export default function PostMediaGrid({ media, onImageClick }: PostMediaGridProp
   if (media.length === 3) {
     return (
       <div className='grid grid-cols-2 gap-1'>
-        <div className='overflow-hidden relative'>
+        <div className='relative overflow-hidden'>
           <img
             src={media[0].url}
             alt='Post image 1'
             className={cn(
-              'w-full h-full object-cover transition-opacity duration-300 border-2 border-black',
+              'w-full h-full object-cover transition-opacity duration-300 border-2 border-black cursor-pointer hover:opacity-90',
               loadedImages.has(0) ? 'opacity-100' : 'opacity-0',
             )}
             loading='lazy'
@@ -82,7 +82,7 @@ export default function PostMediaGrid({ media, onImageClick }: PostMediaGridProp
                 src={image.url}
                 alt={`Post image ${index + 2}`}
                 className={cn(
-                  'w-full h-full object-cover transition-opacity duration-300 border-2 border-black',
+                  'w-full h-full object-cover transition-opacity duration-300 border-2 border-black cursor-pointer hover:opacity-90',
                   loadedImages.has(index + 1) ? 'opacity-100' : 'opacity-0',
                 )}
                 loading='lazy'
@@ -100,12 +100,12 @@ export default function PostMediaGrid({ media, onImageClick }: PostMediaGridProp
   return (
     <div className='grid grid-cols-2 gap-1'>
       {media.slice(0, 4).map((image, index) => (
-        <div key={image.url} className='overflow-hidden relative aspect-square'>
+        <div key={image.url} className='relative overflow-hidden aspect-square'>
           <img
             src={image.url}
             alt={`Post image ${index + 1}`}
             className={cn(
-              'w-full h-full object-cover transition-opacity duration-300 border-2 border-black',
+              'w-full h-full object-cover transition-opacity duration-300 border-2 border-black cursor-pointer hover:opacity-90',
               loadedImages.has(index) ? 'opacity-100' : 'opacity-0',
             )}
             loading='lazy'
@@ -114,7 +114,7 @@ export default function PostMediaGrid({ media, onImageClick }: PostMediaGridProp
           />
           {index === 3 && media.length > 4 && (
             <div
-              className='flex absolute inset-0 justify-center items-center text-2xl font-bold text-white cursor-pointer bg-black/50'
+              className='absolute inset-0 flex items-center justify-center text-2xl font-bold text-white cursor-pointer bg-black/50'
               onClick={() => onImageClick?.(3)}
             >
               +{media.length - 4}

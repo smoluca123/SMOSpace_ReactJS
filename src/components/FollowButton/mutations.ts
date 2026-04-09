@@ -1,4 +1,5 @@
 import { followUserAPI, unfollowUserAPI } from '@/apis/userApi';
+import { getFollowingPostsQueryKey } from '@/components/Posts/querys';
 import useUpdateDataInfomation from '@/hooks/useUpdateDataInfomation';
 import { getUserInfomationQueryKey } from '@/lib/querys';
 import { IApiResponseWrapper, IUserDataWithFollowedStatusType } from '@/lib/types/interfaces';
@@ -34,6 +35,11 @@ export const useFollowUserMutation = ({ userId }: { userId: UUID }) => {
       const queryFilters = {
         queryKey: getUserInfomationQueryKey({ userId }),
       };
+
+      // Invalidate the following post query cache
+      queryClient.invalidateQueries({
+        queryKey: getFollowingPostsQueryKey({ likeUserId: user.id }),
+      });
 
       // Update cached user data with new follower count and status
       queryClient.setQueriesData<IApiResponseWrapper<IUserDataWithFollowedStatusType>>(
@@ -88,6 +94,11 @@ export const useUnfollowUserMutation = ({ userId }: { userId: UUID }) => {
       const queryFilters = {
         queryKey: getUserInfomationQueryKey({ userId }),
       };
+
+      // Invalidate the following post query cache
+      queryClient.invalidateQueries({
+        queryKey: getFollowingPostsQueryKey({ likeUserId: user.id }),
+      });
 
       // Update cached user data with new follower count and status
       queryClient.setQueriesData<IApiResponseWrapper<IUserDataWithFollowedStatusType>>(

@@ -1,6 +1,5 @@
 import { Trash2 } from 'lucide-react';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function PostMediaItem({
   mediaItem,
@@ -10,24 +9,44 @@ export default function PostMediaItem({
   onRemove: () => void;
 }) {
   const [itemUrl, setItemUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setItemUrl(URL.createObjectURL(mediaItem));
+    const url = URL.createObjectURL(mediaItem);
+    setItemUrl(url);
 
     return () => {
-      if (itemUrl) {
-        URL.revokeObjectURL(itemUrl);
-      }
+      URL.revokeObjectURL(url);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mediaItem]);
 
+  const handleImageLoad = () => {
+    setIsLoading(false);
+  };
+
   return (
-    <div className='overflow-hidden relative w-20 h-20 rounded-md group'>
-      <img src={itemUrl || ''} alt='' className='object-cover w-full h-full' />
+    <div className='overflow-hidden relative w-20 h-20 rounded-md group bg-muted'>
+      {/* Loading skeleton */}
+      {isLoading && <div className='absolute inset-0 animate-pulse bg-muted' />}
+
+      {/* Image */}
+      {itemUrl && (
+        <img
+          src={itemUrl}
+          alt='Post media preview'
+          className='object-cover w-full h-full'
+          onLoad={handleImageLoad}
+        />
+      )}
+
+      {/* Remove button */}
       <div className='hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:block'>
-        <button className='p-2 rounded-full bg-muted' onClick={onRemove}>
-          <Trash2 className='w-4 h-4' />
+        <button
+          className='p-2 rounded-full bg-destructive/90 hover:bg-destructive transition-colors'
+          onClick={onRemove}
+          aria-label='Remove image'
+        >
+          <Trash2 className='w-4 h-4 text-destructive-foreground' />
         </button>
       </div>
     </div>

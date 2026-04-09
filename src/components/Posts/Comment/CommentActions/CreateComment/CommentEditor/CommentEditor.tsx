@@ -1,39 +1,32 @@
 'use no memo';
 
-import Placeholder from '@tiptap/extension-placeholder';
-import { EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
+import { sanitizeHtml } from '@/utils/sanitizeHtml';
+import { getEditorExtensions } from '@/components/Posts/Editor/Extensions/editorExtensions';
+import { Editor, EditorContent, useEditor } from '@tiptap/react';
 import { useEffect } from 'react';
 
 export default function CommentEditor({
   content,
   onChangeContent,
+  onEditorReady,
 }: {
   content: string;
   onChangeContent: (content: string) => void;
+  onEditorReady?: (editor: Editor) => void;
 }) {
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({
-        bold: {
-          HTMLAttributes: {
-            class: 'font-bold',
-          },
-        },
-        italic: {
-          HTMLAttributes: {
-            class: 'font-italic',
-          },
-        },
-      }),
-      Placeholder.configure({
+      ...getEditorExtensions({
+        enableMention: true,
         placeholder: 'What are you thinking?',
       }),
     ],
+
     content: content,
     onUpdate: ({ editor }) => {
       const text = editor.getText().trim();
-      onChangeContent(text ? editor.getHTML() : '');
+      const html = text ? editor.getHTML() : '';
+      onChangeContent(text ? sanitizeHtml(html) : '');
     },
   });
 
@@ -42,6 +35,13 @@ export default function CommentEditor({
       editor.commands.setContent(content);
     }
   }, [content, editor]);
+
+  // Notify parent when editor is ready
+  useEffect(() => {
+    if (editor && onEditorReady) {
+      onEditorReady(editor);
+    }
+  }, [editor, onEditorReady]);
 
   return (
     <div className='w-full'>

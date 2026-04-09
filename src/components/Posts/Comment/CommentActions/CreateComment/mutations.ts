@@ -10,13 +10,15 @@ export function useSubmitCommentMutation({ isShowReplies }: { isShowReplies?: bo
     postId,
     content,
     replyTo,
+    mentionedUserIds,
   }: {
     postId: UUID;
     content: string;
     replyTo?: UUID;
+    mentionedUserIds?: string[];
   }) => {
     try {
-      const { data } = await submitCommentAPI({ postId, content, replyTo });
+      const { data } = await submitCommentAPI({ postId, content, replyTo, mentionedUserIds });
       return data;
     } catch (error) {
       console.log(error);

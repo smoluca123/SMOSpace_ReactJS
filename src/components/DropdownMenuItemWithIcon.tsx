@@ -6,7 +6,7 @@ import { LucideProps } from 'lucide-react';
 import { ForwardRefExoticComponent, PropsWithChildren, RefAttributes } from 'react';
 
 interface MenuItemProps extends PropsWithChildren, PropsWithClassName, DropdownMenuItemProps {
-  Icon: ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>;
+  Icon?: ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>;
   variant?: 'default' | 'destructive';
 }
 
@@ -34,7 +34,7 @@ export default function DropdownMenuItemWithIcon({
       })}
       {...props}
     >
-      <Icon className={cn('!size-5', IconColor[variant])} />
+      {Icon && <Icon className={cn('!size-5', IconColor[variant])} />}
       {children}
     </DropdownMenuItem>
   );

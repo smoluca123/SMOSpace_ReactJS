@@ -1,7 +1,6 @@
 'use no memo';
 
 import { Editor, EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import './style.css';
 import {
@@ -22,6 +21,8 @@ import { Navigate } from 'react-router-dom';
 import UserAvatar from '@/components/UserAvatar';
 import PostMedia from '@/components/Posts/Editor/PostMedia/';
 import { IPostDataType } from '@/lib/types/interfaces';
+import { getBaseExtensions } from '@/components/Posts/Editor/Extensions/editorExtensions';
+import { sanitizeHtml } from '@/utils/sanitizeHtml';
 
 export default function PostEditor({
   content,
@@ -44,18 +45,7 @@ export default function PostEditor({
 
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({
-        bold: {
-          HTMLAttributes: {
-            class: 'font-bold',
-          },
-        },
-        italic: {
-          HTMLAttributes: {
-            class: 'font-italic',
-          },
-        },
-      }),
+      ...getBaseExtensions(),
       Placeholder.configure({
         placeholder: "What's going on? #Hashtag... @Mention...",
       }),
@@ -63,7 +53,8 @@ export default function PostEditor({
     content: content,
     onUpdate: ({ editor }) => {
       const text = editor.getText().trim();
-      onChangeContent(text ? editor.getHTML() : '');
+      const html = text ? editor.getHTML() : '';
+      onChangeContent(text ? sanitizeHtml(html) : '');
     },
   });
 
