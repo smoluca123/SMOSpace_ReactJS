@@ -6,17 +6,14 @@ export const getPostQueryKey = ({ postId }: { postId: UUID }) => ['post-detail',
 
 export function useGetPost({ postId, likeUserId }: { postId: UUID; likeUserId?: UUID }) {
   const getPost = async () => {
-    try {
-      const { data } = await getPostAPI({ postId, likeUserId });
-      return data;
-    } catch (error) {
-      throw new Error(error as string);
-    }
+    const { data } = await getPostAPI({ postId, likeUserId });
+    return data;
   };
 
   const query = useQuery({
     queryKey: getPostQueryKey({ postId }),
     queryFn: getPost,
+    retry: false,
   });
 
   return query;
