@@ -8,6 +8,7 @@ import { getMyFollowersAPI, getMyInfomationAPI, getUserInfomationAPI } from '@/a
 import {
   IPaginationParamsType,
   IUserDataType,
+  IUserDataTypeWithFriendStatus,
   IUserDataWithFollowedStatusType,
 } from '@/lib/types/interfaces';
 import { useAppSelector } from '@/redux/hooks';
@@ -132,7 +133,10 @@ export const getUserInfomationQueryKey = ({ userId }: { userId: UUID | string })
 
 export function useGetUserInfomation(
   { userId, currentUserId }: { userId: UUID | string; currentUserId?: UUID },
-  options?: Omit<UseQueryOptions<IUserDataWithFollowedStatusType>, 'queryKey' | 'queryFn'>,
+  options?: Omit<
+    UseQueryOptions<IUserDataWithFollowedStatusType & IUserDataTypeWithFriendStatus>,
+    'queryKey' | 'queryFn'
+  >,
 ) {
   const { user } = useAppSelector(selectAuth);
 

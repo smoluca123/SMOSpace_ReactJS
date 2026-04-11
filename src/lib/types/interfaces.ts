@@ -74,6 +74,7 @@ export interface IUserDataTypeWithFriendStatus extends IUserDataType {
 
 export interface IUserDataWithFollowedStatusType extends IUserDataType {
   isFollowedByUser: boolean;
+  friend?: IFriendRequestDataType | null;
 }
 
 export interface IUserWithAccessTokenType extends IUserDataType, IWithAccessTokenType {}

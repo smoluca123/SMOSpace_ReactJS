@@ -2,6 +2,7 @@ import Header from '@/components/Header';
 import ActiveUserGuard from '@/guard/ActiveUserGuard';
 import LeftSidebar from '@/modules/home/components/LeftSidebar';
 import Sidebar from '@/modules/home/components/Sidebar';
+import RightSidebarDrawer from '@/modules/home/components/RightSidebarDrawer';
 import { PropsWithChildren } from 'react';
 import { Outlet } from 'react-router-dom';
 
@@ -16,6 +17,9 @@ export default function MainLayout({ children }: PropsWithChildren) {
           {children || <Outlet />}
           <Sidebar />
         </div>
+
+        {/* Right Sidebar Drawer - chỉ hiện trên mobile/tablet */}
+        <RightSidebarDrawer />
       </section>
     </ActiveUserGuard>
   );

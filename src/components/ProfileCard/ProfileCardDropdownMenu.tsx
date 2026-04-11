@@ -1,11 +1,14 @@
 import { Ellipsis } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { Button } from '../ui/button';
-import { IUserDataType } from '@/lib/types/interfaces';
+import {
+  IUserDataTypeWithFriendStatus,
+  IUserDataWithFollowedStatusType,
+} from '@/lib/types/interfaces';
 import ProfileCardMenu from './ProfileCardMenu';
 
 interface IProps {
-  user: IUserDataType;
+  user: IUserDataWithFollowedStatusType & IUserDataTypeWithFriendStatus;
 }
 
 export default function ProfileCardDropdownMenu({ user }: IProps) {

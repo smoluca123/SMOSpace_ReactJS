@@ -1,17 +1,19 @@
-import { IUserDataType } from '@/lib/types/interfaces';
-import { Flag, LockKeyhole, UserPlus } from 'lucide-react';
+import {
+  IUserDataTypeWithFriendStatus,
+  IUserDataWithFollowedStatusType,
+} from '@/lib/types/interfaces';
+import { Flag, LockKeyhole } from 'lucide-react';
 import DropdownMenuItemWithIcon from '../DropdownMenuItemWithIcon';
+import { AddFriendButton } from '@/components/FriendButtons';
 
 interface IProps {
-  user: IUserDataType;
+  user: IUserDataWithFollowedStatusType & IUserDataTypeWithFriendStatus;
 }
 
 export default function ProfileCardMenu({ user }: IProps) {
-  console.log(user);
-
   return (
     <div className='space-y-2'>
-      <DropdownMenuItemWithIcon Icon={UserPlus}>Add friend</DropdownMenuItemWithIcon>
+      <AddFriendButton userId={user.id} userData={user} asMenuItem />
       <DropdownMenuItemWithIcon Icon={Flag}> Report profile</DropdownMenuItemWithIcon>
       <DropdownMenuItemWithIcon variant='destructive' Icon={LockKeyhole}>
         Block
