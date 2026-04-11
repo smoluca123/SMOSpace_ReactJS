@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isValidHttpUrl } from './utils';
 
 const requiredString = (field: string) => z.string().trim().min(1, `${field} is required`);
 
@@ -32,7 +33,10 @@ export const updateUserDetailsSchema = z.object({
   ),
   websites: z.array(
     z.object({
-      websiteName: requiredString('WebsiteName'),
+      websiteName: requiredString('WebsiteName').refine(
+        (val) => isValidHttpUrl(val),
+        'URL is not valid',
+      ),
     }),
   ),
 });

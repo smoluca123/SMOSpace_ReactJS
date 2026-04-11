@@ -1,166 +1,83 @@
-import { cn } from '@/lib/utils';
+import { BarChart3, Home, HomeIcon, MessageSquare, Users } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  BarChart3,
-  Home,
-  MessageSquare,
-  Users,
-  Menu,
-  X,
-  ChevronsLeft,
-  ChevronsRight,
-} from 'lucide-react';
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 
 const navigation = [
-  {
-    name: 'Dashboard',
-    href: '/admin',
-    icon: Home,
-  },
-  {
-    name: 'Users',
-    href: '/admin/users',
-    icon: Users,
-  },
-  {
-    name: 'Posts',
-    href: '/admin/posts',
-    icon: MessageSquare,
-  },
-  {
-    name: 'Analytics',
-    href: '/admin/analytics',
-    icon: BarChart3,
-  },
+  { name: 'Dashboard', href: '/admin', icon: Home },
+  { name: 'Users', href: '/admin/users', icon: Users },
+  { name: 'Posts', href: '/admin/posts', icon: MessageSquare },
+  { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
 ];
 
 export function AdminSidebar() {
   const { pathname } = useLocation();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const navigate = useNavigate();
+  const { setOpenMobile } = useSidebar();
 
-  // Hide sidebar on small screens, show collapse button on large screens
   return (
-    <>
-      {/* Mobile menu button */}
-      <div className='fixed z-50 lg:hidden top-4 left-4'>
-        <Button
-          variant='outline'
-          size='icon'
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className='shadow-md bg-background'
-        >
-          {isMobileMenuOpen ? <X className='w-4 h-4' /> : <Menu className='w-4 h-4' />}
-        </Button>
-      </div>
-
-      {/* Sidebar */}
-      <div
-        className={cn(
-          'bg-card border-r border-border flex-shrink-0 transition-all duration-200',
-          isCollapsed ? 'w-16' : 'w-64',
-          'lg:translate-x-0',
-          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full',
-          'fixed lg:relative inset-y-0 left-0 z-40 shadow-lg lg:shadow-none',
-          'lg:block', // always block on large screens
-        )}
-        style={{
-          // Hide sidebar on small screens unless open
-          display: isMobileMenuOpen ? 'block' : undefined,
-        }}
-      >
-        <div className='flex flex-col h-full'>
-          {/* Collapse/Expand button (only on large screens, bottom left) */}
-          <div
-            className={cn(
-              'absolute z-50 hidden lg:flex items-center justify-center',
-              'top-4 right-[-18px]',
-            )}
-          >
-            <Button
-              variant='outline'
-              size='icon'
-              className='shadow-md bg-background p-0 w-8 h-8 border'
-              onClick={() => setIsCollapsed((prev) => !prev)}
-              tabIndex={-1}
-            >
-              {isCollapsed ? (
-                <ChevronsRight className='w-4 h-4' />
-              ) : (
-                <ChevronsLeft className='w-4 h-4' />
-              )}
-            </Button>
+    <Sidebar collapsible='icon'>
+      {/* Logo */}
+      <SidebarHeader className='border-b border-border'>
+        <div className='flex items-center px-2 py-3 space-x-3'>
+          <div className='flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg bg-primary'>
+            <span className='text-sm font-bold text-primary-foreground'>SM</span>
           </div>
-
-          {/* Logo */}
-          <div
-            className={cn(
-              'p-6 border-b border-border flex items-center',
-              isCollapsed && 'justify-center p-2',
-            )}
-          >
-            <div className='flex items-center space-x-3'>
-              <div className='flex items-center justify-center w-8 h-8 rounded-lg bg-primary'>
-                <span className='text-sm font-bold text-primary-foreground'>SM</span>
-              </div>
-              {!isCollapsed && (
-                <div>
-                  <h2 className='text-lg font-semibold text-foreground'>SMO Space</h2>
-                  <p className='text-xs text-muted-foreground'>Management Panel</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <nav className={cn('flex-1 p-4 space-y-1', isCollapsed && 'p-2')}>
-            {navigation.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={cn(
-                    'flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                    isCollapsed ? 'justify-center space-x-0' : 'space-x-3',
-                    isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-accent',
-                  )}
-                  title={isCollapsed ? item.name : undefined}
-                >
-                  <item.icon className='w-5 h-5' />
-                  {!isCollapsed && <span>{item.name}</span>}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* Footer */}
-          <div className={cn('p-4 border-t border-border', isCollapsed && 'p-2')}>
-            <div className={cn('text-xs text-muted-foreground', isCollapsed && 'text-center')}>
-              {!isCollapsed && (
-                <>
-                  <p>Version 1.0.0</p>
-                  <p>© 2025 SMO Space Admin</p>
-                </>
-              )}
-              {isCollapsed && <span>v1.0.0</span>}
-            </div>
+          <div className='group-data-[collapsible=icon]:hidden'>
+            <h2 className='text-lg font-semibold leading-none text-foreground'>SMO Space</h2>
+            <p className='text-xs text-muted-foreground'>Management Panel</p>
           </div>
         </div>
-      </div>
+      </SidebarHeader>
 
-      {/* Mobile overlay */}
-      {isMobileMenuOpen && (
-        <div
-          className='fixed inset-0 z-30 bg-black/20 lg:hidden'
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-      )}
-    </>
+      {/* Navigation */}
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navigation.map((item) => (
+                <SidebarMenuItem key={item.name}>
+                  <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.name}>
+                    <Link to={item.href} onClick={() => setOpenMobile(false)}>
+                      <item.icon />
+                      <span>{item.name}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      {/* Footer */}
+      <SidebarFooter className='border-t border-border'>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip='Go Home Page'>
+              <Button variant='ghost' className='justify-start w-full' onClick={() => { navigate('/'); setOpenMobile(false); }}>
+                <HomeIcon />
+                <span>Go Home Page</span>
+              </Button>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+        <div className='px-2 pb-2 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden'>
+          <p>Version 1.0.0</p>
+          <p>© 2025 SMO Space Admin</p>
+        </div>
+      </SidebarFooter>
+    </Sidebar>
   );
 }

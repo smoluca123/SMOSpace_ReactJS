@@ -53,7 +53,7 @@ const PostsManagementSection = () => {
       <StatSection />
 
       {/* Enhanced Search and Filter */}
-      <div className='relative flex-1'>
+      <div className='relative'>
         <Search className='absolute w-4 h-4 transform -translate-y-1/2 left-3 top-1/2 text-muted-foreground' />
         <Input
           placeholder='Search posts by title, content, author or hashtags...'

@@ -111,3 +111,21 @@ export const handleMaskEmail = (email: string | undefined): string | undefined =
   const maskedPart = '*'.repeat(local.length - 3);
   return fristChar + maskedPart + visiblePart + '@' + domain;
 };
+
+
+export function isValidHttpUrl(string : string) {
+  let url;
+  
+  try {
+    url = new URL(string);
+  } catch {
+    return false;  
+  }
+
+  return url.protocol === "http:" || url.protocol === "https:";
+}
+
+export const cleanURLForUI = (url : string) => {
+  if (!url) return '';
+  return url.replace(/^https?:\/\//, '').replace(/^http?:\/\//, '').replace(/\/$/, '');
+}

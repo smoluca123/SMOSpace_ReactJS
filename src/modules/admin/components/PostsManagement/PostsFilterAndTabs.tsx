@@ -3,7 +3,7 @@ import { CheckCircle, Clock } from 'lucide-react';
 
 export default function PostsFilterAndTabs() {
   return (
-    <TabsList className='grid h-auto grid-cols-3 p-1 mb-6 md:grid-cols-6'>
+    <TabsList className='grid w-full h-auto grid-cols-3 p-1 mb-6'>
       <TabsTrigger value='all' className='py-2'>
         All Posts
       </TabsTrigger>
@@ -15,6 +15,6 @@ export default function PostsFilterAndTabs() {
         <Clock className='w-4 h-4 mr-2' />
         Privated
       </TabsTrigger>
-    </TabsList>
+    </TabsList> 
   );
 }
