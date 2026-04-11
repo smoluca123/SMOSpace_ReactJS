@@ -4,6 +4,7 @@ import ModeToggle from '@/components/ModeToggle';
 import UserButton from '@/components/UserButton';
 import { useState } from 'react';
 import CreatePostDialog from '@/components/Posts/Editor/CreatePostDialog';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 
 export default function AdminHeader() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -13,6 +14,7 @@ export default function AdminHeader() {
       <header className='px-4 py-4 border-b bg-card border-border md:px-6'>
         <div className='flex items-center justify-between'>
           <div className='flex items-center space-x-4'>
+            <SidebarTrigger />
             <div className='hidden md:block'>
               <h1 className='text-xl font-semibold text-foreground'>Dashboard</h1>
               <p className='text-sm text-muted-foreground'>Welcome back, Admin</p>

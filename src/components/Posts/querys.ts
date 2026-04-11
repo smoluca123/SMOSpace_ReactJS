@@ -53,7 +53,7 @@ export function useGetPosts(
     initialPageParam: 1,
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchInterval: 1000 * 60 * 5, // 5 minutes
-    enabled: options?.enabled || true,
+    enabled: options?.enabled ?? true,
   });
   return query;
 }
@@ -105,7 +105,7 @@ export function useGetFollowingPosts(
     initialPageParam: 1,
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchInterval: 1000 * 60 * 5, // 5 minutes
-    enabled: options?.enabled || true,
+    enabled: options?.enabled ?? true,
   });
   return query;
 }
@@ -132,7 +132,7 @@ export function useGetMyPosts(
     }
   };
   const query = useInfiniteQuery({
-    queryKey: getPostsQueryKey({
+    queryKey: getMyPostsQueryKey({
       keywords,
     }),
     queryFn: ({ pageParam }) => getPosts({ page: pageParam }),
@@ -143,7 +143,7 @@ export function useGetMyPosts(
     initialPageParam: 1,
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchInterval: 1000 * 60 * 5, // 5 minutes
-    enabled: options?.enabled || true,
+    enabled: options?.enabled ?? true,
   });
   return query;
 }

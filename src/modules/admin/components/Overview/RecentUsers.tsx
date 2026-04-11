@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Loader2, Users } from 'lucide-react';
 import { useGetAllUsersInfomation } from '@/lib/querys';
 import { Badge } from '@/components/ui/badge';
-import { formatDate } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 export default function RecentUsers() {
@@ -37,14 +36,17 @@ export default function RecentUsers() {
                 className='flex items-center p-3 space-x-4 transition-colors rounded-lg hover:bg-accent'
               >
                 <UserAvatar avatarUrl={user.avatar} />
-                <div className='flex-1 space-y-1'>
+                <div className='flex-1 space-y-1'>  
                   <p
-                    className={cn('text-sm font-medium text-foreground', {
+                    className={cn('text-sm font-medium text-foreground  inline', {
                       'text-destructive line-through': user.isBanned,
                     })}
                   >
                     {user.fullName}
                   </p>
+              <Badge className='ml-4 ' variant={getUserBagVariant(user)}>
+                    {user.isBanned ? 'Banned' : user.isActive ? 'Activer' : 'InActive'}
+                  </Badge>
                   <div
                     className={cn('text-muted-foreground', {
                       'text-destructive line-through': user.isBanned,
@@ -54,14 +56,16 @@ export default function RecentUsers() {
                     <p>{user.followerCount} followers</p>
                   </div>
                 </div>
-                <div className='space-y-1 text-right'>
+
+                {/* <div className='hidden space-y-1 text-right xs:block'>
                   <Badge variant={getUserBagVariant(user)}>
                     {user.isBanned ? 'Banned' : user.isActive ? 'Activer' : 'InActive'}
                   </Badge>
                   <p className='text-xs text-muted-foreground'>
                     {formatDate(new Date(user.createdAt), 'dd-MM-yyyy')}
                   </p>
-                </div>
+                </div> */}
+
               </div>
             )),
           )}

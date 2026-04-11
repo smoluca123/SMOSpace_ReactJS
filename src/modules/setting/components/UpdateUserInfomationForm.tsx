@@ -248,7 +248,6 @@ function AdditionalInfoFields({ form, useBirthDate, setUseBirthDate }: FormProps
   );
 
   useEffect(() => {
-    console.log('chay useFx', form.watch('birthDate'));
     calculatorAge(form.watch('birthDate'));
   }, [useBirthDate, calculatorAge, form]);
 
