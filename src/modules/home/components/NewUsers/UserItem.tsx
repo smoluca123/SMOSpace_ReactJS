@@ -13,7 +13,12 @@ export default function UserItem({ user }: IProps) {
       <div className='flex items-center justify-between p-2 transition-colors duration-300 rounded-md cursor-pointer hover:bg-accent'>
         <div className='flex items-center'>
           {/* User's avatar with margin spacing */}
-          <UserAvatar className='mr-[10px]' avatarUrl={user.avatar} fallbackName={user.username} />
+          <UserAvatar
+            userId={user.id}
+            className='mr-[10px]'
+            avatarUrl={user.avatar}
+            fallbackName={user.username}
+          />
           <h1 className='font-semibold break-words truncate whitespace-pre-line transition-colors duration-300 text-muted-foreground hover:text-foreground line-clamp-1'>
             {user.fullName}
           </h1>

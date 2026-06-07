@@ -56,7 +56,7 @@ export default function useCommentSocket({
 
     commentSocket.on('connect', handleConnect);
 
-    // Nếu socket đã connected sẵn thì emit luôn
+    // Emit immediately if the socket is already connected
     if (commentSocket.connected) {
       handleConnect();
     }

@@ -1,24 +1,27 @@
-import { UUID } from 'crypto';
+import { useState } from 'react';
 import { UserMinus } from 'lucide-react';
 import DropdownMenuItemWithIcon from '@/components/DropdownMenuItemWithIcon';
+import DeleteFriendDialog from '@/components/FriendButtons/DeleteFriendButton/DeleteFriendDialog';
+import { IUserDataType } from '@/lib/types/interfaces';
 
 interface IProps {
-  userId: UUID;
+  userData: IUserDataType;
 }
 
-export default function UnfriendMenuItem({ userId }: IProps) {
-  const handleUnfriend = () => {
-    // TODO: Call API to unfriend user
-    console.log('Unfriend:', userId);
-  };
+export default function UnfriendMenuItem({ userData }: IProps) {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <DropdownMenuItemWithIcon
-      Icon={UserMinus}
-      onClick={handleUnfriend}
-      onSelect={(e) => e.preventDefault()}
-    >
-      Hủy kết bạn
-    </DropdownMenuItemWithIcon>
+    <>
+      <DropdownMenuItemWithIcon
+        Icon={UserMinus}
+        variant='destructive'
+        onClick={() => setIsOpen(true)}
+        onSelect={(e) => e.preventDefault()}
+      >
+        Unfriend
+      </DropdownMenuItemWithIcon>
+      <DeleteFriendDialog userData={userData} isOpen={isOpen} onClose={() => setIsOpen(false)} />
+    </>
   );
 }

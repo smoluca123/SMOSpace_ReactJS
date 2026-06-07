@@ -1,164 +1,67 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Conversation, Participant } from '@/lib/types/chat';
-import { CreateGroupDialog } from '@/modules/chat/components/CreateGroupDialog';
+import { useState } from 'react';
 import ConversationList from '@/modules/chat/components/Conversation/ConversationList';
 import { MessageBox } from '@/modules/chat/components/Message';
-import { useParams } from 'react-router-dom';
-
-const AVAILABLE_USERS: Participant[] = [
-  {
-    id: 'user1',
-    name: 'Alex Johnson',
-    avatar: '/placeholder.svg?height=40&width=40',
-    isOnline: true,
-    isTyping: false,
-  },
-  {
-    id: 'user2',
-    name: 'Sarah Wilson',
-    avatar: '/placeholder.svg?height=40&width=40',
-    isOnline: true,
-    isTyping: false,
-  },
-  {
-    id: 'user3',
-    name: 'Mike Chen',
-    avatar: '/placeholder.svg?height=40&width=40',
-    isOnline: false,
-    isTyping: false,
-  },
-  {
-    id: 'user4',
-    name: 'Emma Davis',
-    avatar: '/placeholder.svg?height=40&width=40',
-    isOnline: true,
-    isTyping: false,
-  },
-  {
-    id: 'user5',
-    name: 'James Wilson',
-    avatar: '/placeholder.svg?height=40&width=40',
-    isOnline: true,
-    isTyping: false,
-  },
-  {
-    id: 'user6',
-    name: 'Lisa Anderson',
-    avatar: '/placeholder.svg?height=40&width=40',
-    isOnline: false,
-    isTyping: false,
-  },
-];
+import { CreateGroupDialog } from '@/modules/chat/components/CreateGroupDialog';
+import MessageRequestsView from '@/modules/chat/components/Conversation/MessageRequestsView';
+import { useGetActiveChatRoomsQuery } from '@/modules/chat/components/Conversation/querys';
+import { useGetMessageRequests } from '@/modules/chat/components/Conversation/requestQuerys';
+import { useNavigate, useParams } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import { MessageSquare } from 'lucide-react';
 
 export default function GroupChatInterface() {
-  const [conversations, setConversations] = useState<Conversation[]>([
-    {
-      id: '1',
-      name: 'Alex Johnson',
-      avatar: '/placeholder.svg?height=40&width=40',
-      lastMessage: 'Check out this amazing view from my hike yesterday!',
-      lastMessageTime: new Date(Date.now() - 1000 * 60 * 20),
-      unreadCount: 2,
-      isGroup: false,
-      participants: [
-        {
-          id: 'user1',
-          name: 'Alex Johnson',
-          avatar: '/placeholder.svg?height=40&width=40',
-          isOnline: true,
-          isTyping: false,
-        },
-      ],
-    },
-    {
-      id: '2',
-      name: 'Design Team',
-      lastMessage: 'Sarah: The new mockups look great!',
-      lastMessageTime: new Date(Date.now() - 1000 * 60 * 60),
-      unreadCount: 3,
-      isGroup: true,
-      participants: [
-        {
-          id: 'user2',
-          name: 'Sarah Wilson',
-          avatar: '/placeholder.svg?height=40&width=40',
-          isOnline: true,
-          isTyping: true,
-        },
-        {
-          id: 'user4',
-          name: 'Emma Davis',
-          avatar: '/placeholder.svg?height=40&width=40',
-          isOnline: true,
-          isTyping: false,
-        },
-        {
-          id: 'user5',
-          name: 'James Wilson',
-          avatar: '/placeholder.svg?height=40&width=40',
-          isOnline: true,
-          isTyping: false,
-        },
-      ],
-      createdBy: 'you',
-      description: 'Design team collaboration space',
-    },
-  ]);
-
   const activeConversationId = useParams().id;
-
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const navigate = useNavigate();
   const [showGroupDialog, setShowGroupDialog] = useState(false);
 
-  const handleCreateGroup = (name: string, participantIds: string[]) => {
-    const participants = participantIds
-      .map((id) => AVAILABLE_USERS.find((user) => user.id === id)!)
-      .filter(Boolean);
+  const isRequestsView = activeConversationId === 'requests';
 
-    const newGroup: Conversation = {
-      id: Date.now().toString(),
-      name,
-      lastMessage: 'Group created',
-      lastMessageTime: new Date(),
-      unreadCount: 0,
-      isGroup: true,
-      participants,
-      createdBy: 'you',
-      description: `Group chat with ${participants.length} members`,
-    };
+  const { data: activeRooms } = useGetActiveChatRoomsQuery();
+  const { data: requestRooms } = useGetMessageRequests();
 
-    setConversations((prev) => [newGroup, ...prev]);
-  };
+  const currentRoom =
+    activeRooms?.pages
+      .flatMap((page) => page.items)
+      .find((room) => room.id === activeConversationId) ||
+    requestRooms?.pages
+      .flatMap((page) => page.items)
+      .find((room) => room.id === activeConversationId);
 
-  useEffect(() => {
-    // scroll to the bottom of the messages
-    const messagesEnd = document.getElementById('messages-end');
-    if (messagesEnd) {
-      messagesEnd.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [activeConversationId]);
+  const isDetailOpen = !!activeConversationId;
 
   return (
-    <div className='flex w-full h-full overflow-hidden bg-background'>
-      <ConversationList onCreateGroup={() => setShowGroupDialog(true)} sidebarOpen={sidebarOpen} />
+    <div className='flex overflow-hidden w-full h-full bg-background'>
+      {/* Conversation list: always visible on desktop, hidden on mobile when a chat/view is open */}
+      <div
+        className={cn(
+          'flex-col w-full border-r shrink-0 lg:flex lg:w-80',
+          isDetailOpen ? 'hidden lg:flex' : 'flex',
+        )}
+      >
+        <ConversationList onCreateGroup={() => setShowGroupDialog(true)} />
+      </div>
 
-      {activeConversationId && (
-        <MessageBox
-          conversations={conversations}
-          sidebarOpen={sidebarOpen}
-          setSidebarOpen={setSidebarOpen}
-          activeConversationId={activeConversationId}
-        />
-      )}
+      {/* Detail area: full screen on mobile when open */}
+      <div className={cn('flex-1', isDetailOpen ? 'flex' : 'hidden lg:flex')}>
+        {isRequestsView ? (
+          <MessageRequestsView />
+        ) : activeConversationId ? (
+          <MessageBox
+            room={currentRoom}
+            activeConversationId={activeConversationId}
+            onBack={() => navigate('/chat')}
+          />
+        ) : (
+          <div className='flex flex-col flex-1 gap-2 justify-center items-center text-muted-foreground'>
+            <MessageSquare className='w-10 h-10' />
+            <p>Select a conversation to get started</p>
+          </div>
+        )}
+      </div>
 
-      <CreateGroupDialog
-        open={showGroupDialog}
-        onOpenChange={setShowGroupDialog}
-        availableUsers={AVAILABLE_USERS}
-        onCreateGroup={handleCreateGroup}
-      />
+      <CreateGroupDialog open={showGroupDialog} onOpenChange={setShowGroupDialog} />
     </div>
   );
 }

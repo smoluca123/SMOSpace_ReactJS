@@ -11,16 +11,16 @@ export function usePostSocket() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    // Kết nối tới namespace posts
+    // Connect to the posts namespace
     postSocket.connect();
 
-    // Lắng nghe sự kiện có bài viết mới
+    // Listen for the new-post event
     postSocket.on('post:onNewPost', (newPost) => {
       if (newPost.author.id === user?.id) return;
 
       dispatch(addNewPosts(newPost));
 
-      // Cập nhật cache của react-query
+      // Update the react-query cache
       // queryClient.setQueriesData(
       //   {
       //     queryKey: ['posts'],
@@ -45,7 +45,7 @@ export function usePostSocket() {
       //   },
       // );
 
-      // Hiển thị thông báo có bài viết mới (optional)
+      // Show a toast for the new post (optional)
       toast({
         title: 'New post',
         description: `${newPost.author.fullName} just posted something new!`,
@@ -53,7 +53,7 @@ export function usePostSocket() {
       });
     });
 
-    // Xử lý lỗi kết nối
+    // Handle connection errors
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     postSocket.on('connect_error', (error: any) => {
       console.error('Socket connection error:', error);
@@ -64,7 +64,7 @@ export function usePostSocket() {
       });
     });
 
-    // Cleanup khi component unmount
+    // Cleanup on component unmount
     return () => {
       postSocket.off('post:onNewPost');
       postSocket.off('connect_error');

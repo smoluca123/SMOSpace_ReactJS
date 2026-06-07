@@ -4,11 +4,11 @@ import Posts from '@/modules/profile/components/Profile/ProfileContent/Posts';
 
 export default function ProfileContent() {
   return (
-    <div className='flex gap-4'>
+    <div className='flex flex-col gap-4 lg:flex-row'>
       <LeftSidebar />
 
       {/* Right Side */}
-      <div className='flex-1 space-y-4'>
+      <div className='flex-1 space-y-4 min-w-0'>
         <SubmitPostBox />
         <Posts />
       </div>

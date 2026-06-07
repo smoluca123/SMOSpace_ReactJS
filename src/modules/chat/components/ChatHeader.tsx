@@ -1,104 +1,79 @@
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { MoreVertical, Phone, Video, Users, Settings } from 'lucide-react';
-import type { Conversation } from '@/lib/types/chat';
-import { getTypingUsers } from '@/lib/utils/chat-utils';
+import UserAvatar from '@/components/UserAvatar';
+import { ArrowLeft, Users } from 'lucide-react';
+import { IChatRoomsDataType } from '@/apis/types/chat.interfaces';
+import { useAppSelector } from '@/redux/hooks';
+import { selectAuth } from '@/redux/slices/authSlice';
 
 interface ChatHeaderProps {
-  conversation: Conversation | undefined;
-  onToggleSidebar: () => void;
+  room: IChatRoomsDataType | undefined;
+  typingUsers?: string[];
+  onBack?: () => void;
   onToggleParticipants: () => void;
 }
 
 export function ChatHeader({
-  conversation,
-  onToggleSidebar,
+  room,
+  typingUsers = [],
+  onBack,
   onToggleParticipants,
 }: ChatHeaderProps) {
-  if (!conversation) return null;
+  const { user } = useAppSelector(selectAuth);
+  if (!room) return null;
 
-  const isGroup = conversation.isGroup;
+  const isGroup = room.type === 'GROUP';
+  const otherParticipant = !isGroup
+    ? room.participants.find((p) => p.user.id !== user?.id)
+    : undefined;
+
+  const title = isGroup
+    ? room.name || 'Group chat'
+    : otherParticipant?.user.fullName || otherParticipant?.user.username || 'Conversation';
+
+  const someoneElseTyping = typingUsers.some((id) => id !== user?.id);
 
   return (
     <div className='flex justify-between items-center p-4 border-b bg-card'>
       <div className='flex items-center space-x-3'>
-        <Button variant='ghost' size='icon' className='lg:hidden' onClick={onToggleSidebar}>
-          <MoreVertical className='w-5 h-5' />
+        <Button variant='ghost' size='icon' className='lg:hidden' onClick={onBack}>
+          <ArrowLeft className='w-5 h-5' />
         </Button>
 
         {isGroup ? (
-          <div className='relative w-10 h-10'>
-            <div className='flex absolute inset-0 justify-center items-center rounded-full bg-muted'>
-              <Users className='w-5 h-5 text-muted-foreground' />
-            </div>
-            {conversation.participants.slice(0, 2).map((participant, index) => (
-              <Avatar
-                key={participant.id}
-                className={`absolute h-5 w-5 border border-background ${
-                  index === 0 ? 'top-0 right-0' : 'bottom-0 left-0'
-                }`}
-              >
-                <AvatarImage src={participant.avatar || '/placeholder.svg'} />
-                <AvatarFallback className='text-xs'>
-                  {participant.name
-                    .split(' ')
-                    .map((n) => n[0])
-                    .join('')}
-                </AvatarFallback>
-              </Avatar>
-            ))}
+          <div className='flex justify-center items-center w-10 h-10 rounded-full bg-muted'>
+            <Users className='w-5 h-5 text-muted-foreground' />
           </div>
         ) : (
-          <Avatar className='w-10 h-10'>
-            <AvatarImage src={conversation.avatar || '/placeholder.svg'} />
-            <AvatarFallback>
-              {conversation.name
-                .split(' ')
-                .map((n) => n[0])
-                .join('')}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar
+            userId={otherParticipant?.user.id}
+            avatarUrl={otherParticipant?.user.avatar}
+            fallbackName={otherParticipant?.user.fullName}
+            className='w-10 h-10'
+          />
         )}
 
         <div>
           <div className='flex items-center space-x-2'>
-            <h2 className='text-lg font-semibold'>{conversation.name}</h2>
+            <h2 className='text-lg font-semibold'>{title}</h2>
             {isGroup && (
               <Badge variant='outline' className='text-xs'>
-                {conversation.participants.length} members
+                {room.participants.length} members
               </Badge>
             )}
           </div>
           <p className='text-sm text-muted-foreground'>
-            {isGroup
-              ? getTypingUsers(conversation) ||
-                `${conversation.participants.filter((p) => p.isOnline).length} online`
-              : getTypingUsers(conversation) ||
-                (conversation.participants[0]?.isOnline ? 'Online' : 'Offline')}
+            {someoneElseTyping ? 'Typing...' : isGroup ? `${room.participants.length} members` : ''}
           </p>
         </div>
       </div>
 
       <div className='flex items-center space-x-2'>
-        {!isGroup && (
-          <>
-            <Button variant='ghost' size='icon'>
-              <Phone className='w-5 h-5' />
-            </Button>
-            <Button variant='ghost' size='icon'>
-              <Video className='w-5 h-5' />
-            </Button>
-          </>
-        )}
         {isGroup && (
           <Button variant='ghost' size='icon' onClick={onToggleParticipants}>
             <Users className='w-5 h-5' />
           </Button>
         )}
-        <Button variant='ghost' size='icon'>
-          <Settings className='w-5 h-5' />
-        </Button>
       </div>
     </div>
   );

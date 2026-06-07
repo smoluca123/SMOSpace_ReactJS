@@ -62,11 +62,11 @@ baseApi.interceptors.response.use(
         localStorage.setItem('currentUser', JSON.stringify(data.data.user));
         localStorage.setItem('isAuthenticated', JSON.stringify(true));
 
-        // Cập nhật token mới vào request gốc
+        // Update the original request with the new token
         const newAccessToken = data.data.accessToken;
         originalRequest.headers.accessToken = newAccessToken;
 
-        // Gửi lại request gốc với token mới
+        // Retry the original request with the new token
         return baseApi(originalRequest);
       } catch (error) {
         console.log('error', error);

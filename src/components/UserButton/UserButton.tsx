@@ -111,7 +111,7 @@ export default function UserButton({ showName }: UserButtonProps) {
       {user ? (
         <DropdownMenuTrigger asChild>
           <div className='flex items-center gap-x-4 max-w-[10rem] cursor-pointer'>
-            <UserAvatar fallbackName={user.fullName} avatarUrl={user.avatar} />
+            <UserAvatar userId={user.id} fallbackName={user.fullName} avatarUrl={user.avatar} />
             {showName && (
               <h4 className='hidden font-medium truncate whitespace-nowrap break-words line-clamp-1 lg:block'>
                 {user.fullName}

@@ -10,16 +10,20 @@ export interface IChatRoomsDataType {
   lastMessage: {
     id: string;
     content: string;
+    type?: 'TEXT' | 'IMAGE' | 'FILE' | 'SYSTEM';
     createdAt: string;
     updatedAt: string;
     sender: IShortSenderDataType;
-  };
+  } | null;
   participants: IRoomParticipantsDataType[];
+  unreadCount?: number;
 }
 
 export interface IRoomParticipantsDataType {
   id: string;
-  leftAt: null;
+  userId?: string;
+  isMuted?: boolean;
+  leftAt: null | string;
   joinedAt: string;
   user: {
     id: string;
@@ -61,3 +65,11 @@ export interface IRoomMessageDataType {
   type: 'TEXT' | 'IMAGE' | 'FILE' | 'SYSTEM';
   room: IChatRoomsDataType;
 }
+
+/** Client-side message with optimistic send status. */
+export type ChatMessageSendStatus = 'sending' | 'failed';
+
+export type IChatMessageUI = IRoomMessageDataType & {
+  tempId?: string;
+  status?: ChatMessageSendStatus;
+};

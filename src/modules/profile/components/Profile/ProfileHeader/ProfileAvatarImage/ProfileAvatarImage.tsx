@@ -16,8 +16,12 @@ export default function ProfileAvatarImage() {
   const { userData, isMe } = useProfileContext();
 
   return (
-    <div className='relative p-1 rounded-full drop-shadow-lg bg-background group'>
-      <UserAvatar className='size-40' avatarUrl={userData.avatar} />
+    <div className='relative p-1 rounded-full drop-shadow-lg shrink-0 bg-background group'>
+      <UserAvatar
+        userId={userData.id}
+        className='size-20 sm:size-28 lg:size-40'
+        avatarUrl={userData.avatar}
+      />
 
       {/* overlay */}
       {isMe && (

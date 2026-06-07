@@ -7,7 +7,7 @@ import ProfileInfo from '@/modules/profile/components/Profile/ProfileContent/Pro
 export default function LeftSidebar() {
   const { userData } = useProfileContext();
   return (
-    <div className='space-y-4 w-full max-w-lg'>
+    <div className='space-y-4 w-full lg:max-w-sm xl:max-w-md shrink-0'>
       <ProfileInfo />
       <Followers userId={userData.id} />
       <Followings userId={userData.id} />

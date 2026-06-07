@@ -48,7 +48,7 @@
 //               crop={crop}
 //               zoom={zoom}
 //               aspect={1}
-//               cropShape='round' // Crop hình tròn
+//               cropShape='round' // Round crop
 //               onCropChange={setCrop}
 //               onCropComplete={onCropComplete}
 //               onZoomChange={setZoom}

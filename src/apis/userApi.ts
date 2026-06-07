@@ -527,14 +527,13 @@ export const adminGetAllUsersAPI = async (
   params?: IPaginationParamsType & { keywords?: string; currentUserId?: string },
 ) => {
   try {
-    const { data } = await baseApi.get<IApiPaginationResponseWrapper<IUserDataType>>(
-      '/user/admin/users',
-      {
-        params: {
-          ...params,
-        },
+    const { data } = await baseApi.get<
+      IApiPaginationResponseWrapper<IUserDataWithFollowedStatusType>
+    >('/user/admin/users', {
+      params: {
+        ...params,
       },
-    );
+    });
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;
@@ -580,6 +579,18 @@ export const toggleFriendshipRequestAPI = async ({ userId }: { userId: UUID }) =
     const { data } = await baseApi.post<
       IApiResponseWrapper<IFriendRequestWithUserDataType & IFriendRequestWithFriendDataType>
     >('/user/friend/' + userId);
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const toggleBlockFriendAPI = async ({ userId }: { userId: UUID }) => {
+  try {
+    const { data } = await baseApi.post<
+      IApiResponseWrapper<IFriendRequestWithUserDataType & IFriendRequestWithFriendDataType>
+    >('/user/friend/block/' + userId);
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;

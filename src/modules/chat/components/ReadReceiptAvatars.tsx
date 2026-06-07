@@ -1,76 +1,45 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import type { Message, Conversation } from '@/lib/types/chat';
+import UserAvatar from '@/components/UserAvatar';
+import { IRoomMessageDataType } from '@/apis/types/chat.interfaces';
 
 interface ReadReceiptAvatarsProps {
-  message: Message;
-  conversation: Conversation;
-  isGroup: boolean;
+  message: IRoomMessageDataType;
+  currentUserId?: string;
 }
 
-export function ReadReceiptAvatars({ message, conversation, isGroup }: ReadReceiptAvatarsProps) {
-  if (message.senderId !== 'you' || !message.status || message.status.readBy.length === 0) {
-    return null;
-  }
+export function ReadReceiptAvatars({ message, currentUserId }: ReadReceiptAvatarsProps) {
+  // Only show read receipts under your own messages
+  if (message.sender.id !== currentUserId) return null;
 
-  const participants = conversation.participants.filter((p) => p.id !== 'you');
-  const readByParticipants = participants.filter((p) => message.status!.readBy.includes(p.id));
+  const participants = message.room?.participants || [];
+  const readers = participants.filter(
+    (p) => p.user.id !== currentUserId && message.readBy.includes(p.user.id),
+  );
+
+  if (readers.length === 0) return null;
+
   const maxAvatars = 3;
-  const showCount = readByParticipants.length > maxAvatars;
+  const overflow = readers.length - maxAvatars;
 
   return (
-    <div className='flex items-center mt-2 -mb-1'>
+    <div className='flex items-center mt-1 -mb-1'>
       <div className='flex -space-x-1'>
-        {readByParticipants.slice(0, maxAvatars).map((participant) => (
-          <div
-            key={participant.id}
-            className='relative group'
-            title={`Read by ${participant.name}`}
-          >
-            <Avatar className='w-4 h-4 border ring-1 border-background ring-background'>
-              <AvatarImage src={participant.avatar || '/placeholder.svg'} />
-              <AvatarFallback className='text-xs text-[8px]'>
-                {participant.name
-                  .split(' ')
-                  .map((n) => n[0])
-                  .join('')}
-              </AvatarFallback>
-            </Avatar>
-            {/* Tooltip */}
-            <div className='absolute bottom-full left-1/2 z-10 px-2 py-1 mb-1 text-xs text-white whitespace-nowrap bg-black rounded opacity-0 transition-opacity transform -translate-x-1/2 pointer-events-none group-hover:opacity-100'>
-              {participant.name}
-            </div>
-          </div>
+        {readers.slice(0, maxAvatars).map((p) => (
+          <span key={p.id} title={`Seen by ${p.user.fullName}`} className='inline-flex'>
+            <UserAvatar
+              avatarUrl={p.user.avatar}
+              fallbackName={p.user.fullName}
+              className='w-4 h-4 ring-1 ring-background'
+            />
+          </span>
         ))}
-        {showCount && (
-          <div
-            className='relative group'
-            title={`Read by ${readByParticipants
-              .slice(maxAvatars)
-              .map((p) => p.name)
-              .join(', ')}`}
-          >
-            <div className='flex justify-center items-center w-4 h-4 rounded-full border ring-1 bg-muted border-background ring-background'>
-              <span className='text-[8px] font-medium text-muted-foreground'>
-                +{readByParticipants.length - maxAvatars}
-              </span>
-            </div>
-            {/* Tooltip */}
-            <div className='absolute bottom-full left-1/2 z-10 px-2 py-1 mb-1 text-xs text-white whitespace-nowrap bg-black rounded opacity-0 transition-opacity transform -translate-x-1/2 pointer-events-none group-hover:opacity-100 max-w-48'>
-              {readByParticipants
-                .slice(maxAvatars)
-                .map((p) => p.name)
-                .join(', ')}
-            </div>
+        {overflow > 0 && (
+          <div className='flex justify-center items-center w-4 h-4 rounded-full ring-1 bg-muted ring-background'>
+            <span className='text-[8px] font-medium text-muted-foreground'>+{overflow}</span>
           </div>
         )}
       </div>
-      {isGroup && message.status.readBy.length > 0 && (
-        <span className='ml-2 text-xs text-muted-foreground'>
-          {message.status.readBy.length === 1 ? 'Seen' : `Seen by ${message.status.readBy.length}`}
-        </span>
-      )}
     </div>
   );
 }

@@ -1,4 +1,6 @@
 import { toggleFriendshipRequestAPI } from '@/apis/userApi';
+import { notificationsQueryKey } from '@/components/Notification/querys';
+import { getMyInfomationQueryKey, getUserInfomationQueryKey } from '@/lib/querys';
 import {
   IApiPaginationResponseWrapper,
   IFriendRequestWithFriendDataType,
@@ -6,6 +8,8 @@ import {
   IUserDataTypeWithFriendStatus,
   IUserDataWithFollowedStatusType,
 } from '@/lib/types/interfaces';
+import { getMyFriendRequestsQueryKey } from '@/modules/friends/components/FriendRequests/querys';
+import { getMyFriendsQueryKey } from '@/modules/profile/components/Profile/ProfileContent/FriendList/querys';
 import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 
@@ -13,81 +17,84 @@ interface UseToggleFriendshipRequestMutationProps {
   userId: UUID;
 }
 
+/**
+ * Shared friendship toggle mutation used by FriendButton / AddFriendButton.
+ *
+ * The backend toggle endpoint smartly resolves the action based on the current
+ * relationship (send request / cancel request / accept request / mutual accept),
+ * so the client only needs to fire the toggle and reconcile its caches.
+ */
 export function useToggleFriendshipRequestMutation({
   userId,
 }: UseToggleFriendshipRequestMutationProps) {
   const queryClient = useQueryClient();
 
   return useMutation({
+    mutationKey: ['toggle-friendship', { userId }],
     mutationFn: async () => {
       return await toggleFriendshipRequestAPI({ userId });
     },
     onMutate: async () => {
-      // Cancel any outgoing refetches for the correct query key
-      await queryClient.cancelQueries({ queryKey: ['profile', { userId }] });
+      const profileQueryKey = getUserInfomationQueryKey({ userId });
+      await queryClient.cancelQueries({ queryKey: profileQueryKey });
 
-      // Snapshot the previous value
       const previousUserData = queryClient.getQueryData<
         IUserDataWithFollowedStatusType & IUserDataTypeWithFriendStatus
-      >(['profile', { userId }]);
+      >(profileQueryKey);
 
       return { previousUserData };
     },
     onSuccess: (response) => {
-      // Update user information cache with new friend status
+      // Only PENDING / ACCEPTED represent an active relationship; anything else
+      // (e.g. REJECTED after cancelling a request) means "no relationship".
+      const status = response.data.status;
+      const hasActiveRelationship = status === 'PENDING' || status === 'ACCEPTED';
+
+      // Update the target user's profile cache with the new friend status
       queryClient.setQueryData<IUserDataWithFollowedStatusType & IUserDataTypeWithFriendStatus>(
-        ['profile', { userId }],
+        getUserInfomationQueryKey({ userId }),
         (oldData) => {
           if (!oldData) return oldData;
-
           return {
             ...oldData,
-            friend: response.data,
+            friend: (hasActiveRelationship
+              ? response.data
+              : null) as IUserDataTypeWithFriendStatus['friend'],
           };
         },
       );
 
-      // Invalidate related queries to refetch fresh data
-      queryClient.invalidateQueries({ queryKey: ['profile', { userId }] });
-      queryClient.invalidateQueries({ queryKey: ['friends'] });
-      queryClient.invalidateQueries({ queryKey: ['friend-requests'] });
-      queryClient.invalidateQueries({ queryKey: ['my-friends'] });
+      // Refresh related data so counts and lists stay in sync
+      queryClient.invalidateQueries({ queryKey: getUserInfomationQueryKey({ userId }) });
+      queryClient.invalidateQueries({ queryKey: getMyInfomationQueryKey });
+      queryClient.invalidateQueries({ queryKey: getMyFriendsQueryKey() });
+      queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
 
-      // Update friend requests list if exists
-      const friendRequestQueryFilter = {
-        queryKey: ['friend-requests'],
-      };
+      // If a friendship just got accepted, refetch the requests list to drop it.
+      // Otherwise (request sent/cancelled) prune the cached request item directly.
+      if (response.data.status === 'ACCEPTED') {
+        queryClient.invalidateQueries({ queryKey: getMyFriendRequestsQueryKey });
+      } else {
+        queryClient.setQueriesData<
+          InfiniteData<IApiPaginationResponseWrapper<IFriendRequestWithFriendDataType>['data']>
+        >({ queryKey: getMyFriendRequestsQueryKey }, (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((item) => item.friend.id !== userId),
+            })),
+          };
+        });
+      }
 
-      queryClient.setQueriesData<
-        InfiniteData<IApiPaginationResponseWrapper<IFriendRequestWithFriendDataType>['data']>
-      >(friendRequestQueryFilter, (oldData) => {
-        if (!oldData) return;
-
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            items: page.items.filter((item) => item.friend.id !== userId),
-          })),
-        };
-      });
-
-      // Update friends list if exists
-      const friendsQueryFilter = {
-        queryKey: ['my-friends'],
-      };
-
+      // Keep the friend list in sync when a relationship is removed
       queryClient.setQueriesData<
         InfiniteData<IApiPaginationResponseWrapper<IUserDataType>['data']>
-      >(friendsQueryFilter, (oldData) => {
-        if (!oldData) return;
-
-        // If friendship was accepted, the user will be added via invalidation
-        // If friendship was cancelled/removed, remove from list
-        if (response.data.status === 'ACCEPTED') {
-          return oldData;
-        }
-
+      >({ queryKey: getMyFriendsQueryKey() }, (oldData) => {
+        if (!oldData) return oldData;
+        if (response.data.status === 'ACCEPTED') return oldData;
         return {
           ...oldData,
           pages: oldData.pages.map((page) => ({
@@ -98,9 +105,8 @@ export function useToggleFriendshipRequestMutation({
       });
     },
     onError: (error, _variables, context) => {
-      // Rollback to previous data on error
       if (context?.previousUserData) {
-        queryClient.setQueryData(['profile', { userId }], context.previousUserData);
+        queryClient.setQueryData(getUserInfomationQueryKey({ userId }), context.previousUserData);
       }
       console.error('Failed to toggle friendship request:', error);
     },

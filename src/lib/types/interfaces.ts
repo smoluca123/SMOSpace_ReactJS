@@ -1,4 +1,5 @@
 import { UUID } from 'crypto';
+import { IReactionCounts, IReactionType } from '@/lib/reactions';
 
 export type PropsWithClassName = {
   className?: string;
@@ -141,6 +142,11 @@ export interface IPostDataType {
 
 export interface IPostDataWithLikedStatusType extends IPostDataType {
   isLiked: boolean;
+  /** Current viewer's reaction (null if none). */
+  myReaction?: IReactionType | null;
+  /** Per-type counters. Optional so older cached data still type-checks. */
+  reactionCounts?: IReactionCounts;
+  isBookmarked?: boolean;
 }
 
 // export interface IUserDataType {
@@ -191,6 +197,8 @@ export interface IFollowingType {
 
 export interface IPostLikeType {
   id: UUID;
+  /** Optional for backward compat with caches predating the reaction refactor. */
+  type?: IReactionType;
   createdAt: string;
   user: IUserDataType;
 }
@@ -202,9 +210,24 @@ export interface ICommentDataType {
   createdAt: string;
   updatedAt: string;
   repliesCount: number;
+  /** Total reaction count. Optional for backward compat with older caches. */
+  likeCount?: number;
+  /** Current viewer reacted? Optional for backward compat. */
+  isLiked?: boolean;
+  /** Current viewer's reaction (null if none). */
+  myReaction?: IReactionType | null;
+  /** Per-type counters. Optional so older cached data still type-checks. */
+  reactionCounts?: IReactionCounts;
   replyToId: UUID | null;
   post: IPostDataType;
   author: IUserDataType;
+}
+
+export interface ICommentLikeType {
+  id: UUID;
+  type?: IReactionType;
+  createdAt: string;
+  user: IUserDataType;
 }
 
 export interface IFollowUserType {
@@ -371,6 +394,9 @@ export interface IGroupedNotificationType {
 export interface IFriendRequestDataType {
   id: string;
   status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'BLOCKED';
+  userId?: string;
+  friendId?: string;
+  isRequestedByMe?: boolean;
   createdAt: string;
   updatedAt: string;
 }
