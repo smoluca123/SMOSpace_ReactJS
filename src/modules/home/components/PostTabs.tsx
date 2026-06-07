@@ -11,7 +11,7 @@ export default function PostTabs() {
   const query = useGetPosts({ likeUserId: user?.id });
 
   const followingQuery = useGetFollowingPosts({ likeUserId: user?.id });
-  // Sử dụng socket hook cho posts
+  // Use the socket hook for posts
   usePostSocket();
 
   return (

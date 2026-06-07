@@ -15,22 +15,33 @@ import EditFriendListMenuItem from './EditFriendListMenuItem';
 import ToggleFollowMenuItem from './ToggleFollowMenuItem';
 import UnfriendMenuItem from './UnfriendMenuItem';
 import BlockMenuItem from './BlockMenuItem';
+import { useGetUserInfomation } from '@/lib/querys';
+import { useAppSelector } from '@/redux/hooks';
+import { selectAuth } from '@/redux/slices/authSlice';
 
 interface IProps {
   userId: UUID;
 }
 
 export default function ProfileActions({ userId }: IProps) {
-  // TODO: Get actual friend status from API/context
-  const isFriend = false; // This will be replaced with actual friend status
+  const { user: currentUser } = useAppSelector(selectAuth);
+  const { data: userInfo } = useGetUserInfomation({ userId });
+
+  const friend = userInfo?.friend;
+  const isFriend = friend?.status === 'ACCEPTED';
+  const isBlocked = friend?.status === 'BLOCKED';
+  // Block rows store the blocker in `userId`; only the blocker can unblock.
+  const isBlockedByMe = isBlocked && friend?.userId === currentUser?.id;
 
   return (
     <div className='flex gap-2'>
-      {/* Friend Button */}
-      <FriendButton userId={userId} />
-
-      {/* Message Button */}
-      <MessageButton userId={userId} />
+      {/* When I've blocked this user, friend/message actions are unavailable */}
+      {!isBlocked && (
+        <>
+          <FriendButton userId={userId} />
+          <MessageButton userId={userId} />
+        </>
+      )}
 
       {/* More Actions Dropdown */}
       <DropdownMenu>
@@ -40,15 +51,22 @@ export default function ProfileActions({ userId }: IProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-56'>
-          <FavoriteMenuItem userId={userId} />
+          {!isBlocked && (
+            <>
+              <FavoriteMenuItem userId={userId} />
 
-          {isFriend && <EditFriendListMenuItem userId={userId} />}
+              {isFriend && <EditFriendListMenuItem userId={userId} />}
 
-          <ToggleFollowMenuItem userId={userId} />
+              <ToggleFollowMenuItem userId={userId} />
 
-          {isFriend && <UnfriendMenuItem userId={userId} />}
+              {isFriend && userInfo && <UnfriendMenuItem userData={userInfo} />}
+            </>
+          )}
 
-          <BlockMenuItem userId={userId} />
+          {/* Block / Unblock - hidden only when the other user blocked me */}
+          {(!isBlocked || isBlockedByMe) && (
+            <BlockMenuItem userId={userId} friend={friend} fullName={userInfo?.fullName} />
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

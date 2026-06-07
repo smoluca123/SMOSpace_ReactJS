@@ -10,7 +10,7 @@ export default function ProfileCoverImage() {
   const controls = useAnimation();
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  // Đưa ảnh về vị trí mặc định khi load trang
+  // Reset the image to its default position on page load
   useEffect(() => {
     if (imageLoaded) {
       controls.start({ y: 0 });
@@ -18,7 +18,10 @@ export default function ProfileCoverImage() {
   }, [imageLoaded, controls]);
 
   return (
-    <ContentWrapper ref={containerRef} className='!p-0 min-h-60 max-h-96 overflow-hidden'>
+    <ContentWrapper
+      ref={containerRef}
+      className='!p-0 min-h-44 sm:min-h-52 lg:min-h-60 max-h-96 overflow-hidden'
+    >
       <motion.img
         src={userData.coverImage}
         alt={userData.displayName}

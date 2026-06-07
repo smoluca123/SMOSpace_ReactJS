@@ -57,6 +57,15 @@ export default function useNotificationSocket(props?: UseNotificationSocketProps
       // Invalidate grouped notifications to refetch with new grouping
       queryClient.invalidateQueries({ queryKey: ['grouped-notifications'] });
 
+      // Friendship notifications (request received / request accepted) should
+      // refresh the friend request list, friend lists, profile (button states)
+      // and friend counts in realtime.
+      if (newNotification.entityType === 'FRIENDSHIP') {
+        queryClient.invalidateQueries({ queryKey: ['friend-request', 'me'] });
+        queryClient.invalidateQueries({ queryKey: ['friend-list'] });
+        queryClient.invalidateQueries({ queryKey: ['profile'] });
+      }
+
       // Show toast notification (optional)
       toast({
         title: 'New notification',

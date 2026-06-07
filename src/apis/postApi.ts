@@ -12,6 +12,7 @@ import {
   IPostLikeType,
   ITrendingTopicType,
 } from '@/lib/types/interfaces';
+import { IReactionType } from '@/lib/reactions';
 import { GeneratePostImagesValues } from '@/lib/validations';
 import { UUID } from 'crypto';
 
@@ -179,10 +180,86 @@ export const getTrendingTopicsAPI = async () => {
   }
 };
 
-export const likePostAPI = async ({ postId }: { postId: UUID }) => {
+export const likePostAPI = async ({
+  postId,
+  type,
+}: {
+  postId: UUID;
+  /** Omit (or pass `LIKE`) for the classic Like toggle. */
+  type?: IReactionType;
+}) => {
   try {
     const { data } = await baseApi.post<IApiResponseWrapper<IPostDataWithLikedStatusType>>(
       `/post/like/${postId}`,
+      type ? { type } : undefined,
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const likeCommentAPI = async ({
+  commentId,
+  type,
+}: {
+  commentId: UUID;
+  /** Omit (or pass `LIKE`) for the classic Like toggle. */
+  type?: IReactionType;
+}) => {
+  try {
+    const { data } = await baseApi.post<IApiResponseWrapper<ICommentDataType>>(
+      `/post/comment/like/${commentId}`,
+      type ? { type } : undefined,
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const getCommentLikedUsersAPI = async ({
+  commentId,
+  page = 1,
+  limit = 10,
+  type,
+}: IPaginationParamsType & { commentId: UUID; type?: IReactionType }) => {
+  try {
+    const { data } = await baseApi.get<IApiPaginationResponseWrapper<IPostLikeType>>(
+      `/post/comment/get-likes/${commentId}`,
+      { params: { page, limit, type } },
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const toggleBookmarkAPI = async ({ postId }: { postId: UUID }) => {
+  try {
+    const { data } = await baseApi.post<IApiResponseWrapper<IPostDataWithLikedStatusType>>(
+      `/post/bookmark/${postId}`,
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const getMyBookmarksAPI = async ({ page = 1, limit = 10 }: IPaginationParamsType) => {
+  try {
+    const { data } = await baseApi.get<IApiPaginationResponseWrapper<IPostDataWithLikedStatusType>>(
+      '/post/bookmarks',
+      {
+        params: {
+          page,
+          limit,
+        },
+      },
     );
     return data;
   } catch (error: any) {
@@ -195,7 +272,8 @@ export const getLikedUsersAPI = async ({
   postId,
   page = 1,
   limit = 10,
-}: IPaginationParamsType & { postId: UUID }) => {
+  type,
+}: IPaginationParamsType & { postId: UUID; type?: IReactionType }) => {
   try {
     const { data } = await baseApi.get<
       IApiPaginationResponseWrapper<IPostLikeType> & {
@@ -205,6 +283,7 @@ export const getLikedUsersAPI = async ({
       params: {
         page,
         limit,
+        type,
       },
     });
     return data;

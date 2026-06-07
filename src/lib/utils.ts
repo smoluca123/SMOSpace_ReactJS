@@ -57,16 +57,16 @@ export const getCroppedImg = ({
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d', { alpha: true });
 
-      // Đặt kích thước canvas bằng kích thước phần đã cắt
+      // Set the canvas size to match the cropped area
       canvas.width = croppedAreaPixels.width;
       canvas.height = croppedAreaPixels.height;
 
       if (!ctx) return;
 
-      // Xóa canvas để đảm bảo nền trong suốt
+      // Clear the canvas to ensure a transparent background
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Vẽ phần ảnh đã cắt lên canvas
+      // Draw the cropped portion of the image onto the canvas
       ctx.drawImage(
         image,
         croppedAreaPixels.x,
@@ -79,7 +79,7 @@ export const getCroppedImg = ({
         croppedAreaPixels.height,
       );
 
-      // Nếu yêu cầu hình tròn, ta sẽ vẽ hình tròn lên canvas
+      // If a circular crop is requested, draw a circle onto the canvas
       if (isCircle) {
         ctx.globalCompositeOperation = 'destination-in';
         ctx.beginPath();
@@ -87,7 +87,7 @@ export const getCroppedImg = ({
         ctx.fill();
       }
 
-      // Trả về ảnh đã cắt dưới dạng Blob với định dạng PNG để giữ độ trong suốt
+      // Return the cropped image as a Blob in PNG format to preserve transparency
       canvas.toBlob((blob) => {
         if (!blob) return;
         resolve(blob);
@@ -112,20 +112,22 @@ export const handleMaskEmail = (email: string | undefined): string | undefined =
   return fristChar + maskedPart + visiblePart + '@' + domain;
 };
 
-
-export function isValidHttpUrl(string : string) {
+export function isValidHttpUrl(string: string) {
   let url;
-  
+
   try {
     url = new URL(string);
   } catch {
-    return false;  
+    return false;
   }
 
-  return url.protocol === "http:" || url.protocol === "https:";
+  return url.protocol === 'http:' || url.protocol === 'https:';
 }
 
-export const cleanURLForUI = (url : string) => {
+export const cleanURLForUI = (url: string) => {
   if (!url) return '';
-  return url.replace(/^https?:\/\//, '').replace(/^http?:\/\//, '').replace(/\/$/, '');
-}
+  return url
+    .replace(/^https?:\/\//, '')
+    .replace(/^http?:\/\//, '')
+    .replace(/\/$/, '');
+};

@@ -18,7 +18,7 @@ export default function FavoriteMenuItem({ userId }: IProps) {
       onClick={handleFavorite}
       onSelect={(e) => e.preventDefault()}
     >
-      Yêu thích
+      Favorite
     </DropdownMenuItemWithIcon>
   );
 }

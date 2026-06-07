@@ -48,7 +48,7 @@ export default function ToggleFollowMenuItem({ userId }: IProps) {
             'text-primary': userInfo.isFollowedByUser,
           })}
         >
-          {userInfo.isFollowedByUser ? 'Bỏ theo dõi' : 'Theo dõi'}
+          {userInfo.isFollowedByUser ? 'Unfollow' : 'Follow'}
           {(isPendingFollow || isPendingUnfollow) && <Loader2 className='animate-spin' />}
         </DropdownMenuItemWithIcon>
       )}

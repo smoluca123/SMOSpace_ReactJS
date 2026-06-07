@@ -1,7 +1,6 @@
 import { CommentPost } from '@/components/Posts/PostAction/Actions/Comment';
 import LikePost from '@/components/Posts/PostAction/Actions/LikePost';
-import { Button } from '@/components/ui/button';
-import { Bookmark } from 'lucide-react';
+import BookmarkPost from '@/components/Posts/PostAction/Actions/BookmarkPost';
 
 export default function PostAction() {
   return (
@@ -10,10 +9,7 @@ export default function PostAction() {
 
       <CommentPost />
 
-      <Button variant='ghost' className=''>
-        <Bookmark className='size-4' />
-        Save
-      </Button>
+      <BookmarkPost />
     </div>
   );
 }

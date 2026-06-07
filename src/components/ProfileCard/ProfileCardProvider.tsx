@@ -1,9 +1,12 @@
 import { ProfileCardContext } from '@/contexts/ProfileCardContext';
-import { IUserDataType } from '@/lib/types/interfaces';
+import {
+  IUserDataTypeWithFriendStatus,
+  IUserDataWithFollowedStatusType,
+} from '@/lib/types/interfaces';
 import { PropsWithChildren } from 'react';
 
 interface IProps extends PropsWithChildren {
-  userData: IUserDataType;
+  userData: IUserDataWithFollowedStatusType & IUserDataTypeWithFriendStatus;
 }
 
 export default function ProfileCardProvider({ userData, children }: IProps) {

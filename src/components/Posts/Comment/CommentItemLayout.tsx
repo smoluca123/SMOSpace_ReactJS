@@ -9,6 +9,9 @@ import ProfileLink from '@/components/ProfileLink';
 import NameWithVerifiedIcon from '@/components/NameWithVerifiedIcon';
 import CommentMoreButton from '@/components/Posts/Comment/CommentActions/CommentMoreButton';
 import NameWithBadge from '@/components/NameWithBadge';
+import LikeComment, {
+  CommentReactionCounter,
+} from '@/components/Posts/Comment/CommentActions/LikeComment';
 
 export default function CommentItemLayout() {
   const { comment, setIsShowReplyInput, isShowReplies, setIsShowReplies } = useCommentContext();
@@ -22,7 +25,7 @@ export default function CommentItemLayout() {
         <div className='space-y-2 w-full'>
           <div className='flex gap-2 items-center'>
             {/* Comment Content */}
-            <div className='p-3 rounded-lg bg-muted w-fit'>
+            <div className='relative p-3 rounded-lg bg-muted w-fit'>
               <ProfileLink username={comment.author.username}>
                 <NameWithBadge userData={comment.author}>
                   <NameWithVerifiedIcon isVerified={comment.author.isVerified}>
@@ -35,6 +38,13 @@ export default function CommentItemLayout() {
                   <article className='~text-sm/base'>{parse(comment.content)}</article>
                 </LinkifyHashTag>
               </MentionLinkHandler>
+
+              {/* Reaction summary chip - floats at bottom-right of bubble */}
+              {(comment.likeCount ?? 0) > 0 && (
+                <div className='absolute right-2 -bottom-2 px-1 py-0.5 rounded-full border shadow-sm bg-background'>
+                  <CommentReactionCounter />
+                </div>
+              )}
             </div>
 
             {/* Comment More Button */}
@@ -42,15 +52,17 @@ export default function CommentItemLayout() {
           </div>
 
           {/* Comment Actions */}
-          <div className='flex gap-2 mt-1 text-sm'>
+          <div className='flex gap-3 items-center mt-1 text-sm'>
             {/* Comment Created At */}
             <p className='text-muted-foreground'>{createdAt}</p>
 
-            {/* Comment Actions */}
-            <button className='text-muted-foreground hover:text-primary'>Like</button>
+            {/* React */}
+            <LikeComment />
+
+            {/* Reply */}
             <button
               onClick={() => setIsShowReplyInput((prev) => !prev)}
-              className='text-muted-foreground hover:text-primary'
+              className='font-medium text-muted-foreground hover:text-primary'
             >
               Reply
             </button>

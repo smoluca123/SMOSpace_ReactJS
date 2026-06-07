@@ -18,6 +18,15 @@ export default function FriendRequestNotificationItem({
           <span className='text-sm'>sent you a friend request</span>
         </NotificationItem>
       );
+    case 'FRIEND_ACCEPT':
+      return (
+        <NotificationItem
+          notification={notification}
+          to={`/profile/${notification.metadata.friend.username}`}
+        >
+          <span className='text-sm'>accepted your friend request</span>
+        </NotificationItem>
+      );
     default:
       return null;
   }

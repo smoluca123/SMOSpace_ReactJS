@@ -1,21 +1,33 @@
-import { IUserDataType } from '@/lib/types/interfaces';
-import { Flag, LockKeyhole, UserPlus } from 'lucide-react';
+import {
+  IUserDataTypeWithFriendStatus,
+  IUserDataWithFollowedStatusType,
+} from '@/lib/types/interfaces';
+import { Flag } from 'lucide-react';
 import DropdownMenuItemWithIcon from '../DropdownMenuItemWithIcon';
+import { AddFriendButton } from '@/components/FriendButtons';
+import BlockMenuItem from '@/modules/profile/components/Profile/ProfileHeader/ProfileActions/BlockMenuItem';
+import { useAppSelector } from '@/redux/hooks';
+import { selectAuth } from '@/redux/slices/authSlice';
 
 interface IProps {
-  user: IUserDataType;
+  user: IUserDataWithFollowedStatusType & IUserDataTypeWithFriendStatus;
 }
 
 export default function ProfileCardMenu({ user }: IProps) {
-  console.log(user);
+  const { user: currentUser } = useAppSelector(selectAuth);
+
+  const isBlocked = user.friend?.status === 'BLOCKED';
+  const isBlockedByMe = isBlocked && user.friend?.userId === currentUser?.id;
 
   return (
     <div className='space-y-2'>
-      <DropdownMenuItemWithIcon Icon={UserPlus}>Add friend</DropdownMenuItemWithIcon>
+      {!isBlocked && <AddFriendButton userId={user.id} userData={user} asMenuItem />}
+
       <DropdownMenuItemWithIcon Icon={Flag}> Report profile</DropdownMenuItemWithIcon>
-      <DropdownMenuItemWithIcon variant='destructive' Icon={LockKeyhole}>
-        Block
-      </DropdownMenuItemWithIcon>
+
+      {(!isBlocked || isBlockedByMe) && (
+        <BlockMenuItem userId={user.id} friend={user.friend} fullName={user.fullName} />
+      )}
     </div>
   );
 }

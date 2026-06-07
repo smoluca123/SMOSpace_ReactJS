@@ -28,7 +28,7 @@ export default function UserList({ queryData }: IProps) {
           data.pages.flatMap((page) =>
             page.items.map(({ id, username, avatar }) => (
               <ProfileLinkWithCard key={id} userId={id} username={username}>
-                <UserAvatar avatarUrl={avatar} className='w-10 h-10 rounded-full' />
+                <UserAvatar userId={id} avatarUrl={avatar} className='w-10 h-10 rounded-full' />
               </ProfileLinkWithCard>
             )),
           )}

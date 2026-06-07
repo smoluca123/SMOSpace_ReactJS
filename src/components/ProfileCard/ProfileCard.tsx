@@ -1,12 +1,11 @@
 'use client';
 import UserAvatar from '../UserAvatar';
-import { MessageCircle } from 'lucide-react';
 import { UUID } from 'crypto';
-import { Button } from '../ui/button';
 import ProfileLink from '../ProfileLink';
 import { Separator } from '../ui/separator';
 
 import FollowButton from '../FollowButton';
+import MessageButton from '@/modules/profile/components/Profile/ProfileHeader/ProfileActions/MessageButton';
 import { useAppSelector } from '@/redux/hooks';
 import { selectAuth } from '@/redux/slices/authSlice';
 import { useGetUserInfomation } from '@/lib/querys';
@@ -97,10 +96,7 @@ function ProfileActions() {
     <div className='flex justify-around w-full gap-x-2'>
       <FollowButton className='w-1/2' userId={userData.id} />
 
-      <Button variant='secondary' className='flex-1'>
-        <MessageCircle />
-        Message
-      </Button>
+      <MessageButton className='flex-1' variant='secondary' userId={userData.id} />
       <ProfileCardDropdownMenu user={userData} />
     </div>
   );

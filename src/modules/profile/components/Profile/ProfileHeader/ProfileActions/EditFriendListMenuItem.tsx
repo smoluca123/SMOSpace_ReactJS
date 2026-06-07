@@ -18,7 +18,7 @@ export default function EditFriendListMenuItem({ userId }: IProps) {
       onClick={handleEditFriendList}
       onSelect={(e) => e.preventDefault()}
     >
-      Chỉnh sửa danh sách bạn bè
+      Edit friend list
     </DropdownMenuItemWithIcon>
   );
 }

@@ -1,81 +1,95 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { useLayoutEffect, useRef, useState } from 'react';
+import { Loader2 } from 'lucide-react';
 import { MessageItem } from '@/modules/chat/components/Message/';
-import { InfiniteData } from '@tanstack/react-query';
-import { IRoomMessageDataType } from '@/apis/types/chat.interfaces';
-import { IApiPaginationResponseWrapper } from '@/lib/types/interfaces';
+import { IChatMessageUI } from '@/apis/types/chat.interfaces';
+import MediaLightbox from '@/components/MediaLightbox';
 
 interface MessageListProps {
-  messages: InfiniteData<IApiPaginationResponseWrapper<IRoomMessageDataType>['data']>;
+  messages: IChatMessageUI[];
   isGroup: boolean;
+  onRetry?: (message: IChatMessageUI) => void;
+  onDismiss?: (message: IChatMessageUI) => void;
+  hasMore?: boolean;
+  isLoadingMore?: boolean;
+  onLoadMore?: () => void;
 }
 
-export default function MessageList({ messages, isGroup }: MessageListProps) {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+export default function MessageList({
+  messages,
+  isGroup,
+  onRetry,
+  onDismiss,
+  hasMore,
+  isLoadingMore,
+  onLoadMore,
+}: MessageListProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const prevScrollHeightRef = useRef(0);
+  const prevCountRef = useRef(0);
+  const loadingOlderRef = useRef(false);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const handleScroll = () => {
+    const el = containerRef.current;
+    if (!el) return;
+    // Near the top -> load older messages
+    if (el.scrollTop < 80 && hasMore && !isLoadingMore && !loadingOlderRef.current) {
+      loadingOlderRef.current = true;
+      prevScrollHeightRef.current = el.scrollHeight;
+      onLoadMore?.();
+    }
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-  console.log(messages);
-  return (
-    <>
-      <ScrollArea className='h-full p-4 overflow-auto'>
-        <div className='space-y-4'>
-          {messages.pages
-            .flatMap((page) => page.items)
-            .map((message) => (
-              <>
-                <MessageItem
-                  key={message.id}
-                  message={message}
-                  isGroup={isGroup}
-                  // onAddReaction={onAddReaction}
-                  // onShowReadReceipts={onShowReadReceipts}
-                />
-              </>
-            ))}
+  // Keep the viewport anchored when prepending older messages, and stick to the
+  // bottom when a new message arrives (or on first render).
+  useLayoutEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
 
-          {/* Typing Indicators */}
-          {/* {conversation.participants
-            .filter((p) => p.isTyping)
-            .map((participant) => (
-              <div key={participant.id} className='flex items-start space-x-3'>
-                <Avatar className='w-8 h-8'>
-                  <AvatarImage src={participant.avatar || '/placeholder.svg'} />
-                  <AvatarFallback>
-                    {participant.name
-                      .split(' ')
-                      .map((n) => n[0])
-                      .join('')}
-                  </AvatarFallback>
-                </Avatar>
-                <div className='px-4 py-2 rounded-2xl bg-muted'>
-                  <div className='flex items-center space-x-1'>
-                    <span className='mr-2 text-xs text-muted-foreground'>{participant.name}</span>
-                    <div className='flex space-x-1'>
-                      <div className='w-2 h-2 rounded-full animate-bounce bg-muted-foreground' />
-                      <div
-                        className='w-2 h-2 rounded-full animate-bounce bg-muted-foreground'
-                        style={{ animationDelay: '0.1s' }}
-                      />
-                      <div
-                        className='w-2 h-2 rounded-full animate-bounce bg-muted-foreground'
-                        style={{ animationDelay: '0.2s' }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))} */}
+    const newCount = messages.length;
+    const prevCount = prevCountRef.current;
+
+    if (loadingOlderRef.current && newCount > prevCount) {
+      const diff = el.scrollHeight - prevScrollHeightRef.current;
+      el.scrollTop = el.scrollTop + diff;
+      loadingOlderRef.current = false;
+    } else if (newCount > prevCount) {
+      el.scrollTop = el.scrollHeight;
+    }
+
+    prevCountRef.current = newCount;
+  }, [messages]);
+
+  return (
+    <div ref={containerRef} onScroll={handleScroll} className='overflow-y-auto flex-1 p-4'>
+      {isLoadingMore && (
+        <div className='flex justify-center py-2'>
+          <Loader2 className='w-4 h-4 animate-spin text-muted-foreground' />
         </div>
-        <div id='messages-end' ref={messagesEndRef} />
-      </ScrollArea>
-    </>
+      )}
+
+      <div className='space-y-4'>
+        {messages.map((message) => (
+          <MessageItem
+            key={message.tempId || message.id}
+            message={message}
+            isGroup={isGroup}
+            onRetry={onRetry}
+            onDismiss={onDismiss}
+            onImageClick={setLightboxSrc}
+          />
+        ))}
+      </div>
+
+      {lightboxSrc && (
+        <MediaLightbox
+          media={[{ type: 'IMAGE', src: lightboxSrc }]}
+          open={!!lightboxSrc}
+          onClose={() => setLightboxSrc(null)}
+        />
+      )}
+    </div>
   );
 }

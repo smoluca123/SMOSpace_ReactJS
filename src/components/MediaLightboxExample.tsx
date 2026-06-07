@@ -8,20 +8,20 @@ export default function MediaLightboxExample() {
   // Example media with mixed images and videos
   const media: MediaItem[] = [
     {
-      type: 'image',
+      type: 'IMAGE',
       src: 'https://picsum.photos/1920/1080?random=1',
       alt: 'Beautiful landscape',
       title: 'Sunset at the beach',
       description: 'A stunning sunset captured at the California coast',
     },
     {
-      type: 'image',
+      type: 'IMAGE',
       src: 'https://picsum.photos/1920/1080?random=2',
       alt: 'Mountain view',
       title: 'Mountain peaks',
     },
     {
-      type: 'video',
+      type: 'VIDEO',
       src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       poster:
         'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg',
@@ -31,7 +31,7 @@ export default function MediaLightboxExample() {
       height: 1080,
     },
     {
-      type: 'image',
+      type: 'IMAGE',
       src: 'https://picsum.photos/1920/1080?random=3',
       alt: 'City lights',
       title: 'Night cityscape',
@@ -51,7 +51,7 @@ export default function MediaLightboxExample() {
             className='relative aspect-square cursor-pointer overflow-hidden rounded-lg border border-border hover:opacity-80 transition-opacity'
             onClick={() => openLightbox(index)}
           >
-            {item.type === 'image' ? (
+            {item.type === 'IMAGE' ? (
               <img src={item.src} alt={item.alt} className='w-full h-full object-cover' />
             ) : (
               <div className='relative w-full h-full'>

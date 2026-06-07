@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Home, MessageCircleCode, UserPlus } from 'lucide-react';
+import { Bookmark, Home, MessageCircleCode, UserPlus } from 'lucide-react';
 
 // Components
 import AppLogo from '@/components/AppLogo';
@@ -7,6 +7,8 @@ import UserButton from '@/components/UserButton';
 import { NavSidebar } from '@/components/Header/NavSidebar';
 import SearchBox from '@/components/Header/SearchBox';
 import NotificationPopover from '@/components/Notification';
+import { useGetUnreadChatCount } from '@/modules/chat/querys';
+import RightSidebarDrawer from '@/modules/home/components/RightSidebarDrawer';
 
 // Sub-components
 const LeftSection = () => (
@@ -22,20 +24,31 @@ const LeftSection = () => (
   </>
 );
 
-const ActionButtons = () => (
-  <div className='flex ~gap-x-0/2 justify-between items-center'>
-    <Link to='/friends' className='~p-2/4 rounded-md hover:bg-accent'>
-      <UserPlus />
-    </Link>
-    <Link to='/chat' className='~p-2/4 rounded-md hover:bg-accent'>
-      <MessageCircleCode />
-    </Link>
-    {/* <button className='~p-2/4 rounded-md hover:bg-accent'>
-      <Bell />
-    </button> */}
-    <NotificationPopover />
-  </div>
-);
+const ActionButtons = () => {
+  const { data: unreadCount } = useGetUnreadChatCount();
+
+  return (
+    <div className='flex ~gap-x-0/2 justify-between items-center'>
+      <Link to='/friends' className='~p-2/4 rounded-md hover:bg-accent'>
+        <UserPlus />
+      </Link>
+      <Link to='/bookmarks' className='~p-2/4 rounded-md hover:bg-accent'>
+        <Bookmark />
+      </Link>
+      <Link to='/chat' className='~p-2/4 relative rounded-md hover:bg-accent'>
+        <MessageCircleCode />
+        {!!unreadCount && unreadCount > 0 && (
+          <span className='flex absolute -top-0.5 -right-0.5 justify-center items-center px-1 min-w-[18px] h-[18px] text-[10px] font-semibold leading-none text-white rounded-full bg-destructive'>
+            {unreadCount > 99 ? '99+' : unreadCount}
+          </span>
+        )}
+      </Link>
+      {/* Right sidebar trigger – only visible below lg */}
+      <RightSidebarDrawer />
+      <NotificationPopover />
+    </div>
+  );
+};
 
 const AuthSection = () => {
   return <UserButton showName={true} />;

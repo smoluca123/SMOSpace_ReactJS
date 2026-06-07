@@ -1,12 +1,14 @@
 import { adminDeletePostAPI, deletePostAPI, likePostAPI, updatePostAPI } from '@/apis/postApi';
+import { toggleBookmarkAPI } from '@/apis/postApi';
 import { UUID } from 'crypto';
 import { InfiniteData, QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   IApiPaginationResponseWrapper,
   IPostDataWithLikedStatusType,
 } from '@/lib/types/interfaces';
-import { getLikedUsersQueryKey } from '@/components/Posts/PostEngagementMetrics/LikedUsersDialog/querys';
+import { IReactionType } from '@/lib/reactions';
 import { getPostQueryKey } from '@/modules/post-detail/components/PostDetail/querys';
+import { getMyBookmarksQueryKey } from '@/modules/bookmarks/querys';
 import useUpdateDataInfomation from '@/hooks/useUpdateDataInfomation';
 import { useAppSelector } from '@/redux/hooks';
 import { selectAuth } from '@/redux/slices/authSlice';
@@ -14,9 +16,9 @@ import { selectAuth } from '@/redux/slices/authSlice';
 export function useLikePostMutation() {
   const queryClient = useQueryClient();
 
-  const likePost = async ({ postId }: { postId: UUID }) => {
+  const reactToPost = async ({ postId, type }: { postId: UUID; type?: IReactionType }) => {
     try {
-      const { data } = await likePostAPI({ postId });
+      const { data } = await likePostAPI({ postId, type });
       return data;
     } catch (error) {
       console.log(error);
@@ -26,7 +28,7 @@ export function useLikePostMutation() {
 
   const mutation = useMutation({
     mutationKey: ['likePost'],
-    mutationFn: likePost,
+    mutationFn: reactToPost,
     onSuccess: async (newData) => {
       const postsQueryFilter = {
         queryKey: ['posts'],
@@ -39,14 +41,13 @@ export function useLikePostMutation() {
         postQueryFilter.queryKey as QueryKey,
       );
 
-      const likedUsersQueryFilter = {
-        queryKey: getLikedUsersQueryKey(newData.id),
-      };
-
-      // Cancel the existing liked users query to prevent race condition
-      // await queryClient.cancelQueries(likedUsersQueryFilter);
-
-      await queryClient.invalidateQueries(likedUsersQueryFilter);
+      // Invalidate every reaction tab for this post (All / Like / Love / ...),
+      // not just one type, so the lists refresh after a reaction change.
+      await queryClient.invalidateQueries({
+        predicate: (query) =>
+          query.queryKey[0] === 'likes' &&
+          (query.queryKey[1] as { postId?: string } | undefined)?.postId === newData.id,
+      });
 
       if (postQueryData) {
         queryClient.setQueryData<IPostDataWithLikedStatusType>(
@@ -90,6 +91,56 @@ export function useLikePostMutation() {
     },
   });
   return mutation;
+}
+
+export function useToggleBookmarkMutation() {
+  const queryClient = useQueryClient();
+
+  const toggleBookmark = async ({ postId }: { postId: UUID }) => {
+    try {
+      const { data } = await toggleBookmarkAPI({ postId });
+      return data;
+    } catch (error) {
+      console.log(error);
+      throw new Error(error as string);
+    }
+  };
+
+  return useMutation({
+    mutationKey: ['toggleBookmark'],
+    mutationFn: toggleBookmark,
+    onSuccess: async (newData) => {
+      // Sync the post detail cache
+      const postQueryKey = getPostQueryKey({ postId: newData.id });
+      const postQueryData = queryClient.getQueryData<IPostDataWithLikedStatusType>(postQueryKey);
+      if (postQueryData) {
+        queryClient.setQueryData<IPostDataWithLikedStatusType>(postQueryKey, (oldData) =>
+          oldData ? { ...oldData, ...newData } : oldData,
+        );
+      }
+
+      // Sync the bookmark flag across all feed caches
+      const postsQueryFilter = { queryKey: ['posts'] as QueryKey };
+      await queryClient.cancelQueries(postsQueryFilter);
+      queryClient.setQueriesData<
+        InfiniteData<IApiPaginationResponseWrapper<IPostDataWithLikedStatusType>['data']>
+      >(postsQueryFilter, (oldData) => {
+        if (!oldData) return oldData;
+        return {
+          pageParams: oldData.pageParams,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            items: page.items.map((post) =>
+              post.id === newData.id ? { ...post, isBookmarked: newData.isBookmarked } : post,
+            ),
+          })),
+        };
+      });
+
+      // Refresh the bookmarks list so saved/unsaved posts appear/disappear
+      queryClient.invalidateQueries({ queryKey: getMyBookmarksQueryKey() });
+    },
+  });
 }
 
 export function useDeletePostMutation() {

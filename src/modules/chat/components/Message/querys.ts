@@ -25,5 +25,8 @@ export const useGetRoomsMessagesQuery = ({ roomId }: { roomId: string }) => {
     getPreviousPageParam: ({ hasPreviousPage, currentPage }) =>
       hasPreviousPage ? currentPage - 1 : undefined,
     initialPageParam: 1,
+    // Don't retry: a 4xx (e.g. not a participant) won't fix itself, and we
+    // want the UI to surface the error promptly instead of looping.
+    retry: false,
   });
 };
