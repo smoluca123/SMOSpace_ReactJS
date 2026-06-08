@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { IUserDataWithFollowedStatusType } from '@/lib/types/interfaces';
-import { useAdminToggleBanUsersMutaion } from '../../mutations';
+import { useAdminToggleBanUsersMutation } from '../../mutations';
 import LoadingButton from '@/components/LoadingButton';
 import { SetStateAction } from 'react';
 
@@ -25,7 +25,7 @@ export default function MultipleToggleBanUserDialog({
   selectedUsers,
   setSelectedUsers,
 }: Props) {
-  const { mutate, isPending } = useAdminToggleBanUsersMutaion();
+  const { mutate, isPending } = useAdminToggleBanUsersMutation();
 
   const handleDialogChange = (isOpen: boolean) => {
     if (!isOpen) onClose();

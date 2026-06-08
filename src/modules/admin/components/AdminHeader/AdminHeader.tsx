@@ -22,12 +22,6 @@ export default function AdminHeader() {
           </div>
 
           <div className='flex items-center space-x-4'>
-            {/* Search */}
-            {/* <div className='relative hidden md:block'>
-              <Search className='absolute w-4 h-4 transform -translate-y-1/2 left-3 top-1/2 text-muted-foreground' />
-              <Input placeholder='Search...' className='pl-10 w-80 bg-background' />
-            </div> */}
-
             {/* Quick Actions */}
             <Button
               onClick={() => setIsCreateDialogOpen(true)}

@@ -76,9 +76,8 @@ export default function PostEditor({
         />
       </div>
 
-      <div className='w-full min-h-[8rem] max-h-[20rem] overflow-y-auto bg-card lg:rounded-xl rounded-lg px-5 py-3  max-w-full border-border border space-y-2'>
-        {/* {editor && <MenuBar editor={editor} />} */}
-        <EditorContent editor={editor} className='' />
+      <div className='w-full min-h-[8rem] max-h-[20rem] overflow-y-auto bg-card lg:rounded-xl rounded-lg px-5 py-3 max-w-full border-border border space-y-2'>
+        <EditorContent editor={editor} />
       </div>
 
       {/* Post Media */}

@@ -10,12 +10,12 @@ export default function PostStatusBadge({ post }: { post: IPostDataType }) {
         <span>Draft</span>
       </Badge>
     );
-  } else {
-    return (
-      <Badge className='flex items-center gap-1 text-green-800 bg-green-100 dark:bg-green-900 dark:text-green-300'>
-        <CheckCircle className='w-3 h-3' />
-        <span>Published</span>
-      </Badge>
-    );
   }
+
+  return (
+    <Badge className='flex items-center gap-1 text-green-800 bg-green-100 dark:bg-green-900 dark:text-green-300'>
+      <CheckCircle className='w-3 h-3' />
+      <span>Published</span>
+    </Badge>
+  );
 }

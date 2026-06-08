@@ -7,9 +7,46 @@ import { useGetAllUsersInfomation } from '@/lib/querys';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
-export default function RecentUsers() {
-  const getUserBagVariant = (user: IUserDataType) => (user.isActive ? 'default' : 'secondary');
+function getUserBadgeVariant(user: IUserDataType) {
+  return user.isActive ? 'default' : 'secondary';
+}
 
+function getUserStatusLabel(user: IUserDataType) {
+  if (user.isBanned) return 'Banned';
+  return user.isActive ? 'Active' : 'Inactive';
+}
+
+function UserItem({ user }: { user: IUserDataType }) {
+  return (
+    <div className='flex items-center p-3 space-x-4 transition-colors rounded-lg hover:bg-accent'>
+      <UserAvatar avatarUrl={user.avatar} />
+      <div className='flex-1 space-y-1'>
+        <div className='flex items-center'>
+          <p
+            className={cn('text-sm font-medium text-foreground', {
+              'text-destructive line-through': user.isBanned,
+            })}
+          >
+            {user.fullName}
+          </p>
+          <Badge className='ml-4' variant={getUserBadgeVariant(user)}>
+            {getUserStatusLabel(user)}
+          </Badge>
+        </div>
+        <div
+          className={cn('text-muted-foreground text-sm', {
+            'text-destructive line-through': user.isBanned,
+          })}
+        >
+          <p>{user.email}</p>
+          <p>{user.followerCount} followers</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function RecentUsers() {
   const { data, isLoading, fetchNextPage, hasNextPage } = useGetAllUsersInfomation({
     keywords: '',
   });
@@ -30,46 +67,8 @@ export default function RecentUsers() {
           className='space-y-4'
         >
           {data?.pages.map((page) =>
-            page.items.map((user) => (
-              <div
-                key={user.id}
-                className='flex items-center p-3 space-x-4 transition-colors rounded-lg hover:bg-accent'
-              >
-                <UserAvatar avatarUrl={user.avatar} />
-                <div className='flex-1 space-y-1'>  
-                  <p
-                    className={cn('text-sm font-medium text-foreground  inline', {
-                      'text-destructive line-through': user.isBanned,
-                    })}
-                  >
-                    {user.fullName}
-                  </p>
-              <Badge className='ml-4 ' variant={getUserBagVariant(user)}>
-                    {user.isBanned ? 'Banned' : user.isActive ? 'Activer' : 'InActive'}
-                  </Badge>
-                  <div
-                    className={cn('text-muted-foreground', {
-                      'text-destructive line-through': user.isBanned,
-                    })}
-                  >
-                    <p>{user.email}</p>
-                    <p>{user.followerCount} followers</p>
-                  </div>
-                </div>
-
-                {/* <div className='hidden space-y-1 text-right xs:block'>
-                  <Badge variant={getUserBagVariant(user)}>
-                    {user.isBanned ? 'Banned' : user.isActive ? 'Activer' : 'InActive'}
-                  </Badge>
-                  <p className='text-xs text-muted-foreground'>
-                    {formatDate(new Date(user.createdAt), 'dd-MM-yyyy')}
-                  </p>
-                </div> */}
-
-              </div>
-            )),
+            page.items.map((user) => <UserItem key={user.id} user={user} />),
           )}
-
           {isLoading && <Loader2 className='mx-auto text-primary animate-spin' />}
         </InfiniteScrollContainer>
       </CardContent>

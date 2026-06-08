@@ -35,14 +35,12 @@ const PostsManagementSection = () => {
     limit,
   });
 
+  // Reset to page 1 if current page exceeds total
   useEffect(() => {
-    if (query.isSuccess && page > query.data?.data.totalPage) {
-      setSearchParam({
-        page: '1',
-        limit: limit.toString(),
-      });
+    if (query.isSuccess && query.data && page > query.data.data.totalPage) {
+      setSearchParam({ page: '1', limit: limit.toString() });
     }
-  }, [query, setSearchParam, limit, page]);
+  }, [query.isSuccess, query.data, setSearchParam, limit, page]);
 
   return (
     <div className='space-y-6'>
@@ -52,19 +50,13 @@ const PostsManagementSection = () => {
       {/* Enhanced Stats Cards */}
       <StatSection />
 
-      {/* Enhanced Search and Filter */}
+      {/* Search */}
       <div className='relative'>
         <Search className='absolute w-4 h-4 transform -translate-y-1/2 left-3 top-1/2 text-muted-foreground' />
         <Input
           placeholder='Search posts by title, content, author or hashtags...'
           value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setSearchParam({
-              page: page.toFixed(),
-              limit: limit.toString(),
-            });
-          }}
+          onChange={(e) => setSearchTerm(e.target.value)}
           className='pl-10 transition-colors bg-background/50 border-muted focus:border-primary'
         />
       </div>
@@ -73,9 +65,7 @@ const PostsManagementSection = () => {
       <PostsTable setIsBulkDeleteDialogOpen={setIsBulkDeleteDialogOpen} query={query} />
 
       <MultiplePostDeleteDialog
-        onClose={() => {
-          setIsBulkDeleteDialogOpen(false);
-        }}
+        onClose={() => setIsBulkDeleteDialogOpen(false)}
         open={isBulkDeleteDialogOpen}
       />
     </div>

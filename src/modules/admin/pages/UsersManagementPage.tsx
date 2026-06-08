@@ -36,25 +36,18 @@ export default function UsersManagementPage() {
     page,
   });
 
-  // Update debounced value when search term changes
+  // Reset to page 1 when search term changes
   useEffect(() => {
-    if (query.isSuccess) {
-      setSearchParam({
-        page: '1',
-        limit: limit.toString(),
-      });
-    }
+    setSearchParam({ page: '1', limit: limit.toString() });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchTerm]);
 
+  // Reset if current page exceeds total pages
   useEffect(() => {
-    if (query.isSuccess && page > query.data?.data.totalPage) {
-      setSearchParam({
-        page: '1',
-        limit: limit.toString(),
-      });
+    if (query.isSuccess && query.data && page > query.data.data.totalPage) {
+      setSearchParam({ page: '1', limit: limit.toString() });
     }
-  }, [query, setSearchParam, limit, page]);
+  }, [query.isSuccess, query.data, setSearchParam, limit, page]);
 
   return (
     <div className='space-y-6'>

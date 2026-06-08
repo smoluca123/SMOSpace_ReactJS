@@ -13,201 +13,106 @@ import { selectAuth } from '@/redux/slices/authSlice';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 
-export const useAdminDeletePostMutation = () => {
+// --- Helpers ---
+
+const POST_QUERY_KEYS = ['admin-posts', 'post-count'] as const;
+const USER_QUERY_KEYS = ['admin-users', 'user-count'] as const;
+
+function useInvalidateQueries(keys: readonly string[]) {
   const queryClient = useQueryClient();
-
-  const handleDeletePost = async ({ postId }: { postId: UUID }) => {
-    try {
-      const data = await adminDeletePostAPI({ postId });
-      return data;
-    } catch (error) {
-      throw new Error(error as string);
-    }
+  return () => {
+    keys.forEach((key) => queryClient.invalidateQueries({ queryKey: [key] }));
   };
+}
 
-  const mutation = useMutation({
+// --- Post Mutations ---
+
+export const useAdminDeletePostMutation = () => {
+  const invalidatePosts = useInvalidateQueries(POST_QUERY_KEYS);
+
+  return useMutation({
     mutationKey: ['admin-delete-post'],
-    mutationFn: handleDeletePost,
-    onSuccess: () => {
-      ['admin-posts', 'post-count'].forEach((key) => {
-        queryClient.invalidateQueries({ queryKey: [key] });
-      });
-    },
+    mutationFn: ({ postId }: { postId: UUID }) => adminDeletePostAPI({ postId }),
+    onSuccess: invalidatePosts,
   });
-
-  return mutation;
 };
 
 export const useAdminEditPostMutation = () => {
-  const queryClient = useQueryClient();
+  const invalidatePosts = useInvalidateQueries(POST_QUERY_KEYS);
 
-  const handleEditPost = async ({
-    postId,
-    content,
-    isPrivate,
-    authorId,
-  }: {
-    postId: UUID;
-    content: string;
-    isPrivate: boolean;
-    authorId: UUID;
-  }) => {
-    try {
-      const data = await adminEditPostAPI({
-        postId,
-        content,
-        isPrivate,
-        authorId,
-      });
-      return data;
-    } catch (error) {
-      throw new Error(error as string);
-    }
-  };
-
-  const mutation = useMutation({
+  return useMutation({
     mutationKey: ['admin-edit-post'],
-    mutationFn: handleEditPost,
-    onSuccess: () => {
-      ['admin-posts', 'post-count'].forEach((key) => {
-        queryClient.invalidateQueries({ queryKey: [key] });
-      });
-    },
+    mutationFn: (params: { postId: UUID; content: string; isPrivate: boolean; authorId: UUID }) =>
+      adminEditPostAPI(params),
+    onSuccess: invalidatePosts,
   });
-
-  return mutation;
 };
 
-export const useAdminToggleBanUserMutation = () => {
-  const queryClient = useQueryClient();
+export const useAdminDeletePostsMutation = () => {
+  const invalidatePosts = useInvalidateQueries(POST_QUERY_KEYS);
 
-  const togglebanUser = async ({ userId, isBanned }: { userId: UUID; isBanned: boolean }) => {
-    try {
+  return useMutation({
+    mutationKey: ['admin-delete-posts'],
+    mutationFn: (postsId: string[]) => adminDeletePostsAPI(postsId),
+    onSuccess: invalidatePosts,
+  });
+};
+
+// --- User Mutations ---
+
+export const useAdminToggleBanUserMutation = () => {
+  const invalidateUsers = useInvalidateQueries(USER_QUERY_KEYS);
+
+  return useMutation({
+    mutationKey: ['admin-toggle-ban-user'],
+    mutationFn: async ({ userId, isBanned }: { userId: UUID; isBanned: boolean }) => {
       const { data } = await adminToggleBanUserAPI({ userId, isBanned });
       return data;
-    } catch (error) {
-      throw new Error(error as string);
-    }
-  };
-
-  const mutation = useMutation({
-    mutationKey: ['toggle-ban-user'],
-    mutationFn: togglebanUser,
-    onSuccess: () => {
-      ['admin-users', 'user-count'].forEach((key) => {
-        queryClient.invalidateQueries({ queryKey: [key] });
-      });
     },
+    onSuccess: invalidateUsers,
   });
-
-  return mutation;
 };
 
 export const useAdminUpdateUserInfoMutation = ({ userId }: { userId: UUID }) => {
   const { user } = useAppSelector(selectAuth);
-  const queryClinet = useQueryClient();
+  const queryClient = useQueryClient();
   const isMe = user?.id === userId;
   const { update } = useUpdateDataInfomation();
 
-  const handleUpdateUserInfomation = async (newUserData: IUpdateInfomationType) => {
-    try {
+  return useMutation({
+    mutationKey: ['admin-update-user-information', userId],
+    mutationFn: async (newUserData: IUpdateInfomationType) => {
       const { data } = await adminUpdateUserInfomationAPI({ userId, newUserData });
       return data;
-    } catch (error) {
-      throw new Error(error as string);
-    }
-  };
-
-  const muation = useMutation({
-    mutationKey: ['update-user-infomation'],
-    mutationFn: handleUpdateUserInfomation,
+    },
     onSuccess: (data) => {
-      queryClinet.invalidateQueries({
-        queryKey: ['admin-users'],
-      });
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       if (isMe && user) {
-        update({
-          ...user,
-          data,
-        });
+        update({ ...user, data });
       }
     },
   });
-
-  return muation;
 };
 
-export const useAdminToggleBanUsersMutaion = () => {
-  const queryClient = useQueryClient();
+export const useAdminToggleBanUsersMutation = () => {
+  const invalidateUsers = useInvalidateQueries(USER_QUERY_KEYS);
 
-  const handleBanUsers = async (banList: { userId: UUID; isBanned: boolean }[]) => {
-    try {
-      const data = await adminToggleBanUsers(banList);
-      return data;
-    } catch (error) {
-      throw new Error(error as string);
-    }
-  };
-
-  const mutation = useMutation({
-    mutationKey: ['toggle-ban-users'],
-    mutationFn: handleBanUsers,
-    onSuccess: () => {
-      ['admin-users', 'user-count'].forEach((key) => {
-        queryClient.invalidateQueries({ queryKey: [key] });
-      });
-    },
+  return useMutation({
+    mutationKey: ['admin-toggle-ban-users'],
+    mutationFn: (banList: { userId: UUID; isBanned: boolean }[]) => adminToggleBanUsers(banList),
+    onSuccess: invalidateUsers,
   });
-
-  return mutation;
 };
 
-export const useAdminDeletePostsMutation = () => {
-  const queryClient = useQueryClient();
+export const useAdminCreateUserMutation = () => {
+  const invalidateUsers = useInvalidateQueries(USER_QUERY_KEYS);
 
-  const handleDeletePosts = async (postsId: string[]) => {
-    try {
-      const data = await adminDeletePostsAPI(postsId);
-      return data;
-    } catch (error) {
-      throw new Error(error as string);
-    }
-  };
-
-  const mutation = useMutation({
-    mutationKey: ['delete-posts'],
-    mutationFn: handleDeletePosts,
-    onSuccess: () => {
-      ['admin-posts', 'post-count'].forEach((key) => {
-        queryClient.invalidateQueries({ queryKey: [key] });
-      });
-    },
-  });
-
-  return mutation;
-};
-
-export const useAdminCreateuserMutation = () => {
-  const queryClient = useQueryClient();
-
-  const handleCreateUser = async (credentials: AdminCreateUserType) => {
-    try {
+  return useMutation({
+    mutationKey: ['admin-create-user'],
+    mutationFn: async (credentials: AdminCreateUserType) => {
       const { data } = await adminCreateUserAPI(credentials);
       return data;
-    } catch (error) {
-      throw new Error(error as string);
-    }
-  };
-
-  const mutation = useMutation({
-    mutationKey: ['admin-create-user'],
-    mutationFn: handleCreateUser,
-    onSuccess: () => {
-      ['admin-users', 'user-count'].forEach((key) => {
-        queryClient.invalidateQueries({ queryKey: [key] });
-      });
     },
+    onSuccess: invalidateUsers,
   });
-
-  return mutation;
 };

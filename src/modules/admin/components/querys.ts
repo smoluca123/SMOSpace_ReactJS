@@ -4,71 +4,37 @@ import { IPaginationParamsType } from '@/lib/types/interfaces';
 import { useQuery } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 
-export const getAdminPostListQueryKey = ({
-  page,
-  limit,
-  keywords,
-}: IPaginationParamsType & { keywords: string }) => [
-  'admin-posts',
-  {
-    keywords,
-    limit,
-    page,
-  },
-];
+// --- Query Key Factories ---
 
-export const getAdminPostListByUserIdQueryKey = ({
-  page,
-  limit,
-  keywords,
-  userId,
-}: IPaginationParamsType & { keywords: string; userId: UUID }) => [
-  'admin-posts',
-  {
-    keywords,
-    limit,
-    page,
-    userId,
-  },
-];
+type PaginationWithKeywords = IPaginationParamsType & { keywords: string };
 
-export const getAdminUserListQueryKey = ({
-  page,
-  limit,
-  keywords,
-}: IPaginationParamsType & { keywords: string }) => [
-  'admin-users',
-  {
-    page,
-    limit,
-    keywords,
-  },
-];
+export const adminQueryKeys = {
+  posts: (params: PaginationWithKeywords) => ['admin-posts', params] as const,
+  postsByUserId: (params: PaginationWithKeywords & { userId: UUID }) =>
+    ['admin-posts', params] as const,
+  users: (params: PaginationWithKeywords) => ['admin-users', params] as const,
+  postCount: () => ['post-count'] as const,
+  userCount: () => ['user-count'] as const,
+};
 
-export const useGetAdminPostListQuery = ({
-  page,
-  limit,
-  keywords,
-}: IPaginationParamsType & { keywords: string }) => {
-  const handleGetAdminPosts = async () => {
-    try {
-      const data = await adminGetAllPostAPI({ page, limit, keywords });
-      return data;
-    } catch (error) {
-      throw new Error(error as string);
-    }
-  };
+// Backward-compatible exports
+export const getAdminPostListQueryKey = ({ page, limit, keywords }: PaginationWithKeywords) =>
+  adminQueryKeys.posts({ page, limit, keywords });
 
-  const query = useQuery({
-    queryKey: getAdminPostListQueryKey({
-      page,
-      limit,
-      keywords,
-    }),
-    queryFn: () => handleGetAdminPosts(),
+export const getAdminPostListByUserIdQueryKey = (
+  params: PaginationWithKeywords & { userId: UUID },
+) => adminQueryKeys.postsByUserId(params);
+
+export const getAdminUserListQueryKey = ({ page, limit, keywords }: PaginationWithKeywords) =>
+  adminQueryKeys.users({ page, limit, keywords });
+
+// --- Query Hooks ---
+
+export const useGetAdminPostListQuery = ({ page, limit, keywords }: PaginationWithKeywords) => {
+  return useQuery({
+    queryKey: adminQueryKeys.posts({ page, limit, keywords }),
+    queryFn: () => adminGetAllPostAPI({ page, limit, keywords }),
   });
-
-  return query;
 };
 
 export const useGetAdminPostListByUserIdQuery = ({
@@ -76,90 +42,36 @@ export const useGetAdminPostListByUserIdQuery = ({
   limit,
   page,
   keywords,
-}: IPaginationParamsType & {
-  keywords: string;
-  userId: UUID;
-}) => {
-  const handleGetPostListByUserId = async () => {
-    try {
-      const data = await adminGetPostsByUserIdAPI({
-        userId,
-        limit,
-        page,
-        keywords,
-      });
-      return data;
-    } catch (error) {
-      throw new Error(error as string);
-    }
-  };
-
-  const query = useQuery({
-    queryKey: getAdminPostListByUserIdQueryKey({ userId, limit, page, keywords }),
-    queryFn: handleGetPostListByUserId,
+}: PaginationWithKeywords & { userId: UUID }) => {
+  return useQuery({
+    queryKey: adminQueryKeys.postsByUserId({ userId, limit, page, keywords }),
+    queryFn: () => adminGetPostsByUserIdAPI({ userId, limit, page, keywords }),
   });
-
-  return query;
 };
 
-export const useGetAdminUserListQuery = ({
-  page,
-  limit,
-  keywords,
-}: IPaginationParamsType & { keywords: string }) => {
-  const handleGetAdminUsers = async () => {
-    try {
-      const data = await adminGetAllUsersAPI({ page, limit, keywords });
-      return data;
-    } catch (error) {
-      throw new Error(error as string);
-    }
-  };
-
-  const query = useQuery({
-    queryKey: getAdminUserListQueryKey({
-      page,
-      limit,
-      keywords,
-    }),
-    queryFn: () => handleGetAdminUsers(),
+export const useGetAdminUserListQuery = ({ page, limit, keywords }: PaginationWithKeywords) => {
+  return useQuery({
+    queryKey: adminQueryKeys.users({ page, limit, keywords }),
+    queryFn: () => adminGetAllUsersAPI({ page, limit, keywords }),
   });
-
-  return query;
 };
 
 export const useGetPostCountQuery = () => {
-  const handleGetPostCount = async () => {
-    try {
+  return useQuery({
+    queryKey: adminQueryKeys.postCount(),
+    queryFn: async () => {
       const { data } = await getPostCountAPI();
       return data;
-    } catch (error) {
-      throw new Error(error as string);
-    }
-  };
-
-  const query = useQuery({
-    queryKey: ['post-count'],
-    queryFn: handleGetPostCount,
+    },
   });
-
-  return query;
 };
 
 export const useGetUserCountQuery = () => {
-  const handleGetUserCount = async () => {
-    try {
+  return useQuery({
+    queryKey: adminQueryKeys.userCount(),
+    queryFn: async () => {
       const { data } = await getUserCountAPI();
       return data;
-    } catch (error) {
-      throw new Error(error as string);
-    }
-  };
-
-  const query = useQuery({
-    queryKey: ['user-count'],
-    queryFn: handleGetUserCount,
+    },
   });
-
-  return query;
 };

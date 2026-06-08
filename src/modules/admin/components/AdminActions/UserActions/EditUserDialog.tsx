@@ -24,7 +24,7 @@ export default function EditUserDialog({
     }
   };
 
-  if (!selectedUser) return;
+  if (!selectedUser) return null;
 
   return (
     <Dialog open={open} onOpenChange={handleCloseDialog}>

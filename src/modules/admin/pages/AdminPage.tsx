@@ -6,7 +6,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 
 export default function AdminPage() {
   return (
-    <SidebarProvider className='bg-pink-500' >
+    <SidebarProvider>
       <div className='flex w-full overflow-hidden h-dvh bg-background'>
         <AdminSidebar />
 
