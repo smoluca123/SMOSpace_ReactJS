@@ -13,9 +13,10 @@ import {
 import LoadingButton from '@/components/LoadingButton';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
+import { useGetUserInfomation } from '@/lib/querys';
 import { useAppSelector } from '@/redux/hooks';
 import { selectAuth } from '@/redux/slices/authSlice';
-import { ArrowLeft, Lock } from 'lucide-react';
+import { ArrowLeft, Lock, ShieldBan } from 'lucide-react';
 import { useMemo, useOptimistic, useState, useTransition } from 'react';
 
 export default function MessageBox({
@@ -34,7 +35,7 @@ export default function MessageBox({
   // A pending request waiting for MY approval (the other person started it)
   const isPendingForMe = room?.status === 'PENDING' && room?.lastMessage?.sender.id !== user?.id;
 
-  const { sendMessage, setTyping, typingUsers } = useChatSocket({
+  const { sendMessage, setTyping, typingUsers, reactToMessage } = useChatSocket({
     roomId: activeConversationId,
     autoMarkRead: !isPendingForMe,
     // Don't try to join / mark-as-read a room we have no access to
@@ -45,6 +46,25 @@ export default function MessageBox({
   const rejectRequest = useRejectMessageRequest();
 
   const isGroup = room?.type === 'GROUP';
+
+  // For direct rooms, resolve the other participant so we can detect a block
+  // relationship (either direction) and gate the composer accordingly.
+  const directReceiver =
+    room && !isGroup ? room.participants.find((p) => p.user.id !== user?.id) : undefined;
+
+  const { data: directReceiverInfo } = useGetUserInfomation(
+    { userId: directReceiver?.user.id ?? '' },
+    { enabled: !!directReceiver?.user.id },
+  );
+
+  const blockFriend = directReceiverInfo?.friend;
+  const isBlocked = blockFriend?.status === 'BLOCKED';
+  // The block row stores the blocker in `userId`. If that's me, I blocked them;
+  // otherwise they blocked me.
+  const isBlockedByMe = isBlocked && blockFriend?.userId === user?.id;
+
+  const blockReceiverName =
+    directReceiver?.user.fullName || directReceiver?.user.username || 'this user';
 
   const serverMessages = useMemo<IChatMessageUI[]>(
     () => data?.pages.flatMap((page) => page.items) ?? [],
@@ -86,6 +106,7 @@ export default function MessageBox({
       sender: user as unknown as IUserDataType,
       readBy: user ? [user.id] : [],
       replyTo: null,
+      reactions: [],
       room: undefined as unknown as IChatRoomsDataType,
       status: 'sending',
     };
@@ -187,6 +208,7 @@ export default function MessageBox({
           isGroup={isGroup}
           onRetry={handleRetry}
           onDismiss={handleDismissFailed}
+          onReact={(messageId, type) => reactToMessage(messageId, type, user?.id)}
           hasMore={!!hasNextPage}
           isLoadingMore={isFetchingNextPage}
           onLoadMore={() => fetchNextPage()}
@@ -215,6 +237,15 @@ export default function MessageBox({
               Accept
             </LoadingButton>
           </div>
+        </div>
+      ) : isBlocked ? (
+        <div className='flex flex-col gap-2 items-center p-4 border-t text-center bg-card text-muted-foreground'>
+          <ShieldBan className='w-6 h-6' />
+          <p className='text-sm'>
+            {isBlockedByMe
+              ? `You blocked ${blockReceiverName}. Unblock them to send messages.`
+              : `You can't send messages to ${blockReceiverName}.`}
+          </p>
         </div>
       ) : (
         <MessageInput

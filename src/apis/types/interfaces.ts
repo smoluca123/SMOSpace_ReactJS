@@ -16,4 +16,5 @@ export interface IUpdateInfomationType {
   isVerified?: boolean;
   isBanned?: boolean;
   credits?: number;
+  showOnlineStatus?: boolean;
 }

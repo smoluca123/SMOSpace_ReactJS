@@ -1,7 +1,8 @@
-import { markRoomAsReadAPI, sendChatMessageAPI } from '@/apis/chatApi';
+import { markRoomAsReadAPI, reactToMessageAPI, sendChatMessageAPI } from '@/apis/chatApi';
 import { IRoomMessageDataType } from '@/apis/types/chat.interfaces';
 import { toast } from '@/hooks/use-toast';
 import { chatSocket } from '@/lib/sockets';
+import { IReactionType } from '@/lib/reactions';
 import { IApiPaginationResponseWrapper } from '@/lib/types/interfaces';
 import { activeChatRoomsQueryKey } from '@/modules/chat/components/Conversation/querys';
 import {
@@ -10,6 +11,8 @@ import {
 } from '@/modules/chat/components/Conversation/requestQuerys';
 import { getRoomsMessagesQueryKey } from '@/modules/chat/components/Message/querys';
 import { unreadChatCountQueryKey } from '@/modules/chat/querys';
+import { getUserInfomationQueryKey } from '@/lib/querys';
+import { parseCallMessage, callPreviewText } from '@/modules/call/callMessage';
 import { useAppSelector } from '@/redux/hooks';
 import { selectAuth } from '@/redux/slices/authSlice';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
@@ -41,6 +44,30 @@ function appendMessageToCache(
       pages: oldData.pages.map((page, index) =>
         index === lastIndex ? { ...page, items: [...page.items, message] } : page,
       ),
+    };
+  });
+}
+
+/** Replace a single cached message (used for reaction updates). */
+function patchMessageInCache(
+  queryClient: ReturnType<typeof useQueryClient>,
+  message: IRoomMessageDataType,
+) {
+  const roomId = message.room?.id;
+  if (!roomId) return;
+
+  queryClient.setQueryData<
+    InfiniteData<IApiPaginationResponseWrapper<IRoomMessageDataType>['data']>
+  >(getRoomsMessagesQueryKey({ roomId }), (oldData) => {
+    if (!oldData) return oldData;
+    return {
+      ...oldData,
+      pages: oldData.pages.map((page) => ({
+        ...page,
+        items: page.items.map((item) =>
+          item.id === message.id ? { ...item, reactions: message.reactions } : item,
+        ),
+      })),
     };
   });
 }
@@ -92,9 +119,24 @@ export function useGlobalChatNotifications() {
       const myParticipant = message.room?.participants?.find((p) => p.user.id === user?.id);
       if (myParticipant?.isMuted) return;
 
+      const call = message.type === 'SYSTEM' ? parseCallMessage(message.content) : null;
       toast({
-        title: `New message from ${message.sender.fullName || message.sender.username}`,
-        description: message.type === 'IMAGE' ? 'Sent an image' : message.content,
+        title: call
+          ? callPreviewText(call)
+          : `New message from ${message.sender.fullName || message.sender.username}`,
+        description: call
+          ? `with ${message.sender.fullName || message.sender.username}`
+          : message.type === 'IMAGE'
+            ? 'Sent an image'
+            : message.type === 'POST_SHARE'
+              ? 'Shared a post'
+              : message.type === 'FILE'
+                ? 'Sent a file'
+                : message.type === 'VOICE'
+                  ? 'Sent a voice message'
+                  : message.type === 'SYSTEM'
+                    ? message.content
+                    : message.content,
         duration: 4000,
       });
     };
@@ -104,10 +146,29 @@ export function useGlobalChatNotifications() {
     chatSocket.on('newMessage', handleNewMessage);
     chatSocket.on('chat:newMessageNotification', handleNotification);
 
+    // A block/unblock involving me happened. Refresh the affected caches so the
+    // chat composer banner, the other user's profile and feeds update live.
+    const handleRelationshipChanged = (data: {
+      fromUserId: string;
+      toUserId: string;
+      isBlocked: boolean;
+    }) => {
+      const otherUserId = data.fromUserId === user?.id ? data.toUserId : data.fromUserId;
+
+      queryClient.invalidateQueries({
+        queryKey: getUserInfomationQueryKey({ userId: otherUserId }),
+      });
+      queryClient.invalidateQueries({ queryKey: activeChatRoomsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+    };
+
+    chatSocket.on('chat:relationshipChanged', handleRelationshipChanged);
+
     return () => {
       chatSocket.off('connect', subscribe);
       chatSocket.off('newMessage', handleNewMessage);
       chatSocket.off('chat:newMessageNotification', handleNotification);
+      chatSocket.off('chat:relationshipChanged', handleRelationshipChanged);
     };
   }, [queryClient, user?.id]);
 }
@@ -162,10 +223,17 @@ export function useChatSocket({
       });
     };
 
+    // A reaction was added/removed/swapped on a message in this room
+    const handleReactionUpdated = (message: IRoomMessageDataType) => {
+      if (message.room?.id !== roomId) return;
+      patchMessageInCache(queryClient, message);
+    };
+
     if (chatSocket.connected) joinRoom();
     chatSocket.on('connect', joinRoom);
     chatSocket.on('typingStatus', handleTyping);
     chatSocket.on('messagesRead', handleMessagesRead);
+    chatSocket.on('chat:messageReactionUpdated', handleReactionUpdated);
 
     // Mark the room as read when opened (skipped for pending requests in preview)
     if (autoMarkRead) {
@@ -182,6 +250,7 @@ export function useChatSocket({
       chatSocket.off('connect', joinRoom);
       chatSocket.off('typingStatus', handleTyping);
       chatSocket.off('messagesRead', handleMessagesRead);
+      chatSocket.off('chat:messageReactionUpdated', handleReactionUpdated);
       setTypingUsers([]);
     };
   }, [roomId, queryClient, autoMarkRead, enabled]);
@@ -204,5 +273,49 @@ export function useChatSocket({
     [roomId],
   );
 
-  return { sendMessage, setTyping, typingUsers };
+  // Optimistically patch the cached message's reactions, then persist via REST.
+  // The server broadcasts `chat:messageReactionUpdated` which reconciles every
+  // client (including this one) with the authoritative snapshot.
+  const reactToMessage = useCallback(
+    async (messageId: string, type: IReactionType, currentUserId?: string) => {
+      if (!roomId || !messageId) return;
+
+      // Optimistic update
+      queryClient.setQueryData<
+        InfiniteData<IApiPaginationResponseWrapper<IRoomMessageDataType>['data']>
+      >(getRoomsMessagesQueryKey({ roomId }), (oldData) => {
+        if (!oldData || !currentUserId) return oldData;
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            items: page.items.map((item) => {
+              if (item.id !== messageId) return item;
+              const reactions = item.reactions ?? [];
+              const mine = reactions.find((r) => r.userId === currentUserId);
+              let next = reactions;
+              if (!mine) {
+                next = [...reactions, { id: `temp-${currentUserId}`, userId: currentUserId, type }];
+              } else if (mine.type === type) {
+                next = reactions.filter((r) => r.userId !== currentUserId);
+              } else {
+                next = reactions.map((r) => (r.userId === currentUserId ? { ...r, type } : r));
+              }
+              return { ...item, reactions: next };
+            }),
+          })),
+        };
+      });
+
+      try {
+        await reactToMessageAPI({ messageId, type });
+      } catch {
+        // On failure, refetch to restore the authoritative state
+        queryClient.invalidateQueries({ queryKey: getRoomsMessagesQueryKey({ roomId }) });
+      }
+    },
+    [roomId, queryClient],
+  );
+
+  return { sendMessage, setTyping, typingUsers, reactToMessage };
 }
