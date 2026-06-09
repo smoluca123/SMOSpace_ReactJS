@@ -1,4 +1,5 @@
 import { IUserDataType } from '@/lib/types/interfaces';
+import { IReactionType } from '@/lib/reactions';
 
 export interface IChatRoomsDataType {
   id: string;
@@ -10,7 +11,7 @@ export interface IChatRoomsDataType {
   lastMessage: {
     id: string;
     content: string;
-    type?: 'TEXT' | 'IMAGE' | 'FILE' | 'SYSTEM';
+    type?: 'TEXT' | 'IMAGE' | 'FILE' | 'VOICE' | 'SYSTEM' | 'POST_SHARE';
     createdAt: string;
     updatedAt: string;
     sender: IShortSenderDataType;
@@ -54,16 +55,46 @@ interface IShortSenderDataType {
   avatar: string;
 }
 
+export interface IChatMessageReactionDataType {
+  id: string;
+  userId: string;
+  type: IReactionType;
+}
+
+export interface IShareRecipientType {
+  id: string;
+  username: string;
+  fullName: string;
+  avatar: string | null;
+}
+
 export interface IRoomMessageDataType {
   id: string;
   content: string;
   createdAt: string;
   updatedAt: string;
+  isForwarded?: boolean;
   sender: IUserDataType;
   readBy: string[];
   replyTo: null;
-  type: 'TEXT' | 'IMAGE' | 'FILE' | 'SYSTEM';
+  type: 'TEXT' | 'IMAGE' | 'FILE' | 'VOICE' | 'SYSTEM' | 'POST_SHARE';
   room: IChatRoomsDataType;
+  reactions: IChatMessageReactionDataType[];
+}
+
+/** Parsed JSON descriptor stored in a FILE message's content. */
+export interface IChatFileContent {
+  url: string;
+  name: string;
+  size: number;
+  mime: string;
+}
+
+/** Parsed JSON descriptor stored in a VOICE message's content. */
+export interface IChatVoiceContent {
+  url: string;
+  duration: number;
+  size: number;
 }
 
 /** Client-side message with optimistic send status. */

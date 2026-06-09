@@ -13,6 +13,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { toast } from '@/hooks/use-toast';
+import { useGetUserInfomation } from '@/lib/querys';
 import { useAppSelector } from '@/redux/hooks';
 import { selectAuth } from '@/redux/slices/authSlice';
 import { useToggleBlockMutation } from './mutations';
@@ -29,8 +30,15 @@ export default function BlockMenuItem({ userId, friend, fullName }: IProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { mutate, isPending } = useToggleBlockMutation({ userId });
 
+  // When the caller doesn't provide the relationship, fetch it so the menu can
+  // reflect the correct Block vs Unblock state (e.g. from the chat menus).
+  const { data: fetchedInfo } = useGetUserInfomation({ userId }, { enabled: friend === undefined });
+
+  const effectiveFriend = friend ?? fetchedInfo?.friend;
+
   // The block row stores the blocker in `userId`. Only the blocker sees "unblock".
-  const isBlockedByMe = friend?.status === 'BLOCKED' && friend?.userId === currentUser?.id;
+  const isBlockedByMe =
+    effectiveFriend?.status === 'BLOCKED' && effectiveFriend?.userId === currentUser?.id;
 
   const handleToggleBlock = () => {
     mutate(undefined, {

@@ -12,10 +12,12 @@ import ProfilePage from '@/modules/profile/pages/ProfilePage';
 import { GenneralSettingPage, ProfileSettingPage, SettingPage } from '@/modules/setting/pages';
 import useNotificationSocket from '@/hooks/useNotifiicationSocket';
 import useUserPresence from '@/hooks/useUserPresence';
+import usePushNotifications from '@/hooks/usePushNotifications';
 import ForgetPassword from '@/modules/auth/components/ForgetPassword';
 import PostDetailPage from '@/modules/post-detail/pages/PostDetailPage';
 import FriendsPage from '@/modules/friends/pages/FriendsPage';
 import BookmarksPage from '@/modules/bookmarks/pages/BookmarksPage';
+import HashtagPage from '@/modules/hashtag/pages/HashtagPage';
 import AdminPage from './modules/admin/pages/AdminPage';
 import OverviewPage from './modules/admin/pages/OverviewPage';
 import UsersManagementPage from './modules/admin/pages/UsersManagementPage';
@@ -25,6 +27,8 @@ import AnalyticsPage from './modules/admin/pages/AnalyticsPage';
 import GroupChatInterface from '@/modules/chat/pages/ChatPage';
 import AuthenticationRoute from '@/routes/AuthenticationRoute';
 import { useGlobalChatNotifications } from '@/modules/chat/hooks/useChatSocket';
+import { CallProvider } from '@/modules/call/CallContext';
+import CallOverlay from '@/modules/call/components/CallOverlay';
 
 const router = createBrowserRouter(
   [
@@ -47,6 +51,12 @@ const router = createBrowserRouter(
         {
           path: '/post/:postId',
           element: <PostDetailPage />,
+        },
+
+        // Hashtag feed page
+        {
+          path: '/tag/:tag',
+          element: <HashtagPage />,
         },
 
         // Friends page
@@ -183,10 +193,14 @@ function App() {
   useNotificationSocket();
   useGlobalChatNotifications();
   useUserPresence();
+  usePushNotifications();
   return (
     <HeroUIProvider>
       <ThemeProvider defaultTheme='dark'>
-        <RouterProvider router={router} future={{ v7_startTransition: true }} />
+        <CallProvider>
+          <RouterProvider router={router} future={{ v7_startTransition: true }} />
+          <CallOverlay />
+        </CallProvider>
       </ThemeProvider>
     </HeroUIProvider>
   );

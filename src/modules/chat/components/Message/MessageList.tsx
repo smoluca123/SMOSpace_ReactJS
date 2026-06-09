@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { MessageItem } from '@/modules/chat/components/Message/';
 import { IChatMessageUI } from '@/apis/types/chat.interfaces';
+import { IReactionType } from '@/lib/reactions';
 import MediaLightbox from '@/components/MediaLightbox';
 
 interface MessageListProps {
@@ -11,6 +12,7 @@ interface MessageListProps {
   isGroup: boolean;
   onRetry?: (message: IChatMessageUI) => void;
   onDismiss?: (message: IChatMessageUI) => void;
+  onReact?: (messageId: string, type: IReactionType) => void;
   hasMore?: boolean;
   isLoadingMore?: boolean;
   onLoadMore?: () => void;
@@ -21,6 +23,7 @@ export default function MessageList({
   isGroup,
   onRetry,
   onDismiss,
+  onReact,
   hasMore,
   isLoadingMore,
   onLoadMore,
@@ -78,6 +81,7 @@ export default function MessageList({
             isGroup={isGroup}
             onRetry={onRetry}
             onDismiss={onDismiss}
+            onReact={onReact}
             onImageClick={setLightboxSrc}
           />
         ))}

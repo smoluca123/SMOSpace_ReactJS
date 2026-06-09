@@ -57,8 +57,16 @@ interface ChatServerToClientEvents {
   'chat:newMessageNotification': (
     message: import('@/apis/types/chat.interfaces').IRoomMessageDataType,
   ) => void;
+  'chat:messageReactionUpdated': (
+    message: import('@/apis/types/chat.interfaces').IRoomMessageDataType,
+  ) => void;
   typingStatus: (data: { roomId: string; typingUsers: string[] }) => void;
   messagesRead: (data: { roomId: string; userId: string }) => void;
+  'chat:relationshipChanged': (data: {
+    fromUserId: string;
+    toUserId: string;
+    isBlocked: boolean;
+  }) => void;
 }
 
 interface ChatClientToServerEvents {
@@ -76,6 +84,86 @@ interface ChatClientToServerEvents {
   ) => void;
   typing: (data: { roomId: string; isTyping: boolean }) => void;
   markAsRead: (data: { roomId: string; messageIds: string[] }) => void;
+}
+
+export type CallType = 'audio' | 'video';
+
+export interface ICallPeer {
+  id: string;
+  username: string;
+  fullName: string;
+  avatar: string | null;
+}
+
+interface CallServerToClientEvents {
+  'call:incoming': (data: {
+    callId: string;
+    roomId: string;
+    callType: CallType;
+    fromUser: ICallPeer;
+  }) => void;
+  'call:peer-joined': (data: { callId: string; peer: ICallPeer }) => void;
+  'call:peer-left': (data: { callId: string; userId: string }) => void;
+  'call:offer': (data: {
+    callId: string;
+    fromUser: ICallPeer;
+    offer: RTCSessionDescriptionInit;
+  }) => void;
+  'call:answer': (data: {
+    callId: string;
+    fromUserId: string;
+    answer: RTCSessionDescriptionInit;
+  }) => void;
+  'call:ice': (data: {
+    callId: string;
+    fromUserId: string;
+    candidate: RTCIceCandidateInit;
+  }) => void;
+  'call:invite-declined': (data: { callId: string; userId: string }) => void;
+  'call:ended': (data: { callId: string }) => void;
+  'call:unavailable': (data: { roomId: string }) => void;
+  'call:failed': (data: { reason: string }) => void;
+}
+
+interface CallStartAck {
+  success: boolean;
+  callId?: string;
+  iceServers?: RTCIceServer[];
+  participants?: ICallPeer[];
+  reason?: string;
+}
+
+interface CallAcceptAck {
+  success: boolean;
+  iceServers?: RTCIceServer[];
+  callType?: CallType;
+  roomId?: string;
+  participants?: ICallPeer[];
+  reason?: string;
+}
+
+interface CallClientToServerEvents {
+  'call:subscribe': (
+    ack?: (response: { success: boolean; iceServers: RTCIceServer[] }) => void,
+  ) => void;
+  'call:start': (
+    data: { roomId: string; callType: CallType },
+    ack?: (response: CallStartAck) => void,
+  ) => void;
+  'call:accept': (data: { callId: string }, ack?: (response: CallAcceptAck) => void) => void;
+  'call:reject': (data: { callId: string }) => void;
+  'call:leave': (data: { callId: string }) => void;
+  'call:offer': (data: {
+    callId: string;
+    toUserId: string;
+    offer: RTCSessionDescriptionInit;
+  }) => void;
+  'call:answer': (data: {
+    callId: string;
+    toUserId: string;
+    answer: RTCSessionDescriptionInit;
+  }) => void;
+  'call:ice': (data: { callId: string; toUserId: string; candidate: RTCIceCandidateInit }) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -132,4 +220,8 @@ export const userSocket = createNamespaceSocket<UserServerToClientEvents, UserCl
 
 export const chatSocket = createNamespaceSocket<ChatServerToClientEvents, ChatClientToServerEvents>(
   'chat',
+);
+
+export const callSocket = createNamespaceSocket<CallServerToClientEvents, CallClientToServerEvents>(
+  'call',
 );

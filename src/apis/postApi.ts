@@ -50,6 +50,29 @@ export const getAllPostsAPI = async ({
   }
 };
 
+export const getPostsByHashtagAPI = async ({
+  tag,
+  page = 1,
+  limit = 10,
+  likeUserId,
+}: {
+  tag: string;
+  page?: number;
+  limit?: number;
+  likeUserId?: UUID;
+}) => {
+  try {
+    const { data } = await baseApi.get<IApiPaginationResponseWrapper<IPostDataWithLikedStatusType>>(
+      `/post/hashtag/${encodeURIComponent(tag)}`,
+      { params: { page, limit, likeUserId } },
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
 export const getPostAPI = async ({ postId, likeUserId }: { postId: UUID; likeUserId?: UUID }) => {
   try {
     const { data } = await baseApi.get<IApiResponseWrapper<IPostDataWithLikedStatusType>>(
@@ -242,6 +265,29 @@ export const toggleBookmarkAPI = async ({ postId }: { postId: UUID }) => {
   try {
     const { data } = await baseApi.post<IApiResponseWrapper<IPostDataWithLikedStatusType>>(
       `/post/bookmark/${postId}`,
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const sharePostAPI = async ({
+  postId,
+  content = '',
+  isPrivate = false,
+  mentionedUserIds,
+}: {
+  postId: UUID;
+  content?: string;
+  isPrivate?: boolean;
+  mentionedUserIds?: string[];
+}) => {
+  try {
+    const { data } = await baseApi.post<IApiResponseWrapper<IPostDataType>>(
+      `/post/share/${postId}`,
+      { content, isPrivate, mentionedUserIds },
     );
     return data;
   } catch (error: any) {

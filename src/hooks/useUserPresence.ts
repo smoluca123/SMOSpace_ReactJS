@@ -21,6 +21,16 @@ export default function useUserPresence() {
       return;
     }
 
+    // Reciprocal privacy: hiding your own online status also hides everyone
+    // else's from you. Skip presence entirely and clear any existing state.
+    if (user.showOnlineStatus === false) {
+      if (userSocket.connected) {
+        userSocket.disconnect();
+      }
+      dispatch(resetPresence());
+      return;
+    }
+
     // Force a fresh handshake so the current user's token is (re)sent. Without
     // this, a lingering connection from a previous session could keep using a
     // stale token after re-login.
@@ -30,8 +40,11 @@ export default function useUserPresence() {
     userSocket.connect();
 
     const handleConnect = () => {
-      // Announce self online and ask for the current snapshot.
-      userSocket.emit('user:online', { status: 'online' });
+      // Announce self online only when the user hasn't hidden their status.
+      // We still request the snapshot so they can see who else is online.
+      if (user.showOnlineStatus !== false) {
+        userSocket.emit('user:online', { status: 'online' });
+      }
       userSocket.emit('user:getOnline');
     };
 
@@ -59,5 +72,5 @@ export default function useUserPresence() {
       userSocket.disconnect();
       dispatch(resetPresence());
     };
-  }, [dispatch, isAuthenticated, user?.id]);
+  }, [dispatch, isAuthenticated, user?.id, user?.showOnlineStatus]);
 }

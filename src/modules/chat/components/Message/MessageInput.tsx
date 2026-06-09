@@ -1,11 +1,18 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ImageIcon, Loader2, Send, Smile, X } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  EmojiPicker,
+  EmojiPickerContent,
+  EmojiPickerFooter,
+  EmojiPickerSearch,
+} from '@/components/ui/emoji-picker';
+import { ImageIcon, Loader2, Mic, Paperclip, Send, Smile, Trash2, X } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
-import { sendChatImageAPI } from '@/apis/chatApi';
+import { sendChatFileAPI, sendChatImageAPI, sendChatVoiceAPI } from '@/apis/chatApi';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -14,6 +21,12 @@ interface MessageInputProps {
   roomId: string;
   onSendMessage: (content: string) => void;
   onTyping?: (isTyping: boolean) => void;
+}
+
+function formatElapsed(seconds: number) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
 export default function MessageInput({
@@ -25,17 +38,48 @@ export default function MessageInput({
   const [newMessage, setNewMessage] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [emojiOpen, setEmojiOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const attachInputRef = useRef<HTMLInputElement>(null);
+  const messageInputRef = useRef<HTMLInputElement>(null);
+  const caretRef = useRef<{ start: number; end: number } | null>(null);
   const selectedFile = useRef<File | null>(null);
   const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { mutate: uploadImage, isPending: isUploading } = useMutation({
+  // Voice recording state
+  const [isRecording, setIsRecording] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const cancelledRef = useRef(false);
+  // Keep the latest elapsed available inside recorder.onstop closure.
+  const elapsedRef = useRef(0);
+
+  const { mutate: uploadImage, isPending: isUploadingImage } = useMutation({
     mutationFn: (file: File) => sendChatImageAPI({ roomId, file }),
     onSuccess: () => clearImage(),
     onError: (error) => {
       toast({ title: 'Failed to send image', description: String(error), variant: 'destructive' });
     },
   });
+
+  const { mutate: uploadFile, isPending: isUploadingFile } = useMutation({
+    mutationFn: (file: File) => sendChatFileAPI({ roomId, file }),
+    onError: (error) => {
+      toast({ title: 'Failed to send file', description: String(error), variant: 'destructive' });
+    },
+  });
+
+  const { mutate: uploadVoice, isPending: isUploadingVoice } = useMutation({
+    mutationFn: ({ file, duration }: { file: File; duration: number }) =>
+      sendChatVoiceAPI({ roomId, file, duration }),
+    onError: (error) => {
+      toast({ title: 'Failed to send voice', description: String(error), variant: 'destructive' });
+    },
+  });
+
+  const isBusy = isUploadingImage || isUploadingFile || isUploadingVoice;
 
   const clearImage = () => {
     selectedFile.current = null;
@@ -73,9 +117,40 @@ export default function MessageInput({
     typingTimeout.current = setTimeout(() => onTyping(false), 1500);
   };
 
+  // Insert an emoji at the last known caret position (falls back to append).
+  // We intentionally do NOT refocus the input so the emoji popover stays open
+  // for picking multiple emojis in a row.
+  const insertEmoji = (emoji: string) => {
+    const caret = caretRef.current;
+    const start = caret?.start ?? newMessage.length;
+    const end = caret?.end ?? newMessage.length;
+    const next = newMessage.slice(0, start) + emoji + newMessage.slice(end);
+    handleChange(next);
+    // Advance the stored caret so consecutive picks insert sequentially.
+    const pos = start + emoji.length;
+    caretRef.current = { start: pos, end: pos };
+  };
+
+  // Remember where the caret is whenever the input is interacted with, so we
+  // can insert emojis there even after focus moves to the picker popover.
+  const rememberCaret = () => {
+    const input = messageInputRef.current;
+    if (!input) return;
+    caretRef.current = {
+      start: input.selectionStart ?? input.value.length,
+      end: input.selectionEnd ?? input.value.length,
+    };
+  };
+
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) setImageFile(file);
+  };
+
+  const handleAttachSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) uploadFile(file);
+    if (attachInputRef.current) attachInputRef.current.value = '';
   };
 
   // Drag & drop
@@ -98,7 +173,103 @@ export default function MessageInput({
     }
   };
 
-  const canSend = (!!newMessage.trim() || !!selectedFile.current) && !isUploading;
+  // ----- Voice recording -----
+  const stopTimer = () => {
+    if (recordTimerRef.current) {
+      clearInterval(recordTimerRef.current);
+      recordTimerRef.current = null;
+    }
+  };
+
+  const startRecording = async () => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      toast({ title: 'Recording not supported on this browser', variant: 'destructive' });
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+      cancelledRef.current = false;
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+      recorder.onstop = () => {
+        stream.getTracks().forEach((track) => track.stop());
+        const duration = elapsedRef.current;
+        if (cancelledRef.current) return;
+        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        if (blob.size === 0) return;
+        const file = new File([blob], `voice-${Date.now()}.webm`, { type: 'audio/webm' });
+        uploadVoice({ file, duration });
+      };
+
+      mediaRecorderRef.current = recorder;
+      recorder.start();
+      setIsRecording(true);
+      setElapsed(0);
+      elapsedRef.current = 0;
+      recordTimerRef.current = setInterval(() => {
+        elapsedRef.current += 1;
+        setElapsed(elapsedRef.current);
+      }, 1000);
+    } catch {
+      toast({ title: 'Microphone permission denied', variant: 'destructive' });
+    }
+  };
+
+  const stopRecording = (cancel: boolean) => {
+    cancelledRef.current = cancel;
+    stopTimer();
+    setIsRecording(false);
+    const recorder = mediaRecorderRef.current;
+    if (recorder && recorder.state !== 'inactive') {
+      recorder.stop();
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      stopTimer();
+      const recorder = mediaRecorderRef.current;
+      if (recorder && recorder.state !== 'inactive') {
+        cancelledRef.current = true;
+        recorder.stop();
+      }
+    };
+  }, []);
+
+  const canSend = (!!newMessage.trim() || !!selectedFile.current) && !isBusy;
+
+  // Recording bar replaces the normal composer while recording.
+  if (isRecording) {
+    return (
+      <div className='flex gap-3 items-center p-4 border-t bg-card'>
+        <span className='flex gap-2 items-center text-sm text-destructive'>
+          <span className='inline-block w-2.5 h-2.5 rounded-full bg-destructive animate-pulse' />
+          Recording {formatElapsed(elapsed)}
+        </span>
+        <div className='flex-1' />
+        <Button
+          variant='ghost'
+          size='icon'
+          className='w-10 h-10 rounded-full'
+          onClick={() => stopRecording(true)}
+          aria-label='Cancel recording'
+        >
+          <Trash2 className='w-4 h-4' />
+        </Button>
+        <Button
+          className='w-10 h-10 p-0 rounded-full'
+          onClick={() => stopRecording(false)}
+          aria-label='Send voice message'
+        >
+          <Send className='w-4 h-4' />
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -139,16 +310,21 @@ export default function MessageInput({
       )}
 
       <div className='p-4'>
-        <div className='flex items-center w-full gap-2'>
+        <div className='flex gap-2 items-center w-full'>
           <div className='flex-1'>
             <div className='flex items-center px-4 py-2 space-x-2 rounded-full bg-muted'>
               <Input
+                ref={messageInputRef}
                 value={newMessage}
                 onChange={(e) => handleChange(e.target.value)}
                 onPaste={handlePaste}
+                onSelect={rememberCaret}
+                onKeyUp={rememberCaret}
+                onClick={rememberCaret}
+                onBlur={rememberCaret}
                 placeholder={isGroup ? 'Message the group...' : 'Type a message...'}
                 className='flex-1 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0'
-                disabled={isUploading}
+                disabled={isBusy}
                 onKeyPress={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -160,23 +336,71 @@ export default function MessageInput({
                 variant='ghost'
                 size='icon'
                 className='w-8 h-8 rounded-full'
+                onClick={() => attachInputRef.current?.click()}
+                disabled={isBusy}
+                aria-label='Attach file'
+              >
+                {isUploadingFile ? (
+                  <Loader2 className='w-4 h-4 animate-spin' />
+                ) : (
+                  <Paperclip className='w-4 h-4' />
+                )}
+              </Button>
+              <Button
+                variant='ghost'
+                size='icon'
+                className='w-8 h-8 rounded-full'
                 onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading}
+                disabled={isBusy}
+                aria-label='Send image'
               >
                 <ImageIcon className='w-4 h-4' />
               </Button>
-              <Button variant='ghost' size='icon' className='w-8 h-8 rounded-full'>
-                <Smile className='w-4 h-4' />
-              </Button>
+              <Popover open={emojiOpen} onOpenChange={setEmojiOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    className='w-8 h-8 rounded-full'
+                    disabled={isBusy}
+                    aria-label='Emoji'
+                  >
+                    <Smile className='w-4 h-4' />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className='p-0 w-fit' align='end' side='top'>
+                  <EmojiPicker
+                    onEmojiSelect={(emoji: { emoji: string }) => {
+                      insertEmoji(emoji.emoji);
+                    }}
+                  >
+                    <EmojiPickerSearch placeholder='Search emoji...' />
+                    <EmojiPickerContent className='max-h-[300px] overflow-y-auto w-full' />
+                    <EmojiPickerFooter />
+                  </EmojiPicker>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
-          <Button onClick={handleSend} disabled={!canSend} className='w-10 h-10 p-0 rounded-full'>
-            {isUploading ? (
-              <Loader2 className='w-4 h-4 animate-spin' />
-            ) : (
-              <Send className='w-4 h-4' />
-            )}
-          </Button>
+
+          {canSend ? (
+            <Button onClick={handleSend} disabled={!canSend} className='w-10 h-10 p-0 rounded-full'>
+              {isBusy ? <Loader2 className='w-4 h-4 animate-spin' /> : <Send className='w-4 h-4' />}
+            </Button>
+          ) : (
+            <Button
+              onClick={startRecording}
+              disabled={isBusy}
+              className='w-10 h-10 p-0 rounded-full'
+              aria-label='Record voice message'
+            >
+              {isUploadingVoice ? (
+                <Loader2 className='w-4 h-4 animate-spin' />
+              ) : (
+                <Mic className='w-4 h-4' />
+              )}
+            </Button>
+          )}
         </div>
 
         <input
@@ -186,6 +410,7 @@ export default function MessageInput({
           onChange={handleImageSelect}
           className='hidden'
         />
+        <input ref={attachInputRef} type='file' onChange={handleAttachSelect} className='hidden' />
       </div>
     </div>
   );

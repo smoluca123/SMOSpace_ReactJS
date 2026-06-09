@@ -9,7 +9,7 @@ export default function LinkifyHashTag({ children }: PropsWithChildren) {
       component={(match, key) => (
         <Link
           key={`${match}-${key}`}
-          to={`/search?q=${encodeURIComponent(match)}`}
+          to={`/tag/${encodeURIComponent(match.replace(/^#/, ''))}`}
           className='text-primary hover:underline'
         >
           {match}
