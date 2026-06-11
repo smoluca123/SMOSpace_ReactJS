@@ -1,5 +1,6 @@
 import { toast } from '@/hooks/use-toast';
 import { CallType, ICallPeer, callSocket } from '@/lib/sockets';
+import { startRingtone, stopRingtone } from '@/lib/ringtone';
 import {
   createContext,
   useCallback,
@@ -81,6 +82,12 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
   const setStatusSafe = useCallback((next: CallStatus) => {
     statusRef.current = next;
     setStatus(next);
+    // Start/stop ringtone based on status transition
+    if (next === 'ringing') {
+      startRingtone();
+    } else {
+      stopRingtone();
+    }
   }, []);
 
   const clearRingTimeout = useCallback(() => {
