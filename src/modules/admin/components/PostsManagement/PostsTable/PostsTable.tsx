@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import noImagePlaceholder from '@/assets/imgs/logo.png';
 import {
   Table,
   TableBody,
@@ -12,11 +13,11 @@ import { cn } from '@/lib/utils';
 import UserAvatar from '@/components/UserAvatar';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Heart, MessageSquare, Calendar, FileText, Trash2 } from 'lucide-react';
+import { Heart, MessageSquare, Calendar, FileText, Trash2, Share2, CornerDownRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import usePostsManagementContext from '@/hooks/usePostsManagementContext';
 import parse from 'html-react-parser';
-import { formatDate, formatDistanceToNow } from 'date-fns';
+import { formatDate } from 'date-fns';
 import { IApiPaginationResponseWrapper, IPostDataType } from '@/lib/types/interfaces';
 import { UseQueryResult } from '@tanstack/react-query';
 import { SetStateAction } from 'react';
@@ -32,10 +33,20 @@ interface PostsTableProps {
 }
 
 function PostThumbnail({ url }: { url?: string }) {
+  const handleError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.src = noImagePlaceholder;
+    e.currentTarget.className = 'object-contain w-full h-full p-1 opacity-50';
+  };
+
   if (url) {
     return (
-      <div className='flex-shrink-0 w-10 h-10 overflow-hidden border rounded-md'>
-        <img src={url} alt='post thumbnail' className='object-cover w-full h-full' />
+      <div className='flex-shrink-0 w-10 h-10 overflow-hidden border rounded-md bg-muted'>
+        <img
+          src={url}
+          alt='post thumbnail'
+          className='object-cover w-full h-full'
+          onError={handleError}
+        />
       </div>
     );
   }
@@ -46,7 +57,7 @@ function PostThumbnail({ url }: { url?: string }) {
   );
 }
 
-function PostEngagement({ likeCount, commentCount }: { likeCount: number; commentCount: number }) {
+function PostEngagement({ likeCount, commentCount, shareCount }: { likeCount: number; commentCount: number; shareCount?: number }) {
   return (
     <div className='flex items-center gap-3 text-sm'>
       <span className='flex items-center gap-1 text-red-500'>
@@ -57,6 +68,59 @@ function PostEngagement({ likeCount, commentCount }: { likeCount: number; commen
         <MessageSquare className='w-3 h-3' />
         {commentCount}
       </span>
+      {!!shareCount && (
+        <span className='flex items-center gap-1 text-green-500'>
+          <Share2 className='w-3 h-3' />
+          {shareCount}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/** Renders the Post cell content, handling normal posts and share/reposts */
+function PostCellContent({ post }: { post: IPostDataType }) {
+  const isShare = !!post.sharedPostId;
+  const thumbnail = post.media[0]?.url ?? post.sharedPost?.media?.[0]?.url;
+
+  return (
+    <div className='flex items-start gap-3 max-w-[300px]'>
+      <PostThumbnail url={thumbnail} />
+      <div className='flex-1 min-w-0 space-y-1'>
+        {/* Caption / post content */}
+        {post.content ? (
+          <article className='text-sm line-clamp-2 text-muted-foreground'>
+            {parse(post.content)}
+          </article>
+        ) : isShare ? (
+          <span className='text-xs italic text-muted-foreground'>No caption</span>
+        ) : null}
+
+        {/* Shared original post preview */}
+        {isShare && post.sharedPost && (
+          <div className='flex items-start gap-1.5 mt-1 pl-2 border-l-2 border-blue-300 dark:border-blue-700'>
+            <CornerDownRight className='flex-shrink-0 w-3 h-3 mt-0.5 text-blue-400' />
+            <div className='min-w-0'>
+              <span className='text-xs font-medium text-blue-600 dark:text-blue-400'>
+                @{post.sharedPost.author.username}
+              </span>
+              {post.sharedPost.content && (
+                <article className='text-xs line-clamp-1 text-muted-foreground'>
+                  {parse(post.sharedPost.content)}
+                </article>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Shared post but original is deleted / unavailable */}
+        {isShare && !post.sharedPost && (
+          <div className='flex items-center gap-1.5 mt-1 pl-2 border-l-2 border-muted'>
+            <CornerDownRight className='w-3 h-3 text-muted-foreground' />
+            <span className='text-xs italic text-muted-foreground'>Original post unavailable</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -71,6 +135,9 @@ export function PostMobileCard({
   isSelected: boolean;
   onSelect: () => void;
 }) {
+  const isShare = !!post.sharedPostId;
+  const thumbnail = post.media[0]?.url ?? post.sharedPost?.media?.[0]?.url;
+
   return (
     <div
       className={cn(
@@ -79,11 +146,22 @@ export function PostMobileCard({
       )}
     >
       <Checkbox checked={isSelected} onCheckedChange={onSelect} className='flex-shrink-0 mt-1' />
-      <PostThumbnail url={post.media[0]?.url} />
+      <PostThumbnail url={thumbnail} />
       <div className='flex-1 min-w-0 space-y-1.5'>
-        <article className='text-sm text-muted-foreground line-clamp-2'>
-          {parse(post.content)}
-        </article>
+        {post.content && (
+          <article className='text-sm text-muted-foreground line-clamp-2'>
+            {parse(post.content)}
+          </article>
+        )}
+        {isShare && post.sharedPost && (
+          <div className='flex items-start gap-1 pl-2 border-l-2 border-blue-300'>
+            <CornerDownRight className='w-3 h-3 mt-0.5 text-blue-400 flex-shrink-0' />
+            <span className='text-xs text-muted-foreground line-clamp-1'>
+              <span className='font-medium text-blue-600'>@{post.sharedPost.author.username}:</span>{' '}
+              {post.sharedPost.content ? parse(post.sharedPost.content) : <em>No content</em>}
+            </span>
+          </div>
+        )}
         <div className='flex items-center gap-2'>
           <UserAvatar avatarUrl={post.author.avatar} className='size-5' />
           <span className='text-xs font-medium truncate'>{post.author.fullName}</span>
@@ -91,7 +169,7 @@ export function PostMobileCard({
         <div className='flex items-center justify-between gap-2'>
           <div className='flex flex-wrap items-center gap-2'>
             <PostStatusBadge post={post} />
-            <PostEngagement likeCount={post.likeCount} commentCount={post.commentCount} />
+            <PostEngagement likeCount={post.likeCount} commentCount={post.commentCount} shareCount={post.shareCount} />
           </div>
           <PostAction post={post} />
         </div>
@@ -117,7 +195,9 @@ export default function PostsTable({ query, setIsBulkDeleteDialogOpen }: PostsTa
           ? !post.isPrivate
           : activeTab === 'private'
             ? post.isPrivate
-            : true;
+            : activeTab === 'shared'
+              ? !!post.sharedPostId
+              : true; // 'all'
 
       const matchesStatus =
         filters.status === 'all' ||
@@ -148,7 +228,15 @@ export default function PostsTable({ query, setIsBulkDeleteDialogOpen }: PostsTa
         <Card className='shadow-sm '>
           <CardHeader className='pb-4'>
             <div className='flex items-center justify-between gap-4'>
-              <CardTitle className='text-xl'>Posts Database</CardTitle>
+              <div className='flex items-center gap-3'>
+                <CardTitle className='text-xl'>Posts Database</CardTitle>
+                {activeTab === 'shared' && (
+                  <Badge variant='outline' className='flex items-center gap-1 text-blue-600 border-blue-300'>
+                    <Share2 className='w-3 h-3' />
+                    Share / Repost
+                  </Badge>
+                )}
+              </div>
               <div
                 className={cn(
                   'flex items-center gap-3 transition-all duration-200',
@@ -175,19 +263,7 @@ export default function PostsTable({ query, setIsBulkDeleteDialogOpen }: PostsTa
           </CardHeader>
 
           <CardContent className='p-0 '>
-            {/* Mobile view (< md) */}
-            {/* <div className='md:hidden'>
-              {filteredPosts.map((post) => (
-                <PostMobileCard
-                  key={post.id}
-                  post={post}
-                  isSelected={selectedPosts.some((p) => p.id === post.id)}
-                  onSelect={() => handleSelectPost(post)}
-                />
-              ))}
-            </div> */}
-
-            {/* Desktop view (>= md) */}
+            {/* Desktop view */}
             <div className='overflow-x-auto'>
               <Table>
                 <TableHeader className='bg-muted/50'>
@@ -200,7 +276,6 @@ export default function PostsTable({ query, setIsBulkDeleteDialogOpen }: PostsTa
                     <TableHead>Status</TableHead>
                     <TableHead>Engagement</TableHead>
                     <TableHead className='hidden lg:table-cell'>Created</TableHead>
-                    <TableHead className='hidden lg:table-cell'>Reports</TableHead>
                     <TableHead className='text-right'>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -209,67 +284,66 @@ export default function PostsTable({ query, setIsBulkDeleteDialogOpen }: PostsTa
                     <TableRow
                       key={post.id}
                       className={cn(
-                        'hover:bg-muted/50 transition-colors',
+                        'hover:bg-muted/50 transition-colors align-top',
                         selectedPosts.some((p) => p.id === post.id) && 'bg-muted/30',
+                        !!post.sharedPostId && 'border-l-2 border-l-blue-200 dark:border-l-blue-800',
                       )}
                     >
-                      <TableCell className='px-5'>
+                      <TableCell className='px-5 pt-4'>
                         <Checkbox
                           checked={selectedPosts.some((p) => p.id === post.id)}
                           onCheckedChange={() => handleSelectPost(post)}
                         />
                       </TableCell>
 
-                      <TableCell>
-                        <div className='flex items-center gap-3 max-w-[280px]'>
-                          <PostThumbnail url={post.media[0]?.url} />
-                          <article className='flex-1 min-w-0 text-sm line-clamp-2 text-muted-foreground'>
-                            {parse(post.content)}
-                          </article>
-                        </div>
+                      <TableCell className='py-3'>
+                        <PostCellContent post={post} />
                       </TableCell>
 
-                      <TableCell>
+                      <TableCell className='py-3'>
                         <div className='flex items-center gap-2'>
                           <UserAvatar avatarUrl={post.author.avatar} className='size-8' />
                           <div className='min-w-0'>
                             <p className='text-sm font-medium truncate'>{post.author.fullName}</p>
                             <p className='text-xs text-muted-foreground'>
-                              {formatDistanceToNow(new Date(post.createdAt))} ago
+                              @{post.author.username}
                             </p>
                           </div>
                         </div>
                       </TableCell>
 
-                      <TableCell>
+                      <TableCell className='py-3'>
                         <PostStatusBadge post={post} />
                       </TableCell>
 
-                      <TableCell>
+                      <TableCell className='py-3'>
                         <PostEngagement
                           likeCount={post.likeCount}
                           commentCount={post.commentCount}
+                          shareCount={post.shareCount}
                         />
                       </TableCell>
 
-                      <TableCell className='hidden lg:table-cell'>
+                      <TableCell className='hidden lg:table-cell py-3'>
                         <div className='flex items-center gap-1 text-sm text-muted-foreground'>
                           <Calendar className='w-3 h-3' />
                           {formatDate(new Date(post.createdAt), 'dd-MM-yyyy')}
                         </div>
                       </TableCell>
 
-                      <TableCell className='hidden lg:table-cell'>
-                        <Badge variant='destructive' className='text-xs'>
-                          22
-                        </Badge>
-                      </TableCell>
-
-                      <TableCell className='text-right'>
+                      <TableCell className='text-right py-3'>
                         <PostAction post={post} />
                       </TableCell>
                     </TableRow>
                   ))}
+
+                  {!isLoading && filteredPosts.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={7} className='py-12 text-center text-muted-foreground'>
+                        No posts found.
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
                 {isLoading && <PostTableSkeleton />}
               </Table>

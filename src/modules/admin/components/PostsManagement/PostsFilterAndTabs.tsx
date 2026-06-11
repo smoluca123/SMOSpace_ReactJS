@@ -1,20 +1,25 @@
 import { TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle, Clock } from 'lucide-react';
+import { CheckCircle, Globe, Lock, Share2 } from 'lucide-react';
 
 export default function PostsFilterAndTabs() {
   return (
-    <TabsList className='grid w-full h-auto grid-cols-3 p-1 mb-6'>
+    <TabsList className='grid w-full h-auto grid-cols-4 p-1 mb-6'>
       <TabsTrigger value='all' className='py-2'>
+        <Globe className='w-4 h-4 mr-2' />
         All Posts
       </TabsTrigger>
       <TabsTrigger value='public' className='py-2'>
         <CheckCircle className='w-4 h-4 mr-2' />
-        Published
+        Public
       </TabsTrigger>
       <TabsTrigger value='private' className='py-2'>
-        <Clock className='w-4 h-4 mr-2' />
-        Privated
+        <Lock className='w-4 h-4 mr-2' />
+        Private
       </TabsTrigger>
-    </TabsList> 
+      <TabsTrigger value='shared' className='py-2'>
+        <Share2 className='w-4 h-4 mr-2' />
+        Shared
+      </TabsTrigger>
+    </TabsList>
   );
 }
