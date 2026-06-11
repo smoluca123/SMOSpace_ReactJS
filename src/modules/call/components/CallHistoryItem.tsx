@@ -4,14 +4,7 @@ import { Button } from '@/components/ui/button';
 import type { ICallHistoryItem } from '@/apis/types/call.interfaces';
 import { formatCallDuration } from '@/modules/call/callMessage';
 import { cn } from '@/lib/utils';
-import {
-  MicOff,
-  Phone,
-  PhoneIncoming,
-  PhoneMissed,
-  PhoneOff,
-  Video,
-} from 'lucide-react';
+import { MicOff, Phone, PhoneIncoming, PhoneMissed, PhoneOff, Video } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -22,15 +15,12 @@ interface CallHistoryItemProps {
 }
 
 /** Icon + badge colour config keyed by status and call type. */
-function CallTypeIcon({
-  callType,
-  status,
-}: Pick<ICallHistoryItem, 'callType' | 'status'>) {
+function CallTypeIcon({ callType, status }: Pick<ICallHistoryItem, 'callType' | 'status'>) {
   const missed = status === 'missed';
 
   if (missed) {
     return (
-      <div className='flex justify-center items-center w-10 h-10 rounded-full bg-destructive/10'>
+      <div className='flex items-center justify-center w-10 h-10 rounded-full bg-destructive/10'>
         <PhoneMissed className='w-5 h-5 text-destructive' />
       </div>
     );
@@ -38,14 +28,14 @@ function CallTypeIcon({
 
   if (callType === 'video') {
     return (
-      <div className='flex justify-center items-center w-10 h-10 rounded-full bg-blue-500/10'>
+      <div className='flex items-center justify-center w-10 h-10 rounded-full bg-blue-500/10'>
         <Video className='w-5 h-5 text-blue-500' />
       </div>
     );
   }
 
   return (
-    <div className='flex justify-center items-center w-10 h-10 rounded-full bg-green-500/10'>
+    <div className='flex items-center justify-center w-10 h-10 rounded-full bg-green-500/10'>
       <Phone className='w-5 h-5 text-green-500' />
     </div>
   );
@@ -56,7 +46,7 @@ function CallTypeIcon({
  * Shows: participant avatar + name, call type badge, status, duration, and
  * a "Call back" button that navigates to the chat room.
  */
-export default function CallHistoryItem({ item, currentUserId: _ }: CallHistoryItemProps) {
+export default function CallHistoryItem({ item }: CallHistoryItemProps) {
   const navigate = useNavigate();
   const mainParticipant = item.participants[0];
   const extraCount = item.participants.length - 1;
@@ -90,7 +80,7 @@ export default function CallHistoryItem({ item, currentUserId: _ }: CallHistoryI
             className='w-12 h-12'
           />
         ) : (
-          <div className='flex justify-center items-center w-12 h-12 rounded-full bg-muted'>
+          <div className='flex items-center justify-center w-12 h-12 rounded-full bg-muted'>
             <Phone className='w-5 h-5 text-muted-foreground' />
           </div>
         )}
@@ -105,26 +95,18 @@ export default function CallHistoryItem({ item, currentUserId: _ }: CallHistoryI
 
       {/* Main info */}
       <div className='flex-1 min-w-0'>
-        <div className='flex gap-2 items-center'>
-          <p
-            className={cn(
-              'font-semibold truncate',
-              isMissed && 'text-destructive',
-            )}
-          >
+        <div className='flex items-center gap-2'>
+          <p className={cn('font-semibold truncate', isMissed && 'text-destructive')}>
             {displayName}
           </p>
           {/* Call type badge */}
-          <Badge
-            variant='outline'
-            className='shrink-0 text-xs'
-          >
+          <Badge variant='outline' className='text-xs shrink-0'>
             {item.callType === 'video' ? (
-              <span className='flex gap-1 items-center'>
+              <span className='flex items-center gap-1'>
                 <Video className='w-3 h-3' /> Video
               </span>
             ) : (
-              <span className='flex gap-1 items-center'>
+              <span className='flex items-center gap-1'>
                 <MicOff className='w-3 h-3' /> Audio
               </span>
             )}
