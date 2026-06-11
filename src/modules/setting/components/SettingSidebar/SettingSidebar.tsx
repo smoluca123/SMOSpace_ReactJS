@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import ContentWrapper from '@/modules/home/components/ContentWrapper';
-import { AlignLeft, User } from 'lucide-react';
+import { AlignLeft, History, User } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
 const settingList = [
@@ -15,7 +15,13 @@ const settingList = [
     Icon: User,
     to: 'profile',
   },
+  {
+    label: 'Call History',
+    Icon: History,
+    to: 'call-history',
+  },
 ];
+
 
 export default function SettingSidebar() {
   return (

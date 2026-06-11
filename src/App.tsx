@@ -29,6 +29,8 @@ import AuthenticationRoute from '@/routes/AuthenticationRoute';
 import { useGlobalChatNotifications } from '@/modules/chat/hooks/useChatSocket';
 import { CallProvider } from '@/modules/call/CallContext';
 import CallOverlay from '@/modules/call/components/CallOverlay';
+import CallHistoryPage from '@/modules/call/pages/CallHistoryPage';
+
 
 const router = createBrowserRouter(
   [
@@ -147,6 +149,14 @@ const router = createBrowserRouter(
         {
           path: 'profile',
           element: <ProfileSettingPage />,
+        },
+        {
+          path: 'call-history',
+          element: (
+            <AuthenticationRoute>
+              <CallHistoryPage />
+            </AuthenticationRoute>
+          ),
         },
       ],
     },

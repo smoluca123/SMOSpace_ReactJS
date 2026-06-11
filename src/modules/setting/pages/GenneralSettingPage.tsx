@@ -5,6 +5,7 @@ import { List } from 'lucide-react';
 import UpdateUserInfomationForm from '../components/UpdateUserInfomationForm';
 import OnlineStatusSetting from '../components/OnlineStatusSetting';
 import PushNotificationSetting from '../components/PushNotificationSetting';
+import RingtoneSetting from '../components/RingtoneSetting';
 import { Separator } from '@/components/ui/separator';
 
 export default function GenneralSettingPage() {
@@ -29,6 +30,13 @@ export default function GenneralSettingPage() {
         <OnlineStatusSetting />
       </ContentWrapper>
 
+      {/* Calls */}
+      <ContentWrapper className='space-y-4'>
+        <h2 className='font-bold'>Calls</h2>
+        <Separator />
+        <RingtoneSetting />
+      </ContentWrapper>
+
       {/* Notifications */}
       <ContentWrapper className='space-y-4'>
         <h2 className='font-bold'>Notifications</h2>
@@ -47,3 +55,4 @@ function GenneralSettingHeader() {
     </ContentWrapper>
   );
 }
+
