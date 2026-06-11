@@ -1,10 +1,10 @@
 import { TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle, Globe, Lock, Share2 } from 'lucide-react';
+import { CheckCircle, Globe, Lock } from 'lucide-react';
 
 const TABS = [
-  { value: 'all', label: 'All Posts', icon: null },
+  { value: 'all', label: 'All Posts', icon: Globe },
   { value: 'public', label: 'Published', icon: CheckCircle },
-  { value: 'private', label: 'Private', icon: Clock },
+  { value: 'private', label: 'Private', icon: Lock },
 ] as const;
 
 export default function PostsFilterAndTabs() {
