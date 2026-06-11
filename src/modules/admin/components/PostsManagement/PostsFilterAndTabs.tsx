@@ -1,5 +1,5 @@
 import { TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle, Clock } from 'lucide-react';
+import { CheckCircle, Globe, Lock, Share2 } from 'lucide-react';
 
 const TABS = [
   { value: 'all', label: 'All Posts', icon: null },

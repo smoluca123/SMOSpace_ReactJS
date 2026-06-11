@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import baseApi from '@/apis/baseApi';
-import { IChatRoomsDataType, IRoomMessageDataType } from './types/chat.interfaces';
+import {
+  IChatRoomsDataType,
+  IRoomMessageDataType,
+  IShareRecipientType,
+} from './types/chat.interfaces';
 import { IApiPaginationResponseWrapper, IPaginationParamsType } from '@/lib/types/interfaces';
+import { IReactionType } from '@/lib/reactions';
 
 export const createOrGetDirectRoomAPI = async ({ userId }: { userId: string }) => {
   try {
@@ -47,6 +52,45 @@ export const sendChatImageAPI = async ({ roomId, file }: { roomId: string; file:
   }
 };
 
+export const sendChatFileAPI = async ({ roomId, file }: { roomId: string; file: File }) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    const { data } = await baseApi.post<{ data: IRoomMessageDataType }>(
+      `/chat/rooms/${roomId}/file`,
+      formData,
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const sendChatVoiceAPI = async ({
+  roomId,
+  file,
+  duration,
+}: {
+  roomId: string;
+  file: File;
+  duration: number;
+}) => {
+  try {
+    const formData = new FormData();
+    formData.append('audio', file);
+    formData.append('duration', String(duration));
+    const { data } = await baseApi.post<{ data: IRoomMessageDataType }>(
+      `/chat/rooms/${roomId}/voice`,
+      formData,
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
 export const sendChatMessageAPI = async ({
   roomId,
   content,
@@ -59,6 +103,81 @@ export const sendChatMessageAPI = async ({
       `/chat/rooms/${roomId}/messages`,
       { content },
     );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const getShareRecipientsAPI = async ({
+  search,
+  page = 1,
+  limit = 20,
+}: { search?: string } & IPaginationParamsType) => {
+  try {
+    const { data } = await baseApi.get<IApiPaginationResponseWrapper<IShareRecipientType>>(
+      '/chat/share-recipients',
+      { params: { search, page, limit } },
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const sharePostToChatAPI = async ({
+  postId,
+  roomIds,
+  userIds,
+}: {
+  postId: string;
+  roomIds?: string[];
+  userIds?: string[];
+}) => {
+  try {
+    const { data } = await baseApi.post<{ data: IRoomMessageDataType[] }>(
+      `/chat/share-post/${postId}`,
+      { roomIds, userIds },
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const forwardMessageAPI = async ({
+  messageId,
+  roomIds,
+}: {
+  messageId: string;
+  roomIds: string[];
+}) => {
+  try {
+    const { data } = await baseApi.post<{ data: IRoomMessageDataType[] }>(
+      `/chat/messages/${messageId}/forward`,
+      { roomIds },
+    );
+    return data;
+  } catch (error: any) {
+    if (error.response) throw error.response.data.message;
+    throw error.message;
+  }
+};
+
+export const reactToMessageAPI = async ({
+  messageId,
+  type,
+}: {
+  messageId: string;
+  type: IReactionType;
+}) => {
+  try {
+    const { data } = await baseApi.post<{
+      data: { message: IRoomMessageDataType; myReaction: IReactionType | null };
+    }>(`/chat/messages/${messageId}/react`, { type });
     return data;
   } catch (error: any) {
     if (error.response) throw error.response.data.message;

@@ -16,6 +16,7 @@ import NameWithVerifiedIcon from '@/components/NameWithVerifiedIcon';
 import { CommentBox } from '@/components/Posts/Comment';
 import NameWithBadge from '@/components/NameWithBadge';
 import PostMedia from '@/components/Posts/PostMedia';
+import SharedPostEmbed from '@/components/Posts/SharedPostEmbed';
 
 export default function Post({ isExpanded = false }: { isExpanded?: boolean }) {
   const { post, displayCommentBox } = usePostContext();
@@ -48,6 +49,9 @@ export default function Post({ isExpanded = false }: { isExpanded?: boolean }) {
           </MentionLinkHandler>
         </div>
         <PostMedia media={post.media} />
+
+        {/* Embedded shared/original post (repost) */}
+        {post.sharedPost && <SharedPostEmbed post={post.sharedPost} />}
 
         {/* Post Engagement Metrics */}
         <PostEngagementMetrics />

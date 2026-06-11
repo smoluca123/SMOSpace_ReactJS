@@ -11,6 +11,7 @@ import DropdownMenuItemWithIcon from '@/components/DropdownMenuItemWithIcon';
 import UserAvatar from '@/components/UserAvatar';
 import BlockMenuItem from '@/modules/profile/components/Profile/ProfileHeader/ProfileActions/BlockMenuItem';
 import { formatLastMessageTime } from '@/lib/utils/chat-utils';
+import { parseCallMessage, callPreviewText } from '@/modules/call/callMessage';
 import { useAppSelector } from '@/redux/hooks';
 import { selectAuth } from '@/redux/slices/authSlice';
 import {
@@ -100,10 +101,25 @@ export default function ConversationItem({ conversation }: { conversation: IChat
           >
             {conversation.lastMessage ? (
               <>
-                {conversation.lastMessage.sender.id === user.id ? 'You: ' : ' '}
-                {conversation.lastMessage.type === 'IMAGE'
-                  ? 'Sent an image'
-                  : conversation.lastMessage.content}
+                {conversation.lastMessage.type === 'SYSTEM' ? (
+                  (() => {
+                    const call = parseCallMessage(conversation.lastMessage.content);
+                    return call ? callPreviewText(call) : conversation.lastMessage.content;
+                  })()
+                ) : (
+                  <>
+                    {conversation.lastMessage.sender.id === user.id ? 'You: ' : ' '}
+                    {conversation.lastMessage.type === 'IMAGE'
+                      ? 'Sent an image'
+                      : conversation.lastMessage.type === 'POST_SHARE'
+                        ? 'Shared a post'
+                        : conversation.lastMessage.type === 'FILE'
+                          ? 'Sent a file'
+                          : conversation.lastMessage.type === 'VOICE'
+                            ? 'Sent a voice message'
+                            : conversation.lastMessage.content}
+                  </>
+                )}
               </>
             ) : (
               <span className='italic'>No messages yet</span>

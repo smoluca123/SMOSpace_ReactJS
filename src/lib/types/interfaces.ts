@@ -59,6 +59,7 @@ export interface IUserDataType {
   isActive: boolean;
   isVerified: boolean;
   isBanned: boolean;
+  showOnlineStatus?: boolean;
   createdAt: string;
   updatedAt: string;
   credits: number;
@@ -136,6 +137,10 @@ export interface IPostDataType {
   isPrivate: boolean;
   likeCount: number;
   commentCount: number;
+  shareCount?: number;
+  sharedPostId?: UUID | null;
+  /** Embedded original post when this post is a share/repost. */
+  sharedPost?: IPostDataType | null;
   media: IMediaDataType[];
   author: IUserDataType;
 }
