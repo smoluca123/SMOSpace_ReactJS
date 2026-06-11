@@ -24,7 +24,7 @@ import { adminCreateUserSchema, AdminCreateUserType } from '@/lib/validations';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useAdminCreateuserMutation } from '../../mutations';
+import { useAdminCreateUserMutation } from '../../mutations';
 import {
   Select,
   SelectContent,
@@ -45,7 +45,7 @@ export default function CreateUserDialog({
 }) {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
-  const { mutate, isPending } = useAdminCreateuserMutation();
+  const { mutate, isPending } = useAdminCreateUserMutation();
 
   const form = useForm<AdminCreateUserType>({
     defaultValues: {

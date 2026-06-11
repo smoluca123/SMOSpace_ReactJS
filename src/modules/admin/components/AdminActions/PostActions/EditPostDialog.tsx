@@ -7,7 +7,6 @@ import { DialogDescription } from '@radix-ui/react-dialog';
 import { useAdminEditPostMutation } from '../../mutations';
 import { useState } from 'react';
 import { IPostDataType } from '@/lib/types/interfaces';
-import { useQueryClient } from '@tanstack/react-query';
 
 export default function EditPostDialog({
   open,
@@ -18,18 +17,13 @@ export default function EditPostDialog({
   onClose: () => void;
   post: IPostDataType;
 }) {
-  const handleCloseDialog = (isOpen: boolean) => {
-    if (!isOpen) {
-      onClose();
-    }
-  };
-
   const [editorContent, setEditorContent] = useState(post.content);
   const [isPrivate, setIsPrivate] = useState<boolean>(post.isPrivate);
-
   const { mutate, isPending } = useAdminEditPostMutation();
 
-  const queryClinet = useQueryClient();
+  const handleCloseDialog = (isOpen: boolean) => {
+    if (!isOpen) onClose();
+  };
 
   const handleEditPost = () => {
     mutate(
@@ -39,15 +33,8 @@ export default function EditPostDialog({
         authorId: post.author.id,
         isPrivate,
       },
-      {
-        onSuccess: () => {
-          queryClinet.invalidateQueries({
-            queryKey: ['admin-posts'],
-          });
-        },
-      },
+      { onSuccess: onClose },
     );
-    onClose();
   };
 
   return (

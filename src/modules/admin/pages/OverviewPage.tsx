@@ -41,8 +41,8 @@ export default function OverviewPage() {
 
       {/* Stats Cards */}
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-        {stats.map((stat, index) => (
-          <StatCard stat={stat} key={new Date().getTime() + index} />
+        {stats.map((stat) => (
+          <StatCard stat={stat} key={stat.title} />
         ))}
       </div>
 

@@ -6,7 +6,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-
 import UserAvatar from '@/components/UserAvatar';
 import {
   IApiPaginationResponseWrapper,
@@ -27,13 +26,33 @@ import { Settings } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import MultipleToggleBanUserDialog from '../AdminActions/UserActions/MultipleToggleBanUserDialog';
 
+// --- Types ---
+
 interface UserTableProps {
   query: UseQueryResult<IApiPaginationResponseWrapper<IUserDataWithFollowedStatusType>, Error>;
   setSelectedUser: (user: IUserDataWithFollowedStatusType) => void;
   setIsEditDialogOpen: (isOpen: boolean) => void;
   setIsDeleteDialogOpen: (isOpen: boolean) => void;
-  filterStatus: 'all' | 'active' | 'inactive' | string;
+  filterStatus: string;
 }
+
+interface UserItemProps {
+  user: IUserDataWithFollowedStatusType;
+  isSelected: boolean;
+  onToggleSelect: (user: IUserDataWithFollowedStatusType) => void;
+  setSelectedUser: (user: IUserDataWithFollowedStatusType) => void;
+  setIsEditDialogOpen: (isOpen: boolean) => void;
+  setIsDeleteDialogOpen: (isOpen: boolean) => void;
+}
+
+// --- Helpers ---
+
+function filterUsersByStatus(users: IUserDataWithFollowedStatusType[], status: string) {
+  if (status === 'all') return users;
+  return users.filter((user) => (status === 'active') === user.isActive);
+}
+
+// --- Components ---
 
 export default function UsersTable({
   query,
@@ -43,44 +62,30 @@ export default function UsersTable({
   filterStatus,
 }: UserTableProps) {
   const [selectedUsers, setSelectedUsers] = useState<IUserDataWithFollowedStatusType[]>([]);
+  const [isMultipleBanDialogOpen, setIsMultipleBanDialogOpen] = useState(false);
   const { data, isLoading } = query;
-  const [multipleToggleBanUserDialogOpen, setMultipleToggleBanUserDialog] = useState(false);
+
+  const items = data?.data.items ?? [];
+  const filteredUsers = filterUsersByStatus(items, filterStatus);
+  const allSelected = selectedUsers.length === items.length && items.length > 0;
 
   const handleSelectAll = () => {
-    if (!data) return;
-
-    if (selectedUsers.length === data.data.items.length) {
-      setSelectedUsers([]);
-    } else {
-      setSelectedUsers(data.data.items.map((user) => user));
-    }
+    setSelectedUsers(allSelected ? [] : [...items]);
   };
 
   const handleToggleSelect = (toggledUser: IUserDataWithFollowedStatusType) => {
     setSelectedUsers((prev) => {
-      const isSelected = prev.find((u) => u.id === toggledUser.id);
-      if (isSelected) {
-        return prev.filter((u) => u.id !== toggledUser.id);
-      } else {
-        return [...prev, toggledUser];
-      }
+      const exists = prev.some((u) => u.id === toggledUser.id);
+      return exists ? prev.filter((u) => u.id !== toggledUser.id) : [...prev, toggledUser];
     });
   };
-
-  const userFilter = (users: IUserDataWithFollowedStatusType[]) =>
-    users.filter((user) => {
-      if (filterStatus === 'all') return true;
-      return (filterStatus.toLowerCase() === 'active') === user.isActive;
-    });
 
   return (
     <>
       <Card className='overflow-hidden border rounded-md'>
         <CardHeader className='pb-4'>
           <div className='flex items-center justify-between'>
-            <div className='flex gap-x-5'>
-              <CardTitle className='text-xl'>Users Database</CardTitle>
-            </div>
+            <CardTitle className='text-xl'>Users Database</CardTitle>
             <div
               className={cn(
                 'flex items-center gap-4 transition-all duration-200',
@@ -89,10 +94,12 @@ export default function UsersTable({
                   : 'opacity-100 pointer-events-auto',
               )}
             >
-              <span className='text-sm text-muted-foreground'>{selectedUsers.length} selected</span>
+              <span className='text-sm text-muted-foreground'>
+                {selectedUsers.length} selected
+              </span>
               <Button
-                disabled={selectedUsers.length == 0}
-                onClick={() => setMultipleToggleBanUserDialog(true)}
+                disabled={selectedUsers.length === 0}
+                onClick={() => setIsMultipleBanDialogOpen(true)}
                 size='sm'
               >
                 <Settings className='w-4 h-4 mr-2' />
@@ -106,17 +113,11 @@ export default function UsersTable({
             <TableHeader>
               <TableRow>
                 <TableHead className='w-[40px]'>
-                  <Checkbox
-                    checked={
-                      selectedUsers.length === data?.data.items.length &&
-                      data?.data.items.length > 0
-                    }
-                    onCheckedChange={handleSelectAll}
-                  />
+                  <Checkbox checked={allSelected} onCheckedChange={handleSelectAll} />
                 </TableHead>
                 <TableHead>User</TableHead>
                 <TableHead className='text-center'>Status</TableHead>
-                <TableHead className='text-center '>Role</TableHead>
+                <TableHead className='text-center'>Role</TableHead>
                 <TableHead className='hidden text-center md:table-cell'>Posts</TableHead>
                 <TableHead className='hidden text-center md:table-cell'>Followers</TableHead>
                 <TableHead className='hidden text-center lg:table-cell'>Join Date</TableHead>
@@ -126,11 +127,11 @@ export default function UsersTable({
             </TableHeader>
             {data && (
               <TableBody>
-                {userFilter(data.data.items).map((user) => (
+                {filteredUsers.map((user) => (
                   <UserItem
                     key={user.id}
                     user={user}
-                    isSelected={!!selectedUsers.find((u) => u.id === user.id)}
+                    isSelected={selectedUsers.some((u) => u.id === user.id)}
                     onToggleSelect={handleToggleSelect}
                     setSelectedUser={setSelectedUser}
                     setIsEditDialogOpen={setIsEditDialogOpen}
@@ -143,9 +144,10 @@ export default function UsersTable({
           </Table>
         </CardContent>
       </Card>
+
       <MultipleToggleBanUserDialog
-        onClose={() => setMultipleToggleBanUserDialog(false)}
-        open={multipleToggleBanUserDialogOpen}
+        onClose={() => setIsMultipleBanDialogOpen(false)}
+        open={isMultipleBanDialogOpen}
         selectedUsers={selectedUsers}
         setSelectedUsers={setSelectedUsers}
       />
@@ -153,21 +155,14 @@ export default function UsersTable({
   );
 }
 
-const UserItem = ({
+function UserItem({
   user,
   isSelected,
   onToggleSelect,
   setIsDeleteDialogOpen,
   setIsEditDialogOpen,
   setSelectedUser,
-}: {
-  user: IUserDataWithFollowedStatusType;
-  isSelected: boolean;
-  onToggleSelect: (user: IUserDataWithFollowedStatusType) => void;
-  setSelectedUser: (user: IUserDataWithFollowedStatusType) => void;
-  setIsEditDialogOpen: (isOpen: boolean) => void;
-  setIsDeleteDialogOpen: (isOpen: boolean) => void;
-}) => {
+}: UserItemProps) {
   return (
     <TableRow>
       <TableCell className='w-[40px]'>
@@ -182,13 +177,7 @@ const UserItem = ({
                 'text-destructive': user.isBanned,
               })}
             >
-              <span
-                className={cn('', {
-                  'line-through': user.isBanned,
-                })}
-              >
-                {user.fullName}
-              </span>
+              <span className={cn({ 'line-through': user.isBanned })}>{user.fullName}</span>
               {user.isVerified && <VerifiedIcon isVerified />}
             </div>
             <p
@@ -225,4 +214,4 @@ const UserItem = ({
       </TableCell>
     </TableRow>
   );
-};
+}

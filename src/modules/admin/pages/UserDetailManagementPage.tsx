@@ -18,28 +18,12 @@ import UserRoleBadge from '../components/UserRoleBadge';
 import { useGetUserInfomation } from '@/lib/querys';
 import VerifiedIcon from '@/components/VerifiedIcon';
 import UserProvider from '../components/UserManagement/UserDetailMagagement/UserProvider';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import UserOverviewTab from '../components/UserManagement/UserDetailMagagement/UserOverviewTab';
 import useUserContext from '@/hooks/useUserContext';
 import { IUserDataWithFollowedStatusType } from '@/lib/types/interfaces';
 import UserPostsTab from '../components/UserManagement/UserDetailMagagement/UserPostsTab';
+import EditUserDialog from '../components/AdminActions/UserActions/EditUserDialog';
 
 export default function UserDetailPage() {
   const { username } = useParams();
@@ -55,42 +39,7 @@ export default function UserDetailPage() {
           <UserDetailHeader />
 
           {/* User Stats */}
-          <div className='grid gap-4 md:grid-cols-4'>
-            <Card>
-              <CardContent className='pt-6'>
-                <div className='text-center'>
-                  <div className='text-2xl font-bold text-foreground'>{userData.postCount}</div>
-                  <div className='text-sm text-muted-foreground'>Posts</div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className='pt-6'>
-                <div className='text-center'>
-                  <div className='text-2xl font-bold text-foreground'>{userData.followerCount}</div>
-                  <div className='text-sm text-muted-foreground'>Followers</div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className='pt-6'>
-                <div className='text-center'>
-                  <div className='text-2xl font-bold text-foreground'>
-                    {userData.followingCount}
-                  </div>
-                  <div className='text-sm text-muted-foreground'>Following</div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className='pt-6'>
-                <div className='text-center'>
-                  <div className='text-2xl font-bold text-foreground'>{userData.friendCount}</div>
-                  <div className='text-sm text-muted-foreground'>Friends</div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <UserDetailStats userData={userData} />
 
           {/* Main Content */}
           <Tabs defaultValue='overview' className='w-full'>
@@ -167,72 +116,36 @@ const UserDetailHeader = () => {
       </div>
 
       {/* Edit User Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit User</DialogTitle>
-            <DialogDescription>Update user information</DialogDescription>
-          </DialogHeader>
-          <div className='grid gap-4 py-4'>
-            <div className='grid items-center grid-cols-4 gap-4'>
-              <Label htmlFor='edit-name' className='text-right'>
-                Name
-              </Label>
-              <Input
-                id='edit-name'
-                name='name'
-                defaultValue={userData.fullName}
-                className='col-span-3'
-              />
-            </div>
-            <div className='grid items-center grid-cols-4 gap-4'>
-              <Label htmlFor='edit-email' className='text-right'>
-                Email
-              </Label>
-              <Input
-                id='edit-email'
-                name='email'
-                type='email'
-                defaultValue={userData.email}
-                className='col-span-3'
-              />
-            </div>
-            <div className='grid items-center grid-cols-4 gap-4'>
-              <Label htmlFor='edit-role' className='text-right'>
-                Role
-              </Label>
-              <Select name='role' defaultValue={userData.userType.typeName}>
-                <SelectTrigger className='col-span-3'>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='User'>User</SelectItem>
-                  <SelectItem value='Moderator'>Moderator</SelectItem>
-                  <SelectItem value='Admin'>Admin</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className='grid items-center grid-cols-4 gap-4'>
-              <Label htmlFor='edit-status' className='text-right'>
-                Status
-              </Label>
-              <Select name='status' defaultValue={'abcd'}>
-                <SelectTrigger className='col-span-3'>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='Active'>Active</SelectItem>
-                  <SelectItem value='Inactive'>Inactive</SelectItem>
-                  <SelectItem value='Banned'>Banned</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type='submit'>Update User</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <EditUserDialog
+        selectedUser={userData}
+        open={isEditDialogOpen}
+        onClose={() => setIsEditDialogOpen(false)}
+      />
     </>
   );
 };
+
+const USER_STAT_FIELDS = ['postCount', 'followerCount', 'followingCount', 'friendCount'] as const;
+const USER_STAT_LABELS: Record<(typeof USER_STAT_FIELDS)[number], string> = {
+  postCount: 'Posts',
+  followerCount: 'Followers',
+  followingCount: 'Following',
+  friendCount: 'Friends',
+};
+
+function UserDetailStats({ userData }: { userData: IUserDataWithFollowedStatusType }) {
+  return (
+    <div className='grid gap-4 md:grid-cols-4'>
+      {USER_STAT_FIELDS.map((field) => (
+        <Card key={field}>
+          <CardContent className='pt-6'>
+            <div className='text-center'>
+              <div className='text-2xl font-bold text-foreground'>{userData[field]}</div>
+              <div className='text-sm text-muted-foreground'>{USER_STAT_LABELS[field]}</div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}

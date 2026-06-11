@@ -15,98 +15,130 @@ import {
   AreaChart,
   Area,
 } from 'recharts';
-import { TrendingUp, Users, Activity, BarChart3, Eye } from 'lucide-react';
+import { TrendingUp, Users, Activity, BarChart3, Eye, LucideIcon } from 'lucide-react';
+
+// --- Constants ---
+
+const USER_GROWTH_DATA = [
+  { month: 'Jan', users: 1200, newUsers: 120 },
+  { month: 'Feb', users: 1450, newUsers: 250 },
+  { month: 'Mar', users: 1680, newUsers: 230 },
+  { month: 'Apr', users: 2100, newUsers: 420 },
+  { month: 'May', users: 2450, newUsers: 350 },
+  { month: 'Jun', users: 2890, newUsers: 440 },
+];
+
+const ENGAGEMENT_DATA = [
+  { day: 'Mon', posts: 45, likes: 1200, comments: 340, shares: 120 },
+  { day: 'Tue', posts: 52, likes: 1450, comments: 420, shares: 150 },
+  { day: 'Wed', posts: 48, likes: 1680, comments: 380, shares: 140 },
+  { day: 'Thu', posts: 61, likes: 2100, comments: 520, shares: 180 },
+  { day: 'Fri', posts: 58, likes: 1950, comments: 480, shares: 170 },
+  { day: 'Sat', posts: 67, likes: 2300, comments: 580, shares: 200 },
+  { day: 'Sun', posts: 43, likes: 1800, comments: 350, shares: 130 },
+];
+
+const DEVICE_DATA = [
+  { name: 'Mobile', value: 65, color: '#3b82f6' },
+  { name: 'Desktop', value: 25, color: '#10b981' },
+  { name: 'Tablet', value: 10, color: '#f59e0b' },
+];
+
+const TOP_CONTENT_DATA = [
+  { category: 'Lifestyle', posts: 245, engagement: 85 },
+  { category: 'Technology', posts: 189, engagement: 92 },
+  { category: 'Business', posts: 156, engagement: 78 },
+  { category: 'Creative', posts: 134, engagement: 88 },
+  { category: 'Opinion', posts: 98, engagement: 95 },
+];
+
+interface StatItemType {
+  title: string;
+  value: string;
+  change: string;
+  icon: LucideIcon;
+  description: string;
+}
+
+const STATS: StatItemType[] = [
+  {
+    title: 'Total Views',
+    value: '2.4M',
+    change: '+12.5%',
+    icon: Eye,
+    description: 'Page views this month',
+  },
+  {
+    title: 'Engagement Rate',
+    value: '24.5%',
+    change: '+8.2%',
+    icon: Activity,
+    description: 'Average engagement rate',
+  },
+  {
+    title: 'Total Posts',
+    value: '8,967',
+    change: '+15.3%',
+    icon: BarChart3,
+    description: 'Posts created this month',
+  },
+  {
+    title: 'Active Users',
+    value: '12.3K',
+    change: '+2.1%',
+    icon: Users,
+    description: 'Monthly active users',
+  },
+];
+
+// --- Sub-components ---
+
+function CustomTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: { dataKey: string; value: string; color: string }[];
+  label?: string;
+}) {
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div className='p-3 rounded-lg border shadow-sm bg-card border-border'>
+      <p className='font-medium text-foreground'>{label}</p>
+      {payload.map((entry, index) => (
+        <p key={index} style={{ color: entry.color }} className='text-sm'>
+          {entry.dataKey}: {entry.value}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+function AnalyticsStatCard({ stat }: { stat: StatItemType }) {
+  return (
+    <Card className='transition-shadow hover:shadow-md'>
+      <CardHeader className='flex flex-row justify-between items-center pb-2 space-y-0'>
+        <CardTitle className='text-sm font-medium text-muted-foreground'>{stat.title}</CardTitle>
+        <stat.icon className='w-4 h-4 text-primary' />
+      </CardHeader>
+      <CardContent>
+        <div className='text-2xl font-bold text-foreground'>{stat.value}</div>
+        <div className='flex items-center mt-1 text-xs text-muted-foreground'>
+          <TrendingUp className='mr-1 w-3 h-3 text-green-500' />
+          <span className='text-green-500'>{stat.change}</span>
+          <span className='ml-1'>from last month</span>
+        </div>
+        <p className='mt-1 text-xs text-muted-foreground'>{stat.description}</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+// --- Main Component ---
 
 export default function AnalyticsPage() {
-  // Mock data for charts
-  const userGrowthData = [
-    { month: 'Jan', users: 1200, newUsers: 120 },
-    { month: 'Feb', users: 1450, newUsers: 250 },
-    { month: 'Mar', users: 1680, newUsers: 230 },
-    { month: 'Apr', users: 2100, newUsers: 420 },
-    { month: 'May', users: 2450, newUsers: 350 },
-    { month: 'Jun', users: 2890, newUsers: 440 },
-  ];
-
-  const engagementData = [
-    { day: 'Mon', posts: 45, likes: 1200, comments: 340, shares: 120 },
-    { day: 'Tue', posts: 52, likes: 1450, comments: 420, shares: 150 },
-    { day: 'Wed', posts: 48, likes: 1680, comments: 380, shares: 140 },
-    { day: 'Thu', posts: 61, likes: 2100, comments: 520, shares: 180 },
-    { day: 'Fri', posts: 58, likes: 1950, comments: 480, shares: 170 },
-    { day: 'Sat', posts: 67, likes: 2300, comments: 580, shares: 200 },
-    { day: 'Sun', posts: 43, likes: 1800, comments: 350, shares: 130 },
-  ];
-
-  const deviceData = [
-    { name: 'Mobile', value: 65, color: '#3b82f6' },
-    { name: 'Desktop', value: 25, color: '#10b981' },
-    { name: 'Tablet', value: 10, color: '#f59e0b' },
-  ];
-
-  const topContentData = [
-    { category: 'Lifestyle', posts: 245, engagement: 85 },
-    { category: 'Technology', posts: 189, engagement: 92 },
-    { category: 'Business', posts: 156, engagement: 78 },
-    { category: 'Creative', posts: 134, engagement: 88 },
-    { category: 'Opinion', posts: 98, engagement: 95 },
-  ];
-
-  const stats = [
-    {
-      title: 'Total Views',
-      value: '2.4M',
-      change: '+12.5%',
-      icon: Eye,
-      description: 'Page views this month',
-    },
-    {
-      title: 'Engagement Rate',
-      value: '24.5%',
-      change: '+8.2%',
-      icon: Activity,
-      description: 'Average engagement rate',
-    },
-    {
-      title: 'Total Posts',
-      value: '8,967',
-      change: '+15.3%',
-      icon: BarChart3,
-      description: 'Posts created this month',
-    },
-    {
-      title: 'Active Users',
-      value: '12.3K',
-      change: '+2.1%',
-      icon: Users,
-      description: 'Monthly active users',
-    },
-  ];
-
-  const CustomTooltip = ({
-    active,
-    payload,
-    label,
-  }: {
-    active: boolean;
-    payload: { dataKey: string; value: string; color: string }[];
-    label: string;
-  }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className='p-3 rounded-lg border shadow-sm bg-card border-border'>
-          <p className='font-medium text-foreground'>{`${label}`}</p>
-          {payload.map((entry, index: number) => (
-            <p key={index} style={{ color: entry.color }} className='text-sm'>
-              {`${entry.dataKey}: ${entry.value}`}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <div className='space-y-6'>
       {/* Page Header */}
@@ -117,24 +149,8 @@ export default function AnalyticsPage() {
 
       {/* Stats Cards */}
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-        {stats.map((stat, index) => (
-          <Card key={index} className='transition-shadow hover:shadow-md'>
-            <CardHeader className='flex flex-row justify-between items-center pb-2 space-y-0'>
-              <CardTitle className='text-sm font-medium text-muted-foreground'>
-                {stat.title}
-              </CardTitle>
-              <stat.icon className='w-4 h-4 text-primary' />
-            </CardHeader>
-            <CardContent>
-              <div className='text-2xl font-bold text-foreground'>{stat.value}</div>
-              <div className='flex items-center mt-1 text-xs text-muted-foreground'>
-                <TrendingUp className='mr-1 w-3 h-3 text-green-500' />
-                <span className='text-green-500'>{stat.change}</span>
-                <span className='ml-1'>from last month</span>
-              </div>
-              <p className='mt-1 text-xs text-muted-foreground'>{stat.description}</p>
-            </CardContent>
-          </Card>
+        {STATS.map((stat) => (
+          <AnalyticsStatCard key={stat.title} stat={stat} />
         ))}
       </div>
 
@@ -147,11 +163,11 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width='100%' height={300}>
-              <AreaChart data={userGrowthData}>
+              <AreaChart data={USER_GROWTH_DATA}>
                 <CartesianGrid strokeDasharray='3 3' className='stroke-muted' />
                 <XAxis dataKey='month' className='text-muted-foreground' fontSize={12} />
                 <YAxis className='text-muted-foreground' fontSize={12} />
-                <Tooltip content={<CustomTooltip active={false} payload={[]} label={''} />} />
+                <Tooltip content={<CustomTooltip />} />
                 <Area
                   type='monotone'
                   dataKey='users'
@@ -181,7 +197,7 @@ export default function AnalyticsPage() {
             <ResponsiveContainer width='100%' height={300}>
               <PieChart>
                 <Pie
-                  data={deviceData}
+                  data={DEVICE_DATA}
                   cx='50%'
                   cy='50%'
                   innerRadius={60}
@@ -189,16 +205,16 @@ export default function AnalyticsPage() {
                   paddingAngle={5}
                   dataKey='value'
                 >
-                  {deviceData.map((entry, index) => (
+                  {DEVICE_DATA.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip content={<CustomTooltip active={false} payload={[]} label={''} />} />
+                <Tooltip content={<CustomTooltip />} />
               </PieChart>
             </ResponsiveContainer>
             <div className='flex justify-center mt-4 space-x-6'>
-              {deviceData.map((item, index) => (
-                <div key={index} className='flex items-center space-x-2'>
+              {DEVICE_DATA.map((item) => (
+                <div key={item.name} className='flex items-center space-x-2'>
                   <div className='w-3 h-3 rounded-full' style={{ backgroundColor: item.color }} />
                   <span className='text-sm text-muted-foreground'>
                     {item.name}: {item.value}%
@@ -218,11 +234,11 @@ export default function AnalyticsPage() {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width='100%' height={400}>
-            <LineChart data={engagementData}>
+            <LineChart data={ENGAGEMENT_DATA}>
               <CartesianGrid strokeDasharray='3 3' className='stroke-muted' />
               <XAxis dataKey='day' className='text-muted-foreground' fontSize={12} />
               <YAxis className='text-muted-foreground' fontSize={12} />
-              <Tooltip content={<CustomTooltip active={false} payload={[]} label={''} />} />
+              <Tooltip content={<CustomTooltip />} />
               <Line type='monotone' dataKey='posts' stroke='#3b82f6' strokeWidth={2} />
               <Line type='monotone' dataKey='likes' stroke='#10b981' strokeWidth={2} />
               <Line type='monotone' dataKey='comments' stroke='#f59e0b' strokeWidth={2} />
@@ -240,11 +256,11 @@ export default function AnalyticsPage() {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width='100%' height={300}>
-            <BarChart data={topContentData}>
+            <BarChart data={TOP_CONTENT_DATA}>
               <CartesianGrid strokeDasharray='3 3' className='stroke-muted' />
               <XAxis dataKey='category' className='text-muted-foreground' fontSize={12} />
               <YAxis className='text-muted-foreground' fontSize={12} />
-              <Tooltip content={<CustomTooltip active={false} payload={[]} label={''} />} />
+              <Tooltip content={<CustomTooltip />} />
               <Bar dataKey='posts' fill='#3b82f6' />
               <Bar dataKey='engagement' fill='#10b981' />
             </BarChart>

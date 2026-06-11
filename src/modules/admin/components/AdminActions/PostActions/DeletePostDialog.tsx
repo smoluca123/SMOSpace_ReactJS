@@ -30,8 +30,10 @@ export default function DeletePostDialog({
   };
 
   const handleDeletePost = () => {
-    mutate({ postId: post.id });
-    onClose();
+    mutate(
+      { postId: post.id },
+      { onSuccess: onClose },
+    );
   };
 
   return (

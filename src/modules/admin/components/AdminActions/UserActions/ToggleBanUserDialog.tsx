@@ -24,7 +24,8 @@ export default function TogglebanUserDialog({
   onClose: () => void;
 }) {
   const { mutate, isPending } = useAdminToggleBanUserMutation();
-  if (!selectedUser) return;
+
+  if (!selectedUser) return null;
 
   const handleCloseDialog = (isOpen: boolean) => {
     if (!isOpen) {
@@ -35,8 +36,8 @@ export default function TogglebanUserDialog({
   const toggleBanUser = () => {
     mutate(
       {
-        userId: selectedUser?.id,
-        isBanned: !selectedUser?.isBanned,
+        userId: selectedUser.id,
+        isBanned: !selectedUser.isBanned,
       },
       {
         onSuccess: () => {
@@ -46,10 +47,6 @@ export default function TogglebanUserDialog({
       },
     );
   };
-
-  if (!selectedUser) {
-    return null;
-  }
 
   return (
     <Dialog open={open} onOpenChange={handleCloseDialog}>

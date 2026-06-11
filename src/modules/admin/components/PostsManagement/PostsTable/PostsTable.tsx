@@ -24,7 +24,7 @@ import { SetStateAction } from 'react';
 import PostsFilterAndTabs from '../PostsFilterAndTabs';
 import PostStatusBadge from '../../PostStatusBadge';
 import { PostTableSkeleton } from '../../Skeletons/PostTableSkeleton';
-import PostPaginationControls from '../../PostPaginationControls';
+import PaginationControls from '../../PaginationControls';
 import PostAction from '../PostAction';
 
 interface PostsTableProps {
@@ -125,63 +125,6 @@ function PostCellContent({ post }: { post: IPostDataType }) {
   );
 }
 
-// Mobile card view for small screens
-export function PostMobileCard({
-  post,
-  isSelected,
-  onSelect,
-}: {
-  post: IPostDataType;
-  isSelected: boolean;
-  onSelect: () => void;
-}) {
-  const isShare = !!post.sharedPostId;
-  const thumbnail = post.media[0]?.url ?? post.sharedPost?.media?.[0]?.url;
-
-  return (
-    <div
-      className={cn(
-        'flex gap-3 p-4 border-b transition-colors',
-        isSelected && 'bg-muted/30',
-      )}
-    >
-      <Checkbox checked={isSelected} onCheckedChange={onSelect} className='flex-shrink-0 mt-1' />
-      <PostThumbnail url={thumbnail} />
-      <div className='flex-1 min-w-0 space-y-1.5'>
-        {post.content && (
-          <article className='text-sm text-muted-foreground line-clamp-2'>
-            {parse(post.content)}
-          </article>
-        )}
-        {isShare && post.sharedPost && (
-          <div className='flex items-start gap-1 pl-2 border-l-2 border-blue-300'>
-            <CornerDownRight className='w-3 h-3 mt-0.5 text-blue-400 flex-shrink-0' />
-            <span className='text-xs text-muted-foreground line-clamp-1'>
-              <span className='font-medium text-blue-600'>@{post.sharedPost.author.username}:</span>{' '}
-              {post.sharedPost.content ? parse(post.sharedPost.content) : <em>No content</em>}
-            </span>
-          </div>
-        )}
-        <div className='flex items-center gap-2'>
-          <UserAvatar avatarUrl={post.author.avatar} className='size-5' />
-          <span className='text-xs font-medium truncate'>{post.author.fullName}</span>
-        </div>
-        <div className='flex items-center justify-between gap-2'>
-          <div className='flex flex-wrap items-center gap-2'>
-            <PostStatusBadge post={post} />
-            <PostEngagement likeCount={post.likeCount} commentCount={post.commentCount} shareCount={post.shareCount} />
-          </div>
-          <PostAction post={post} />
-        </div>
-        <div className='flex items-center gap-1 text-xs text-muted-foreground'>
-          <Calendar className='w-3 h-3' />
-          {formatDate(new Date(post.createdAt), 'dd-MM-yyyy')}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function PostsTable({ query, setIsBulkDeleteDialogOpen }: PostsTableProps) {
   const { filters, activeTab, setActiveTab, selectedPosts, setSelectedPosts } =
     usePostsManagementContext();
@@ -262,7 +205,7 @@ export default function PostsTable({ query, setIsBulkDeleteDialogOpen }: PostsTa
             </div>
           </CardHeader>
 
-          <CardContent className='p-0 '>
+          <CardContent className='p-0'>
             {/* Desktop view */}
             <div className='overflow-x-auto'>
               <Table>
@@ -331,7 +274,13 @@ export default function PostsTable({ query, setIsBulkDeleteDialogOpen }: PostsTa
                         </div>
                       </TableCell>
 
-                      <TableCell className='text-right py-3'>
+                      <TableCell className='hidden lg:table-cell'>
+                        <Badge variant='destructive' className='text-xs'>
+                          0
+                        </Badge>
+                      </TableCell>
+
+                      <TableCell className='text-right'>
                         <PostAction post={post} />
                       </TableCell>
                     </TableRow>
@@ -349,7 +298,7 @@ export default function PostsTable({ query, setIsBulkDeleteDialogOpen }: PostsTa
               </Table>
             </div>
 
-            <PostPaginationControls query={query} />
+            <PaginationControls query={query} entityLabel='posts' />
           </CardContent>
         </Card>
       </TabsContent>
