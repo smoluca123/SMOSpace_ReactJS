@@ -110,10 +110,14 @@ export function useGlobalChatNotifications() {
         return;
       }
 
-      queryClient.invalidateQueries({ queryKey: unreadChatCountQueryKey });
+      // Always keep the conversation list (lastMessage, order) in sync for everyone
       queryClient.invalidateQueries({ queryKey: activeChatRoomsQueryKey });
 
+      // Skip toast/unread badge if: viewing the room, it's our own message, or room is muted
       if (message.room?.id && isViewingRoom(message.room.id)) return;
+      if (message.sender.id === user?.id) return; // own message – no toast or badge
+
+      queryClient.invalidateQueries({ queryKey: unreadChatCountQueryKey });
 
       // Respect muted conversations - no toast
       const myParticipant = message.room?.participants?.find((p) => p.user.id === user?.id);
@@ -142,6 +146,7 @@ export function useGlobalChatNotifications() {
     };
 
     if (chatSocket.connected) subscribe();
+
     chatSocket.on('connect', subscribe);
     chatSocket.on('newMessage', handleNewMessage);
     chatSocket.on('chat:newMessageNotification', handleNotification);
