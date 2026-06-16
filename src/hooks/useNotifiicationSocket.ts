@@ -18,13 +18,7 @@ export default function useNotificationSocket(props?: UseNotificationSocketProps
   useEffect(() => {
     notificationSocket.connect();
 
-    const handleConnect = () => {
-      notificationSocket.emit('noti:subscribe');
-      notificationSocket.on('noti:new', handleHasNewNotification);
-    };
-
     const handleHasNewNotification = (newNotification: INotificationType) => {
-      console.log('newNotification', newNotification);
       if (onNewNotification) {
         onNewNotification(newNotification);
       }
@@ -74,7 +68,12 @@ export default function useNotificationSocket(props?: UseNotificationSocketProps
       });
     };
 
+    const handleConnect = () => {
+      notificationSocket.emit('noti:subscribe');
+    };
+
     notificationSocket.on('connect', handleConnect);
+    notificationSocket.on('noti:new', handleHasNewNotification);
 
     // If socket is already connected, emit subscribe immediately
     if (notificationSocket.connected) {
@@ -82,8 +81,8 @@ export default function useNotificationSocket(props?: UseNotificationSocketProps
     }
 
     return () => {
-      notificationSocket.off('noti:new');
-      notificationSocket.off('connect');
+      notificationSocket.off('noti:new', handleHasNewNotification);
+      notificationSocket.off('connect', handleConnect);
       notificationSocket.disconnect();
     };
   }, [user?.id, onNewNotification, queryClient]);

@@ -60,6 +60,10 @@ interface ChatServerToClientEvents {
   'chat:messageReactionUpdated': (
     message: import('@/apis/types/chat.interfaces').IRoomMessageDataType,
   ) => void;
+  'chat:messageUpdated': (
+    message: import('@/apis/types/chat.interfaces').IRoomMessageDataType,
+  ) => void;
+  'chat:messageDeleted': (data: { messageId: string }) => void;
   typingStatus: (data: { roomId: string; typingUsers: string[] }) => void;
   messagesRead: (data: { roomId: string; userId: string }) => void;
   'chat:relationshipChanged': (data: {

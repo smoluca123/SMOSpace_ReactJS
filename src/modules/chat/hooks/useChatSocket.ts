@@ -201,7 +201,7 @@ export function useChatSocket({
       if (data.roomId === roomId) setTypingUsers(data.typingUsers);
     };
 
-    // Someone read the room - add them to readBy of every cached message (read receipts)
+    // Someone read the room — add them to readBy of all cached messages in this room
     const handleMessagesRead = (data: { roomId: string; userId: string }) => {
       if (data.roomId !== roomId) return;
 
@@ -229,11 +229,48 @@ export function useChatSocket({
       patchMessageInCache(queryClient, message);
     };
 
+    // A message in this room was edited — replace it in cache
+    const handleMessageUpdated = (message: IRoomMessageDataType) => {
+      if (message.room?.id !== roomId) return;
+      queryClient.setQueryData<
+        InfiniteData<IApiPaginationResponseWrapper<IRoomMessageDataType>['data']>
+      >(getRoomsMessagesQueryKey({ roomId }), (oldData) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            items: page.items.map((item) =>
+              item.id === message.id ? { ...item, ...message } : item,
+            ),
+          })),
+        };
+      });
+    };
+
+    // A message in this room was deleted — remove it from cache
+    const handleMessageDeleted = (data: { messageId: string }) => {
+      queryClient.setQueryData<
+        InfiniteData<IApiPaginationResponseWrapper<IRoomMessageDataType>['data']>
+      >(getRoomsMessagesQueryKey({ roomId }), (oldData) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            items: page.items.filter((item) => item.id !== data.messageId),
+          })),
+        };
+      });
+    };
+
     if (chatSocket.connected) joinRoom();
     chatSocket.on('connect', joinRoom);
     chatSocket.on('typingStatus', handleTyping);
     chatSocket.on('messagesRead', handleMessagesRead);
     chatSocket.on('chat:messageReactionUpdated', handleReactionUpdated);
+    chatSocket.on('chat:messageUpdated', handleMessageUpdated);
+    chatSocket.on('chat:messageDeleted', handleMessageDeleted);
 
     // Mark the room as read when opened (skipped for pending requests in preview)
     if (autoMarkRead) {
@@ -251,6 +288,8 @@ export function useChatSocket({
       chatSocket.off('typingStatus', handleTyping);
       chatSocket.off('messagesRead', handleMessagesRead);
       chatSocket.off('chat:messageReactionUpdated', handleReactionUpdated);
+      chatSocket.off('chat:messageUpdated', handleMessageUpdated);
+      chatSocket.off('chat:messageDeleted', handleMessageDeleted);
       setTypingUsers([]);
     };
   }, [roomId, queryClient, autoMarkRead, enabled]);

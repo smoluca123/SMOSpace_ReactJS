@@ -2,7 +2,7 @@ import UserAvatar from '@/components/UserAvatar';
 import { Button } from '@/components/ui/button';
 import { RemoteParticipant, useCall } from '@/modules/call/CallContext';
 import { Mic, MicOff, MonitorUp, Phone, PhoneOff, Video, VideoOff } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 /** Attaches a MediaStream to a <video> element (srcObject can't be set via JSX). */
 function StreamVideo({
@@ -73,6 +73,25 @@ export default function CallOverlay() {
     toggleScreenShare,
   } = useCall();
 
+  // Track call duration in seconds while in-call
+  const [callDurationSeconds, setCallDurationSeconds] = useState(0);
+
+  useEffect(() => {
+    if (status !== 'in-call') {
+      setCallDurationSeconds(0);
+      return;
+    }
+    const timer = setInterval(() => setCallDurationSeconds((s) => s + 1), 1000);
+    return () => clearInterval(timer);
+  }, [status]);
+
+  /** Format seconds to MM:SS string */
+  const formatDuration = (totalSeconds: number): string => {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
+
   if (status === 'idle') return null;
 
   const isVideo = callType === 'video';
@@ -123,9 +142,11 @@ export default function CallOverlay() {
       ? 'Calling...'
       : status === 'connecting'
         ? 'Connecting...'
-        : connectedCount > 0
-          ? `${connectedCount + 1} in call`
-          : 'Connected';
+        : status === 'in-call'
+          ? formatDuration(callDurationSeconds)
+          : connectedCount > 0
+            ? `${connectedCount + 1} in call`
+            : 'Connected';
 
   const hasRemotes = participants.length > 0;
   // Single remote -> 1 column; 2 remotes -> 2 columns.
