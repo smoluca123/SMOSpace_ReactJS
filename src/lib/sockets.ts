@@ -60,6 +60,10 @@ interface ChatServerToClientEvents {
   'chat:messageReactionUpdated': (
     message: import('@/apis/types/chat.interfaces').IRoomMessageDataType,
   ) => void;
+  'chat:messageUpdated': (
+    message: import('@/apis/types/chat.interfaces').IRoomMessageDataType,
+  ) => void;
+  'chat:messageDeleted': (data: { messageId: string }) => void;
   typingStatus: (data: { roomId: string; typingUsers: string[] }) => void;
   messagesRead: (data: { roomId: string; userId: string }) => void;
   'chat:relationshipChanged': (data: {
@@ -190,12 +194,9 @@ export const createNamespaceSocket = <
   };
 
   return io(`${env.VITE_SOCKET_URL}/${namespace}`, {
-    // `auth` as a function is re-evaluated on every (re)connection, so the
-    // server always receives the current user's token.
     auth: (cb) => cb({ accessToken: getAccessToken(), token: getAccessToken() }),
     extraHeaders: {
       Authorization: `Bearer ${env.VITE_AUTHORIZATION_TOKEN}`,
-      accessToken: getAccessToken(),
     },
     autoConnect: false,
   }) as Socket<SE, CE>;

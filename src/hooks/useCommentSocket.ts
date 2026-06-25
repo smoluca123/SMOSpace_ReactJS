@@ -19,12 +19,24 @@ export default function useCommentSocket({
   onNewComment,
 }: UseCommentSocketProps) {
   const hasSubscribed = useRef<boolean>(false);
-  const { user } = useAppSelector(selectAuth);
+  const { user, isAuthenticated } = useAppSelector(selectAuth);
   const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!isSubscribed) return;
 
+    // Don't connect if not authenticated
+    if (!isAuthenticated || !user?.id) {
+      if (commentSocket.connected) {
+        commentSocket.disconnect();
+      }
+      return;
+    }
+
+    // Force disconnect and reconnect to ensure fresh token is sent
+    if (commentSocket.connected) {
+      commentSocket.disconnect();
+    }
     commentSocket.connect();
 
     const handleConnect = () => {
@@ -64,7 +76,8 @@ export default function useCommentSocket({
     return () => {
       commentSocket.off('comment:onNewComment');
       commentSocket.off('connect');
-      commentSocket.disconnect();
+      // Keep connection, only reset subscription flag
+      hasSubscribed.current = false;
     };
-  }, [isSubscribed, postId, user?.id, onNewComment, queryClient]);
+  }, [isAuthenticated, isSubscribed, postId, user?.id, onNewComment, queryClient]);
 }

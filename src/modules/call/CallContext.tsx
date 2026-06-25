@@ -1,6 +1,8 @@
 import { toast } from '@/hooks/use-toast';
 import { CallType, ICallPeer, callSocket } from '@/lib/sockets';
 import { startRingtone, stopRingtone } from '@/lib/ringtone';
+import { useAppSelector } from '@/redux/hooks';
+import { selectAuth } from '@/redux/slices/authSlice';
 import {
   createContext,
   useCallback,
@@ -54,6 +56,7 @@ interface IncomingInfo {
 }
 
 export function CallProvider({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, user } = useAppSelector(selectAuth);
   const [status, setStatus] = useState<CallStatus>('idle');
   const [callType, setCallType] = useState<CallType>('audio');
   const [incomingFrom, setIncomingFrom] = useState<ICallPeer | null>(null);
@@ -479,7 +482,18 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
   // ---- Socket wiring ------------------------------------------------------
 
   useEffect(() => {
-    callSocket.connect();
+    // Don't connect if not authenticated
+    if (!isAuthenticated || !user?.id) {
+      if (callSocket.connected && isAuthenticated === false) {
+        callSocket.disconnect();
+      }
+      return;
+    }
+
+    // Only connect if not already connected
+    if (!callSocket.connected) {
+      callSocket.connect();
+    }
 
     const subscribe = () => {
       callSocket.emit('call:subscribe', (response) => {
@@ -604,6 +618,15 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
       cleanup();
     };
 
+    const handleInviteDeclined = (data: { callId: string; userId: string }) => {
+      if (data.callId !== callIdRef.current) return;
+      toast({
+        title: 'Call declined',
+        description: 'The other party declined your call.',
+        duration: 3000,
+      });
+    };
+
     const handleFailed = (data: { reason: string }) => {
       toast({
         title: 'Call failed',
@@ -630,6 +653,7 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     callSocket.on('call:ended', handleEnded);
     callSocket.on('call:unavailable', handleUnavailable);
     callSocket.on('call:failed', handleFailed);
+    callSocket.on('call:invite-declined', handleInviteDeclined);
 
     return () => {
       callSocket.off('connect', subscribe);
@@ -642,8 +666,12 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
       callSocket.off('call:ended', handleEnded);
       callSocket.off('call:unavailable', handleUnavailable);
       callSocket.off('call:failed', handleFailed);
+      callSocket.off('call:invite-declined', handleInviteDeclined);
+      // Keep connection alive
     };
   }, [
+    isAuthenticated,
+    user?.id,
     addParticipant,
     cleanup,
     closePeer,

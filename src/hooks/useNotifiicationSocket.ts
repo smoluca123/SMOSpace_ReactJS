@@ -12,19 +12,24 @@ interface UseNotificationSocketProps {
 
 export default function useNotificationSocket(props?: UseNotificationSocketProps) {
   const { onNewNotification } = props || {};
-  const { user } = useAppSelector(selectAuth);
+  const { user, isAuthenticated } = useAppSelector(selectAuth);
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    notificationSocket.connect();
+    // Don't connect if not authenticated
+    if (!isAuthenticated || !user?.id) {
+      if (notificationSocket.connected && isAuthenticated === false) {
+        notificationSocket.disconnect();
+      }
+      return;
+    }
 
-    const handleConnect = () => {
-      notificationSocket.emit('noti:subscribe');
-      notificationSocket.on('noti:new', handleHasNewNotification);
-    };
+    // Only connect if not already connected
+    if (!notificationSocket.connected) {
+      notificationSocket.connect();
+    }
 
     const handleHasNewNotification = (newNotification: INotificationType) => {
-      console.log('newNotification', newNotification);
       if (onNewNotification) {
         onNewNotification(newNotification);
       }
@@ -74,7 +79,12 @@ export default function useNotificationSocket(props?: UseNotificationSocketProps
       });
     };
 
+    const handleConnect = () => {
+      notificationSocket.emit('noti:subscribe');
+    };
+
     notificationSocket.on('connect', handleConnect);
+    notificationSocket.on('noti:new', handleHasNewNotification);
 
     // If socket is already connected, emit subscribe immediately
     if (notificationSocket.connected) {
@@ -82,9 +92,9 @@ export default function useNotificationSocket(props?: UseNotificationSocketProps
     }
 
     return () => {
-      notificationSocket.off('noti:new');
-      notificationSocket.off('connect');
-      notificationSocket.disconnect();
+      notificationSocket.off('noti:new', handleHasNewNotification);
+      notificationSocket.off('connect', handleConnect);
+      // Keep connection alive across re-renders
     };
-  }, [user?.id, onNewNotification, queryClient]);
+  }, [isAuthenticated, user?.id, onNewNotification, queryClient]);
 }
