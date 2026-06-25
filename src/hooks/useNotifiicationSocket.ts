@@ -12,11 +12,22 @@ interface UseNotificationSocketProps {
 
 export default function useNotificationSocket(props?: UseNotificationSocketProps) {
   const { onNewNotification } = props || {};
-  const { user } = useAppSelector(selectAuth);
+  const { user, isAuthenticated } = useAppSelector(selectAuth);
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    notificationSocket.connect();
+    // Don't connect if not authenticated
+    if (!isAuthenticated || !user?.id) {
+      if (notificationSocket.connected && isAuthenticated === false) {
+        notificationSocket.disconnect();
+      }
+      return;
+    }
+
+    // Only connect if not already connected
+    if (!notificationSocket.connected) {
+      notificationSocket.connect();
+    }
 
     const handleHasNewNotification = (newNotification: INotificationType) => {
       if (onNewNotification) {
@@ -83,7 +94,7 @@ export default function useNotificationSocket(props?: UseNotificationSocketProps
     return () => {
       notificationSocket.off('noti:new', handleHasNewNotification);
       notificationSocket.off('connect', handleConnect);
-      notificationSocket.disconnect();
+      // Keep connection alive across re-renders
     };
-  }, [user?.id, onNewNotification, queryClient]);
+  }, [isAuthenticated, user?.id, onNewNotification, queryClient]);
 }

@@ -7,10 +7,23 @@ import { selectAuth } from '@/redux/slices/authSlice';
 import { addNewPosts } from '@/redux/slices/postSlice';
 
 export function usePostSocket() {
-  const { user } = useAppSelector(selectAuth);
+  const { user, isAuthenticated } = useAppSelector(selectAuth);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    // Don't connect if not authenticated
+    if (!isAuthenticated || !user?.id) {
+      if (postSocket.connected) {
+        postSocket.disconnect();
+      }
+      return;
+    }
+
+    // Force disconnect and reconnect to ensure fresh token is sent
+    if (postSocket.connected) {
+      postSocket.disconnect();
+    }
+
     // Connect to the posts namespace
     postSocket.connect();
 
@@ -68,7 +81,7 @@ export function usePostSocket() {
     return () => {
       postSocket.off('post:onNewPost');
       postSocket.off('connect_error');
-      postSocket.disconnect();
+      // Keep connection alive
     };
-  }, [user?.id, dispatch]);
+  }, [isAuthenticated, user?.id, dispatch]);
 }

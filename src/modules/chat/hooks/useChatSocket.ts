@@ -80,10 +80,19 @@ function patchMessageInCache(
  */
 export function useGlobalChatNotifications() {
   const queryClient = useQueryClient();
-  const { user } = useAppSelector(selectAuth);
+  const { user, isAuthenticated } = useAppSelector(selectAuth);
 
   useEffect(() => {
-    chatSocket.connect();
+    if (!isAuthenticated || !user?.id) {
+      if (chatSocket.connected && isAuthenticated === false) {
+        chatSocket.disconnect();
+      }
+      return;
+    }
+
+    if (!chatSocket.connected) {
+      chatSocket.connect();
+    }
 
     const subscribe = () => chatSocket.emit('chat:subscribe');
 
@@ -142,7 +151,14 @@ export function useGlobalChatNotifications() {
     };
 
     if (chatSocket.connected) subscribe();
-    chatSocket.on('connect', subscribe);
+
+    chatSocket.on('connect', () => {
+      console.log('[useGlobalChatNotifications] Socket connected');
+      subscribe();
+    });
+    chatSocket.on('connect_error', (error) => {
+      console.error('[useGlobalChatNotifications] Socket connect_error:', error.message);
+    });
     chatSocket.on('newMessage', handleNewMessage);
     chatSocket.on('chat:newMessageNotification', handleNotification);
 
@@ -170,7 +186,7 @@ export function useGlobalChatNotifications() {
       chatSocket.off('chat:newMessageNotification', handleNotification);
       chatSocket.off('chat:relationshipChanged', handleRelationshipChanged);
     };
-  }, [queryClient, user?.id]);
+  }, [queryClient, isAuthenticated, user?.id]);
 }
 
 /**
