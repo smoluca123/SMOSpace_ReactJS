@@ -22,11 +22,14 @@ export default function NotificationPopover() {
     groupByTime: 24,
   });
 
-  // Check for unread based on current view mode
-  const hasUnreadNotification =
-    viewMode === 'flat'
-      ? flatQuery.data?.pages[0].items.some((notification) => !notification.isRead)
-      : groupedQuery.data?.pages[0].items.some((group) => !group.isRead);
+  // Check for unread across both flat and grouped queries for instantaneous dot display
+  const hasUnreadInFlat = flatQuery.data?.pages?.[0]?.items?.some(
+    (notification) => !notification.isRead,
+  );
+  const hasUnreadInGrouped = groupedQuery.data?.pages?.[0]?.items?.some(
+    (group) => !group.isRead,
+  );
+  const hasUnreadNotification = Boolean(hasUnreadInFlat || hasUnreadInGrouped);
 
   return (
     <Popover>
