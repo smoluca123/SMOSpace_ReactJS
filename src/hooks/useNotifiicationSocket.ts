@@ -1,6 +1,10 @@
 import { toast } from '@/hooks/use-toast';
 import { notificationSocket } from '@/lib/sockets';
-import { IApiPaginationResponseWrapper, INotificationType } from '@/lib/types/interfaces';
+import {
+  IApiPaginationResponseWrapper,
+  INotificationType,
+  IUserWithAccessTokenType,
+} from '@/lib/types/interfaces';
 import { useAppSelector } from '@/redux/hooks';
 import { selectAuth } from '@/redux/slices/authSlice';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
@@ -24,6 +28,17 @@ export default function useNotificationSocket(props?: UseNotificationSocketProps
       return;
     }
 
+    // Refresh token in auth payload before connecting
+    const currentUser = JSON.parse(
+      localStorage.getItem('currentUser') || 'null',
+    ) as IUserWithAccessTokenType | null;
+    const token = currentUser?.accessToken || '';
+
+    notificationSocket.auth = {
+      accessToken: token,
+      token,
+    };
+
     // Only connect if not already connected
     if (!notificationSocket.connected) {
       notificationSocket.connect();
@@ -34,22 +49,23 @@ export default function useNotificationSocket(props?: UseNotificationSocketProps
         onNewNotification(newNotification);
       }
 
-      // Cancel pending queries
-      queryClient.cancelQueries({ queryKey: ['notifications'] });
-      queryClient.cancelQueries({ queryKey: ['grouped-notifications'] });
-
-      // Update flat notifications cache
+      // Update flat notifications cache immediately for instant UI response
       queryClient.setQueriesData(
         {
           queryKey: ['notifications'],
         },
-        (oldData: InfiniteData<IApiPaginationResponseWrapper<INotificationType>['data']>) => {
-          if (!oldData) return oldData;
+        (oldData: InfiniteData<IApiPaginationResponseWrapper<INotificationType>['data']> | undefined) => {
+          if (!oldData || !oldData.pages || oldData.pages.length === 0) return oldData;
 
           const firstPage = oldData.pages[0];
+          // Prevent duplicates if already present
+          const alreadyExists = firstPage.items.some((item) => item.id === newNotification.id);
+          if (alreadyExists) return oldData;
+
           const updatedFirstPage = {
             ...firstPage,
             items: [newNotification, ...firstPage.items],
+            totalCount: (firstPage.totalCount || 0) + 1,
           };
 
           return {
@@ -59,23 +75,28 @@ export default function useNotificationSocket(props?: UseNotificationSocketProps
         },
       );
 
-      // Invalidate grouped notifications to refetch with new grouping
+      // Force refetch grouped notifications so the grouped view is instantly updated
       queryClient.invalidateQueries({ queryKey: ['grouped-notifications'] });
+      queryClient.refetchQueries({ queryKey: ['grouped-notifications'] });
 
-      // Friendship notifications (request received / request accepted) should
-      // refresh the friend request list, friend lists, profile (button states)
-      // and friend counts in realtime.
+      // Entity-specific invalidations
       if (newNotification.entityType === 'FRIENDSHIP') {
         queryClient.invalidateQueries({ queryKey: ['friend-request', 'me'] });
+        queryClient.invalidateQueries({ queryKey: ['friend-requests'] });
         queryClient.invalidateQueries({ queryKey: ['friend-list'] });
+        queryClient.invalidateQueries({ queryKey: ['friends'] });
         queryClient.invalidateQueries({ queryKey: ['profile'] });
+      } else if (newNotification.entityType === 'COMMENT') {
+        queryClient.invalidateQueries({ queryKey: ['comments'] });
+      } else if (newNotification.entityType === 'POST') {
+        queryClient.invalidateQueries({ queryKey: ['posts'] });
       }
 
-      // Show toast notification (optional)
+      // Show toast notification
       toast({
-        title: 'New notification',
-        description: newNotification.content.message,
-        duration: 3000,
+        title: newNotification.content?.title || 'New notification',
+        description: newNotification.content?.message || 'You received a new notification',
+        duration: 4000,
       });
     };
 
@@ -94,7 +115,6 @@ export default function useNotificationSocket(props?: UseNotificationSocketProps
     return () => {
       notificationSocket.off('noti:new', handleHasNewNotification);
       notificationSocket.off('connect', handleConnect);
-      // Keep connection alive across re-renders
     };
   }, [isAuthenticated, user?.id, onNewNotification, queryClient]);
 }
