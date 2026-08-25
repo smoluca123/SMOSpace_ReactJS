@@ -490,6 +490,17 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    // Refresh token in auth payload before connecting
+    const currentUser = JSON.parse(
+      localStorage.getItem('currentUser') || 'null',
+    ) as import('@/lib/types/interfaces').IUserWithAccessTokenType | null;
+    const token = currentUser?.accessToken || '';
+
+    callSocket.auth = {
+      accessToken: token,
+      token,
+    };
+
     // Only connect if not already connected
     if (!callSocket.connected) {
       callSocket.connect();
@@ -642,8 +653,18 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
       cleanup();
     };
 
+    const onConnect = () => {
+      console.log('[CallContext] Socket connected, subscribing to call gateway...');
+      subscribe();
+    };
+
+    const onConnectError = (error: Error) => {
+      console.error('[CallContext] Socket connect_error:', error.message);
+    };
+
     if (callSocket.connected) subscribe();
-    callSocket.on('connect', subscribe);
+    callSocket.on('connect', onConnect);
+    callSocket.on('connect_error', onConnectError);
     callSocket.on('call:incoming', handleIncoming);
     callSocket.on('call:peer-joined', handlePeerJoined);
     callSocket.on('call:offer', handleOffer);
@@ -656,7 +677,8 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     callSocket.on('call:invite-declined', handleInviteDeclined);
 
     return () => {
-      callSocket.off('connect', subscribe);
+      callSocket.off('connect', onConnect);
+      callSocket.off('connect_error', onConnectError);
       callSocket.off('call:incoming', handleIncoming);
       callSocket.off('call:peer-joined', handlePeerJoined);
       callSocket.off('call:offer', handleOffer);
